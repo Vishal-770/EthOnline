@@ -10,5 +10,11 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs"
+  "type": "module",
+  "dependencies": {
+    "@envio-dev/hypersync-client": "^0.6.6",
+    "envio": "^1.0.0",
+    "ethers": "^6.15.0",
+    "viem": "^2.38.3"
+  }
 }
