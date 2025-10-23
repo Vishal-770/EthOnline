@@ -5,7 +5,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { cookies } from "next/headers";
 import AppSideBar from "@/components/AppSideBar";
 import NavBar from "@/components/AppNavbar";
-import { ThemeProvider } from "next-themes";
+import  ThemeProviderWrapper from "@/components/ThemeProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,32 +24,27 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
+
   return (
     <html lang="en" suppressHydrationWarning>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased flex min-h-screen`}
       >
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased flex min-h-screen`}
-        >
+        <ThemeProviderWrapper>
           <SidebarProvider defaultOpen={defaultOpen}>
             <AppSideBar />
-
             <main className="w-full">
               <NavBar />
-              <div className="px-4"> {children}</div>
+              <div className="px-4">{children}</div>
             </main>
           </SidebarProvider>
-        </body>
-      </ThemeProvider>
+        </ThemeProviderWrapper>
+      </body>
     </html>
   );
 }
