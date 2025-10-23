@@ -1,6 +1,7 @@
 "use client";
 
 import { PriceChartWidget } from "@/components/PriceChartWidget";
+import TokenTransactionsList from "@/components/TokenTransactionsList";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -20,9 +21,9 @@ interface TokenData {
 }
 
 const mockTokenData: Record<string, TokenData> = {
-  "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb": {
+  "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0": {
     name: "trust me bro",
-    symbol: "WBNB",
+    symbol: "TMB",
     price: 0.001799,
     priceChange: 5.23,
     marketCap: "$1.7M",
@@ -55,7 +56,7 @@ export default function TokenDetailsPage() {
     // Simulate fetching token data based on address
     const data =
       mockTokenData[tokenAddress] ||
-      mockTokenData["0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"];
+      mockTokenData["0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0"];
     setTokenData(data);
   }, [tokenAddress]);
 
@@ -174,6 +175,9 @@ export default function TokenDetailsPage() {
             </div>
           </div>
         </div>
+
+        {/* Transactions List */}
+        <TokenTransactionsList tokenAddress={tokenAddress} decimals={18} />
       </div>
     </div>
   );

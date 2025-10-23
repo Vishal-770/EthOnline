@@ -38,7 +38,7 @@ const mockTokens: Token[] = [
     liquidity: "$316K",
     mcap: "$1.7M",
     icon: "😊",
-    tokenAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+    tokenAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0",
   },
   {
     rank: 2,
