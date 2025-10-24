@@ -1,19 +1,20 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Saira, Fira_Code } from "next/font/google";
 import "./globals.css";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { cookies } from "next/headers";
 import AppSideBar from "@/components/AppSideBar";
 import NavBar from "@/components/AppNavbar";
-import  ThemeProviderWrapper from "@/components/ThemeProvider";
+import ThemeProviderWrapper from "@/components/ThemeProvider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const saira = Saira({
+  variable: "--font-saira",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const firaCode = Fira_Code({
+  variable: "--font-fira-code",
   subsets: ["latin"],
 });
 
@@ -33,7 +34,7 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased flex min-h-screen`}
+        className={`${saira.variable} ${firaCode.variable} antialiased flex min-h-screen`}
       >
         <ThemeProviderWrapper>
           <SidebarProvider defaultOpen={defaultOpen}>

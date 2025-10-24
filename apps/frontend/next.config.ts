@@ -16,6 +16,12 @@ const nextConfig: NextConfig = {
     }
     return config;
   },
+  images: {
+    domains: [
+      "dd.dexscreener.com",
+      "cdn.dexscreener.com", // ✅ Add this line
+    ],
+  },
 };
 
 export default nextConfig;
