@@ -1,6 +1,9 @@
 "use client";
-import { motion } from "motion/react";
+import { motion, easeInOut } from "motion/react";
 import React from "react";
+
+// Define ease functions locally
+const linear = (t: number) => t;
 
 export const LoaderOne = () => {
   const transition = (x: number) => {
@@ -9,7 +12,7 @@ export const LoaderOne = () => {
       repeat: Infinity,
       repeatType: "loop" as const,
       delay: x * 0.2,
-      ease: "easeInOut",
+      ease: easeInOut,
     };
   };
   return (
@@ -51,11 +54,11 @@ export const LoaderOne = () => {
 export const LoaderTwo = () => {
   const transition = (x: number) => {
     return {
-      duration: 2,
+      duration: 0.8,
       repeat: Infinity,
       repeatType: "loop" as const,
       delay: x * 0.2,
-      ease: "easeInOut",
+      ease: "easeInOut" as const,
     };
   };
   return (
@@ -129,7 +132,7 @@ export const LoaderFour = ({ text = "Loading..." }: { text?: string }) => {
     <div className="relative font-bold text-black [perspective:1000px] dark:text-white">
       <motion.span
         animate={{
-          skew: [0, -40, 0],
+          skewX: [0, -40, 0],
           scaleX: [1, 2, 1],
         }}
         transition={{
@@ -137,7 +140,7 @@ export const LoaderFour = ({ text = "Loading..." }: { text?: string }) => {
           repeat: Infinity,
           repeatType: "reverse",
           repeatDelay: 2,
-          ease: "linear",
+          ease: linear,
           times: [0, 0.2, 0.5, 0.8, 1],
         }}
         className="relative z-20 inline-block"
@@ -155,7 +158,7 @@ export const LoaderFour = ({ text = "Loading..." }: { text?: string }) => {
           duration: 0.5,
           repeat: Infinity,
           repeatType: "reverse",
-          ease: "linear",
+          ease: linear,
           times: [0, 0.2, 0.5, 0.8, 1],
         }}
       >
@@ -172,7 +175,7 @@ export const LoaderFour = ({ text = "Loading..." }: { text?: string }) => {
           duration: 0.8,
           repeat: Infinity,
           repeatType: "reverse",
-          ease: "linear",
+          ease: linear,
           times: [0, 0.3, 0.6, 0.8, 1],
         }}
       >

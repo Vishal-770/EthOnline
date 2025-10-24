@@ -148,12 +148,19 @@ export class PersonalAssistantAgent extends BaseAgent {
     this.dashboardApp.use(express.json());
     this.dashboardApp.use(express.static('public'));
 
-    // Dashboard route
-    this.dashboardApp.get('/dashboard', (req, res) => {
-      res.send(this.generateDashboardHTML());
+    // Enable CORS for frontend
+    this.dashboardApp.use((req, res, next) => {
+      res.header('Access-Control-Allow-Origin', '*');
+      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+      res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+      if (req.method === 'OPTIONS') {
+        res.sendStatus(200);
+      } else {
+        next();
+      }
     });
 
-    // API routes
+    // API routes only (no HTML)
     this.dashboardApp.get('/api/dashboard-data', (req, res) => {
       res.json(this.getDashboardData());
     });
@@ -173,6 +180,7 @@ export class PersonalAssistantAgent extends BaseAgent {
         const response = await this.handleChatMessage(message);
         res.json({ response });
       } catch (error) {
+        console.error('Chat API error:', error);
         res.status(500).json({ error: 'Chat processing failed' });
       }
     });
@@ -187,13 +195,24 @@ export class PersonalAssistantAgent extends BaseAgent {
         res.status(404).json({ error: 'Token not found' });
       }
     });
+
+    // Health check endpoint
+    this.dashboardApp.get('/api/health', (req, res) => {
+      res.json({ 
+        status: 'ok', 
+        timestamp: Date.now(),
+        tokensTracked: this.aggregatedData.size,
+        insightsCount: this.insights.length
+      });
+    });
   }
 
   private startDashboardServer(): void {
-    const dashboardPort = this.config.port + 100; // Offset to avoid conflicts
+    const dashboardPort = parseInt(process.env.DASHBOARD_PORT || '3000');
     this.dashboardApp.listen(dashboardPort, () => {
-      console.log(`📊 Dashboard server started on port ${dashboardPort}`);
-      console.log(`🌐 Access dashboard at: http://localhost:${dashboardPort}/dashboard`);
+      console.log(`📊 API server started on port ${dashboardPort}`);
+      console.log(`🌐 Endpoints available at: http://localhost:${dashboardPort}/api/`);
+      console.log(`💬 Chat API: http://localhost:${dashboardPort}/api/chat`);
     });
   }
 
@@ -529,163 +548,6 @@ Provide helpful, accurate responses based on the available data. If asked about 
         backgroundColor: 'rgba(54, 162, 235, 0.2)'
       }]
     };
-  }
-
-  private generateDashboardHTML(): string {
-    return `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MemeSentinel Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
-        .header { text-align: center; margin-bottom: 30px; }
-        .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .chart-container { position: relative; height: 300px; }
-        .alert-list { max-height: 200px; overflow-y: auto; }
-        .alert-item { padding: 10px; margin: 5px 0; border-radius: 4px; }
-        .alert-buy { background: #d4edda; border-left: 4px solid #28a745; }
-        .alert-watch { background: #fff3cd; border-left: 4px solid #ffc107; }
-        .alert-avoid { background: #f8d7da; border-left: 4px solid #dc3545; }
-        .chat-container { margin-top: 20px; }
-        .chat-input { width: 70%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
-        .chat-button { width: 25%; padding: 10px; background: #007bff; color: white; border: none; border-radius: 4px; }
-        .chat-response { margin-top: 10px; padding: 10px; background: #e9ecef; border-radius: 4px; }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>🧠 MemeSentinel Dashboard</h1>
-        <p>AI-Powered Memecoin Intelligence (Powered by Groq)</p>
-    </div>
-    
-    <div class="dashboard">
-        <div class="card">
-            <h3>📊 Market Overview</h3>
-            <div id="overview-stats">Loading...</div>
-        </div>
-        
-        <div class="card">
-            <h3>🚨 Active Alerts</h3>
-            <div id="alerts-list" class="alert-list">Loading...</div>
-        </div>
-        
-        <div class="card">
-            <h3>📈 APY Distribution</h3>
-            <div class="chart-container">
-                <canvas id="apy-chart"></canvas>
-            </div>
-        </div>
-        
-        <div class="card">
-            <h3>⚠️ Risk vs Yield</h3>
-            <div class="chart-container">
-                <canvas id="risk-yield-chart"></canvas>
-            </div>
-        </div>
-    </div>
-    
-    <div class="card chat-container">
-        <h3>💬 Chat with MemeSentinel AI (Groq-Powered)</h3>
-        <input type="text" id="chat-input" class="chat-input" placeholder="Ask about memecoin trends, specific tokens, or market insights...">
-        <button onclick="sendMessage()" class="chat-button">Send</button>
-        <div id="chat-response" class="chat-response" style="display: none;"></div>
-    </div>
-
-    <script>
-        // Load dashboard data
-        async function loadDashboard() {
-            try {
-                const response = await fetch('/api/dashboard-data');
-                const data = await response.json();
-                
-                // Update overview stats
-                document.getElementById('overview-stats').innerHTML = \`
-                    <p>Total Tokens: \${data.totalTokensTracked}</p>
-                    <p>Active Alerts: \${data.activeAlerts.length}</p>
-                    <p>Top Performers: \${data.topPerformers.length}</p>
-                \`;
-                
-                // Update alerts
-                const alertsHtml = data.activeAlerts.slice(0, 5).map(alert => 
-                    \`<div class="alert-item alert-\${alert.alertType.toLowerCase()}">
-                        <strong>\${alert.symbol}</strong> - \${alert.alertType} 
-                        (Confidence: \${alert.confidence}%)
-                    </div>\`
-                ).join('');
-                document.getElementById('alerts-list').innerHTML = alertsHtml || 'No active alerts';
-                
-                // Load charts
-                loadCharts();
-            } catch (error) {
-                console.error('Error loading dashboard:', error);
-            }
-        }
-        
-        async function loadCharts() {
-            // APY Distribution Chart
-            const apyResponse = await fetch('/api/chart-data/apy-distribution');
-            const apyData = await apyResponse.json();
-            
-            new Chart(document.getElementById('apy-chart'), {
-                type: 'bar',
-                data: apyData,
-                options: { responsive: true, maintainAspectRatio: false }
-            });
-            
-            // Risk-Yield Scatter Chart
-            const riskResponse = await fetch('/api/chart-data/risk-yield-scatter');
-            const riskData = await riskResponse.json();
-            
-            new Chart(document.getElementById('risk-yield-chart'), {
-                type: 'line',
-                data: riskData,
-                options: { responsive: true, maintainAspectRatio: false }
-            });
-        }
-        
-        async function sendMessage() {
-            const input = document.getElementById('chat-input');
-            const message = input.value.trim();
-            if (!message) return;
-            
-            const responseDiv = document.getElementById('chat-response');
-            responseDiv.style.display = 'block';
-            responseDiv.innerHTML = 'Thinking...';
-            
-            try {
-                const response = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message })
-                });
-                
-                const data = await response.json();
-                responseDiv.innerHTML = data.response;
-                input.value = '';
-            } catch (error) {
-                responseDiv.innerHTML = 'Error: ' + error.message;
-            }
-        }
-        
-        // Allow Enter key to send message
-        document.getElementById('chat-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') sendMessage();
-        });
-        
-        // Load dashboard on page load
-        loadDashboard();
-        
-        // Refresh every 30 seconds
-        setInterval(loadDashboard, 30000);
-    </script>
-</body>
-</html>
-    `;
   }
 
   private async generateDailySummary(): Promise<void> {
