@@ -207,3 +207,93 @@ ELSE (no social data):
   └── FINAL_SCORE = on_chain_score  ← Pure on-chain ranking
 
 Re-rank ALL tokens by FINAL_SCORE
+
+
+
+
+
+🚀 OffChain API
+
+The OffChain API is a backend service that connects to Redis Cloud, fetches and updates token analytics data, and exposes REST endpoints for social sentiment–based token rankings.
+It integrates social media analytics with on-chain scores and provides fast access to data for dashboards or web apps.
+
+⚙️ Tech Stack
+
+Node.js + Express
+
+TypeScript
+
+Redis Cloud (for caching & storage)
+
+CORS-enabled REST API
+
+🧠 Features
+
+✅ Fetch and rank tokens stored in Redis
+✅ Merge on-chain and social sentiment scores
+✅ Cache token rankings for performance
+✅ Auto-update tokens in rank batches
+✅ Expose clean API endpoints for frontend consumption
+
+🔧 Environment Variables
+
+Create a .env file in the same directory as your index.ts:
+
+REDIS_HOST=redis-13615.c277.us-east-1-3.ec2.redns.redis-cloud.com
+REDIS_PORT=13615
+REDIS_USERNAME=default
+REDIS_PASSWORD=pDQQrMEE5RQ9aMMqBw4WdKWItjNYmWHB
+GOOGLE_API_KEY=your_google_api_key
+
+🧩 API Endpoints
+Endpoint	Method	Description
+/	GET	Health check for the API
+/allposts	GET	Fetch all aggregated posts
+/tokenpost	POST	Get posts for specific tokens
+/social-analytics	POST	Run social analysis (Twitter + Reddit)
+/update-social-scores	POST	Update token social scores in Redis
+/token/:address	GET	Fetch a token’s full data by address
+/top-tokens?limit=50	GET	Get top-ranked tokens sorted by score
+/clear-cache	POST	Clear the in-memory cache
+🧮 Scoring Logic
+
+Each token’s final score combines on-chain and social data:
+
+finalScore = (0.6 × onChainTrendingScore) + (0.4 × socialScore)
+
+
+Social Score is computed from:
+
+Sentiment
+
+Mentions & engagement
+
+Risk level (low / medium / high)
+
+Confidence of analysis
+
+🕒 Automatic Updates
+
+The API automatically updates token scores at different intervals:
+
+Rank Range	Frequency
+0–20	Every 5 minutes
+20–100	Every 20 minutes
+100+	Every 30 minutes
+
+Manual trigger:
+
+POST /update-social-scores
+
+🪄 Run Locally
+npm install
+npm run dev
+
+
+API runs on:
+👉 http://localhost:3002
+
+📊 Example Request
+curl -X POST http://localhost:3002/update-social-scores \
+  -H "Content-Type: application/json" \
+  -d '{"startRank":0,"endRank":20}'
