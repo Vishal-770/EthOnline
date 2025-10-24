@@ -233,6 +233,41 @@ app.get("/", (req, res) => {
   res.send("Envio API is running");
 });
 
+app.get("/token-addresses", async (req, res) => {
+  try {
+    const addresses = await fetchTokenAddresses();
+    res.json(addresses);
+  } catch (error) {
+    console.error("Error fetching token addresses:", error);
+    res.status(500).json({ error: "Failed to fetch token addresses" });
+  }
+});
+
+app.get("/token-metadata/:address", async (req, res) => {
+  try {
+    const address = req.params.address;
+    const data = await metadata(address);
+    res.json(data);
+  } catch (error) {
+    console.error("Error fetching token metadata:", error);
+    res.status(500).json({ error: "Failed to fetch token metadata" });
+  }
+});
+
+app.get("/transactions/:address", async (req, res) => {
+  try {
+    const tokenAddress = req.params.address as string;
+    if (!tokenAddress) {
+      return res.status(400).json({ error: "Token address is required" });
+    }
+    const transactions = await getAllTokenTransactions(tokenAddress);
+    return res.json(transactions);
+  } catch (error) {
+    console.error("Error fetching transactions:", error);
+    return res.status(500).json({ error: "Failed to fetch transactions" });
+  }
+});
+
 app.post("/dbinit", async (req, res) => {
   try {
     const tokens: Token[] = await fetchTokenAddresses();
