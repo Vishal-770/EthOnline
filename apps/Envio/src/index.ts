@@ -271,8 +271,8 @@ setInterval(async () => {
   } catch (error) {
     console.error("❌ Hourly token refresh failed:", error);
   }
-}, 3 * 60 * 1000); // every 1 hour
-// }, 60 * 60 * 1000); // every 1 hour
+}, 60 * 60 * 1000); // every 1 hour
+// }, 3 * 60 * 1000); // every 1 hour
 
 // -------------------- Start Server --------------------
 app.listen(port, () => {
