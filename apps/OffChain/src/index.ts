@@ -1,271 +1,37 @@
-import 'dotenv/config';
-import { TwitterApi } from 'twitter-api-v2';
-import type { TweetV2SingleResult, Tweetv2SearchParams } from 'twitter-api-v2';
-import Snoowrap from 'snoowrap';
-import type { Submission } from 'snoowrap';
+import expres from "express"
+import cors from "cors"
+import { fetaclTokenData, fetchAllSocialData } from "./fetchSocials.ts"
 
-interface SocialPost {
-  id: string;
-  platform: 'twitter' | 'reddit';
-  content: string;
-  author: string;
-  timestamp: string;
-  engagement: {
-    likes?: number;
-    retweets?: number;
-    comments?: number;
-    upvotes?: number;
-  };
-  url?: string;
-}
+const app = expres()
+const port = 3002
 
-type CryptoKeywords = string[];
+app.use(cors())
 
-// Expanded and categorized meme coin keywords
-const memeCoins: CryptoKeywords = [
-  // Major meme coins
-  'dogecoin', 'DOGE', 'shiba inu', 'SHIB', 'pepecoin', 'PEPE',
-  'floki', 'FLOKI', 'bonk', 'BONK', 'dogwifhat', 'WIF',
-  
-  // Emerging meme coins
-  'brett', 'mog', 'popcat', 'myro', 'wen', 'book of meme', 'BOME',
-  'cats', 'mew', 'giga', 'moodeng', 'goat', 'act', 'pnut',
-  
-  // Cat-themed
-  'catcoin', 'grumpy cat', 'keyboard cat', 'nyan cat',
-  
-  // Other animal themes
-  'kishu inu', 'akita inu', 'babydoge', 'hokkaidu inu',
-  'samoyedcoin', 'pitbull token', 'husky', 'corgi coin'
-];
+app.get("/", (req, res) => {
+  res.send("OffChain API is running")
+})
 
-const cryptoTerms: CryptoKeywords = [
-  'meme coin', 'memecoin', 'shitcoin', 'crypto pump', 
-  'pump signal', 'moon mission', 'to the moon', 'diamond hands',
-  'paper hands', 'hodl', 'degen', 'ape in', 'rugpull'
-];
+app.get("/allposts", async (req, res) => {
+    try {
+        const posts = await fetchAllSocialData();
+        res.json(posts);
+    } catch (error) {
+        console.log(error)
+    }
+})
 
-const trendingHashtags: CryptoKeywords = [
-  '#memecoin', '#memecoinseason', '#altseason', '#cryptopump',
-  '#100x', '#moonshot', '#defi', '#degen', '#crypto'
-];
+app.get('/tokenpost', async(req, res)=>{
+    try {
+        const memeCoins = req.body.memeCoins as String[];
+        const cryptoTerms = req.body.cryptoTerms as String[];
+        const subreddits = req.body.subreddits as String[];
+        const posts = await fetaclTokenData(memeCoins, cryptoTerms, subreddits);
+        res.json(posts);
+    } catch (error) {
+        console.log(error)
+    }
+})
 
-const twitterClient: TwitterApi = new TwitterApi(process.env.TWITTER_BEARER_TOKEN!);
-
-const redditClient: Snoowrap = new Snoowrap({
-  userAgent: process.env.REDDIT_USER_AGENT!,
-  clientId: process.env.REDDIT_CLIENT_ID!,
-  clientSecret: process.env.REDDIT_CLIENT_SECRET!,
-  username: process.env.REDDIT_USERNAME!,
-  password: process.env.REDDIT_PASSWORD!,
+app.listen(port, () => {
+  console.log(`OffChain API listening at http://localhost:${port}`)
 });
-
-// Convert tweet to SocialPost format
-function convertTweetToSocialPost(tweet: TweetV2SingleResult): SocialPost {
-  return {
-    id: tweet.id,
-    platform: 'twitter',
-    content: tweet.text,
-    author: tweet.author_id || 'unknown',
-    timestamp: tweet.created_at || new Date().toISOString(),
-    engagement: {
-      likes: tweet.public_metrics?.like_count || 0,
-      retweets: tweet.public_metrics?.retweet_count || 0,
-      comments: tweet.public_metrics?.reply_count || 0
-    },
-    url: `https://twitter.com/i/web/status/${tweet.id}`
-  };
-}
-
-// Convert Reddit post to SocialPost format
-function convertRedditToSocialPost(post: Submission): SocialPost {
-  return {
-    id: post.id,
-    platform: 'reddit',
-    content: `${post.title}\n\n${post.selftext || ''}`.trim(),
-    author: post.author.name,
-    timestamp: new Date(post.created_utc * 1000).toISOString(),
-    engagement: {
-      upvotes: post.ups || 0,
-      comments: post.num_comments || 0
-    },
-    url: `https://reddit.com${post.permalink}`
-  };
-}
-
-// Fetch tweets with multiple query strategies - returns SocialPost[]
-async function fetchTweets(): Promise<SocialPost[]> {
-  console.log('🐦 Fetching tweets...\n');
-
-  const allTweets: TweetV2SingleResult[] = [];
-
-  // Strategy 1: Search by meme coin names
-  console.log('Strategy 1: Searching by meme coin names...');
-  const coinQuery = memeCoins.slice(0, 10).map(k => `"${k}"`).join(' OR ') + ' -is:retweet lang:en';
-  await searchTweets(coinQuery, allTweets, 50);
-
-  // Strategy 2: Search by crypto terms + meme coins
-  console.log('Strategy 2: Searching by crypto terms...');
-  const termsQuery = cryptoTerms.map(k => `"${k}"`).join(' OR ') + ' -is:retweet lang:en';
-  await searchTweets(termsQuery, allTweets, 50);
-
-  // Strategy 3: Search by trending hashtags
-  console.log('Strategy 3: Searching by trending hashtags...');
-  const hashtagQuery = trendingHashtags.join(' OR ') + ' -is:retweet lang:en';
-  await searchTweets(hashtagQuery, allTweets, 50);
-
-  // Strategy 4: Combined search for specific patterns
-  console.log('Strategy 4: Searching for pump signals...');
-  const pumpQuery = '(pump OR moon OR 100x OR 1000x) (coin OR token OR crypto) -is:retweet lang:en';
-  await searchTweets(pumpQuery, allTweets, 50);
-
-  // Remove duplicates based on tweet ID
-  const uniqueTweets = Array.from(
-    new Map(allTweets.map(t => [t.id, t])).values()
-  );
-
-  console.log(`\n✅ Total unique tweets fetched: ${uniqueTweets.length}\n`);
-
-  // Convert to SocialPost format
-  return uniqueTweets.map(convertTweetToSocialPost);
-}
-
-async function searchTweets(
-  query: string, 
-  collection: TweetV2SingleResult[], 
-  maxResults: number = 50
-): Promise<void> {
-  try {
-    const params: Tweetv2SearchParams = {
-      query,
-      'tweet.fields': ['id', 'text', 'created_at', 'author_id', 'public_metrics'],
-      max_results: maxResults,
-    };
-
-    const response = await twitterClient.v2.search(params);
-    
-    for await (const tweet of response) {
-      collection.push(tweet);
-    }
-    
-    console.log(`  ✓ Found ${response.tweets.length} tweets`);
-  } catch (error) {
-    console.error(`  ✗ Error fetching tweets:`, error);
-  }
-}
-
-// Fetch Reddit posts with expanded subreddits - returns SocialPost[]
-async function fetchReddit(): Promise<SocialPost[]> {
-  console.log('\n📱 Fetching Reddit posts...\n');
-
-  // Expanded subreddit list
-  const subreddits: string[] = [
-    'CryptoCurrency', 'Bitcoin', 'ethtrader', 'CryptoMarkets',
-    'SatoshiStreetBets', 'CryptoMoonShots', 'CryptoCurrencyTrading',
-    'altcoin', 'defi', 'NFT', 'dogecoin', 'SHIBArmy',
-    'wallstreetbets', 'memecoins', 'CryptoMars'
-  ];
-
-  const allPosts: Submission[] = [];
-
-  // Strategy 1: Search by individual meme coin names
-  console.log('Strategy 1: Searching by meme coin names...');
-  for (const sub of subreddits.slice(0, 8)) {
-    try {
-      const subreddit = await redditClient.getSubreddit(sub);
-      
-      for (const coin of memeCoins.slice(0, 15)) {
-        const results: Submission[] = await subreddit.search({
-          query: coin,
-          sort: 'new',
-          time: 'week',
-          limit: 5,
-        });
-        results.forEach(p => allPosts.push(p));
-      }
-      
-      console.log(`  ✓ Searched r/${sub}`);
-    } catch (error) {
-      console.error(`  ✗ Error searching r/${sub}:`, error);
-    }
-  }
-
-  // Strategy 2: Search by crypto terms
-  console.log('\nStrategy 2: Searching by crypto terms...');
-  for (const sub of subreddits.slice(0, 8)) {
-    try {
-      const subreddit = await redditClient.getSubreddit(sub);
-      
-      for (const term of cryptoTerms) {
-        const results: Submission[] = await subreddit.search({
-          query: term,
-          sort: 'hot',
-          time: 'week',
-          limit: 10,
-        });
-        results.forEach(p => allPosts.push(p));
-      }
-      
-      console.log(`  ✓ Searched r/${sub}`);
-    } catch (error) {
-      console.error(`  ✗ Error searching r/${sub}:`, error);
-    }
-  }
-
-  // Strategy 3: Get hot posts from meme coin specific subreddits
-  console.log('\nStrategy 3: Getting hot posts from meme coin subreddits...');
-  const memeSubreddits = ['CryptoMoonShots', 'SatoshiStreetBets', 'memecoins'];
-  
-  for (const sub of memeSubreddits) {
-    try {
-      const subreddit = await redditClient.getSubreddit(sub);
-      const hotPosts: Submission[] = await subreddit.getHot({ limit: 25 });
-      hotPosts.forEach(p => allPosts.push(p));
-      console.log(`  ✓ Got hot posts from r/${sub}`);
-    } catch (error) {
-      console.error(`  ✗ Error getting hot posts from r/${sub}:`, error);
-    }
-  }
-
-  // Remove duplicates based on post ID
-  const uniquePosts = Array.from(
-    new Map(allPosts.map(p => [p.id, p])).values()
-  );
-
-  console.log(`\n✅ Total unique Reddit posts fetched: ${uniquePosts.length}\n`);
-
-  // Convert to SocialPost format
-  return uniquePosts.map(convertRedditToSocialPost);
-}
-
-// Main function that returns all social posts
-export async function fetchAllSocialData(): Promise<SocialPost[]> {
-  console.log('🚀 Starting enhanced meme coin data fetch...\n');
-  console.log('='.repeat(60) + '\n');
-  
-  const allPosts: SocialPost[] = [];
-  
-  try {
-    const tweets = await fetchTweets();
-    allPosts.push(...tweets);
-    
-    const redditPosts = await fetchReddit();
-    allPosts.push(...redditPosts);
-  } catch (error) {
-    console.error('Fatal error:', error);
-  }
-  
-  console.log('\n' + '='.repeat(60));
-  console.log(`🎯 Data fetch complete! Total posts: ${allPosts.length}`);
-  
-  return allPosts;
-}
-
-  (async () => {
-    const posts = await fetchAllSocialData();
-    
-    // Display sample in required format
-    console.log('\n📋 Sample posts in SocialPost format:\n');
-    console.log(JSON.stringify(posts.slice(0, 5), null, 2));
-    
-  })();
