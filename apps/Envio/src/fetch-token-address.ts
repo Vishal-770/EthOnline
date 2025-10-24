@@ -27,7 +27,11 @@ export async function fetchTokenAddresses(
 ): Promise<TokenAddress[]> {
   console.log("\n🔍 STEP 1: Fetching Token Addresses...\n");
 
-  const hypersyncClient = HypersyncClient.new(null);
+  const hypersyncClient = HypersyncClient.new({
+    url: "https://eth.hypersync.xyz",
+    bearerToken:
+      process.env.HYPERSYNC_BEARER_TOKEN || "c09215fd-568a-48f0-83b3-c96c2572ad85",
+  });
   const currentBlock = await client.getBlockNumber();
   const blocksPerDay = 7200;
   const startBlock = Number(currentBlock) - blocksPerDay * daysToLookBack;
@@ -106,4 +110,4 @@ function main() {
     console.log(addresses);
   });
 }
-// main();
+main();
