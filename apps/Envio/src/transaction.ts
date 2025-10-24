@@ -6,11 +6,8 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 const hypersyncUrl = "https://eth.hypersync.xyz";
-const tokenAddress = "0x00c83aecc790e8a4453e5dd3b0b4b3680501a7a7"
 
-// ERC20 Transfer event signature
 const TRANSFER_EVENT_SIGNATURE = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
-// ERC20 Approval event signature
 const APPROVAL_EVENT_SIGNATURE = "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925";
 
 interface TransactionInfo {
@@ -34,7 +31,7 @@ interface TransactionInfo {
   };
 }
 
-async function getAllTokenTransactions() {
+export async function getAllTokenTransactions(tokenAddress:string) {
   console.log(`🔗 Connecting to HyperSync: ${hypersyncUrl}`);
   console.log(`📍 Fetching all transactions for token: ${tokenAddress}\n`);
 
@@ -92,7 +89,7 @@ async function getAllTokenTransactions() {
             BlockField.Hash
           ]
         },
-        maxNumLogs: 10000, // Fetch 10k logs per batch
+        maxNumLogs: 10000,
         includeAllBlocks: false
       };
 
@@ -215,7 +212,7 @@ async function getAllTokenTransactions() {
     typeof value === 'bigint' ? value.toString() : value
   , 2);
   
-  await fs.writeFile(outputPath, jsonString);
+  // await fs.writeFile(outputPath, jsonString);
   console.log(`💾 Transactions saved to: ${outputPath}`);
 
   // Print summary statistics
@@ -263,13 +260,13 @@ async function getAllTokenTransactions() {
   return allTransactions;
 }
 
-// Run the script
-getAllTokenTransactions()
-  .then(() => {
-    console.log("\n✅ Script completed successfully!");
-    process.exit(0);
-  })
-  .catch((error) => {
-    console.error("\n❌ Script failed:", error);
-    process.exit(1);
-  });
+// // Run the script
+// getAllTokenTransactions("0x00c83aecc790e8a4453e5dd3b0b4b3680501a7a7")
+//   .then(() => {
+//     console.log("\n✅ Script completed successfully!");
+//     process.exit(0);
+//   })
+//   .catch((error) => {
+//     console.error("\n❌ Script failed:", error);
+//     process.exit(1);
+//   });
