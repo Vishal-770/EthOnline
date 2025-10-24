@@ -7,8 +7,8 @@ const AppSideBar = async () => {
   // Fallback tweet IDs in case API fails
   const fallbackTweetIds = [
     "1234903157580296192",
-    "1981416387588571398",
-    "1981415786238661080",
+    "19818030598662229048",
+    "1981803063393259726",
   ];
 
   let tweets = [];
@@ -32,7 +32,7 @@ const AppSideBar = async () => {
   return (
     <SidebarWrapper>
       <div className="sticky top-0 bg-card/95 backdrop-blur-sm z-10 border-b border-border px-4 py-4">
-        <h2 className="text-3xl font-bold text-foreground">Trending Tweets</h2>
+        <h2 className="text-xl font-bold text-foreground">Trending Tweets</h2>
         <p className="text-xs text-muted-foreground mt-1">
           {error ? "Showing cached tweets" : "Latest from Ethereum"}
         </p>

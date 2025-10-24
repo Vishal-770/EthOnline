@@ -17,7 +17,7 @@ export function SidebarWrapper({ children }: SidebarWrapperProps) {
       <Button
         variant="ghost"
         size="icon"
-        className="md:hidden fixed top-20 left-4 z-50 bg-card border border-border shadow-lg"
+        className="md:hidden fixed top-9 left-4 z-50 bg-card border border-border shadow-lg"
         onClick={() => setIsOpen(!isOpen)}
       >
         {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}

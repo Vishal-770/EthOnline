@@ -129,159 +129,152 @@ const TrendingTokenCardGrid: React.FC<TrendingTokenCardGridProps> = ({
 
   return (
     <Link href={`/token/${tokenAddress}`} className="block w-full group">
-      <Card className="relative w-full h-full p-4 border border-border bg-card hover:bg-accent/5 hover:border-primary/20 rounded-lg transition-all duration-150 overflow-hidden">
-        {/* Rank Badge */}
-        {rank && (
-          <div className="absolute top-3 left-3 bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded-full z-10">
-            #{rank}
-          </div>
-        )}
+      <Card className="relative w-full p-3 border border-border bg-card hover:bg-accent/5 hover:border-primary/20 rounded-lg transition-all duration-150 overflow-hidden">
+        {/* Header Section with Token Info */}
+        <div className="flex items-center gap-3 mb-3">
+          {/* Rank Badge */}
+          {rank && (
+            <div className="flex flex-col items-center justify-center shrink-0">
+              <div className="text-[10px] text-muted-foreground font-medium uppercase">
+                Rank
+              </div>
+              <div className="text-sm font-bold text-foreground">#{rank}</div>
+            </div>
+          )}
 
-        {/* Trend Badge */}
-        <div
-          className={`absolute top-3 right-3 text-xs font-bold px-2 py-1 rounded whitespace-nowrap z-10 ${
-            isPositive24h
-              ? "bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20"
-              : "bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20"
-          }`}
-        >
-          {isPositive24h ? "↑" : "↓"} {data.priceChange24h.toFixed(2)}%
-        </div>
-
-        <div className="flex flex-col items-center space-y-4 pt-8">
           {/* Token Image */}
-          <div className="relative">
+          <div className="relative shrink-0">
             <Image
               src={data.imageUrl || "/image.png"}
               alt={data.name}
-              width={64}
-              height={64}
-              className="rounded-full border-2 border-border"
+              width={48}
+              height={48}
+              className="rounded-full border border-border"
             />
             {data.viralMetrics?.multiChainPresence > 1 && (
-              <div className="absolute -bottom-1 -right-1 bg-primary text-white text-xs font-bold px-2 py-1 rounded-full border-2 border-card">
+              <div className="absolute -bottom-1 -right-1 bg-primary text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-card">
                 {data.viralMetrics.multiChainPresence}
               </div>
             )}
           </div>
 
           {/* Token Name & Symbol */}
-          <div className="text-center w-full">
-            <h3 className="text-lg font-bold text-foreground truncate">
+          <div className="flex-1 min-w-0">
+            <h3 className="text-base font-bold text-foreground truncate">
               {data.name}
             </h3>
-            <div className="flex items-center justify-center gap-2 mt-1">
-              <span className="text-sm text-muted-foreground font-medium bg-muted px-2 py-1 rounded">
+            <div className="flex items-center gap-2 mt-0.5">
+              <span className="text-xs text-muted-foreground font-medium bg-muted px-2 py-0.5 rounded">
                 {data.symbol}
               </span>
-              <span className="text-xs bg-blue-500/10 text-blue-600 dark:text-blue-400 px-2 py-1 rounded">
+              <span className="text-[10px] bg-blue-500/10 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded">
                 {data.viralMetrics.ageInDays}d
               </span>
             </div>
           </div>
 
+          {/* 24H Change Badge */}
+          <div
+            className={`shrink-0 text-xs font-bold px-2 py-1 rounded ${
+              isPositive24h
+                ? "bg-green-500/10 text-green-600 dark:text-green-400"
+                : "bg-red-500/10 text-red-600 dark:text-red-400"
+            }`}
+          >
+            {isPositive24h ? "+" : ""}
+            {data.priceChange24h.toFixed(2)}%
+          </div>
+        </div>
+
+        {/* Stats Grid - Horizontal Layout */}
+        <div className="grid grid-cols-6 gap-2 py-2 border-t border-border">
           {/* Price */}
-          <div className="text-center w-full py-3 bg-muted/50 rounded-lg">
-            <div className="text-xs text-muted-foreground font-medium mb-1">
-              PRICE
+          <div className="text-left">
+            <div className="text-[10px] text-muted-foreground font-medium mb-0.5 uppercase">
+              Price
             </div>
-            <div className="text-xl font-bold text-foreground">
+            <div className="text-xs font-bold text-foreground">
               ${formatPrice(data.priceUSD)}
             </div>
           </div>
 
-          {/* Price Changes */}
-          <div className="grid grid-cols-3 gap-2 w-full">
-            <div className="text-center p-2 bg-muted/30 rounded">
-              <div className="text-xs text-muted-foreground font-medium mb-1">
-                1H
-              </div>
-              <div
-                className={`text-sm font-bold ${
-                  isPositive1h
-                    ? "text-green-600 dark:text-green-400"
-                    : "text-red-600 dark:text-red-400"
-                }`}
-              >
-                {isPositive1h ? "+" : ""}
-                {data.priceChange1h.toFixed(2)}%
-              </div>
+          {/* Market Cap */}
+          <div className="text-left">
+            <div className="text-[10px] text-muted-foreground font-medium mb-0.5 uppercase">
+              MCap
             </div>
-            <div className="text-center p-2 bg-muted/30 rounded">
-              <div className="text-xs text-muted-foreground font-medium mb-1">
-                6H
-              </div>
-              <div
-                className={`text-sm font-bold ${
-                  isPositive6h
-                    ? "text-green-600 dark:text-green-400"
-                    : "text-red-600 dark:text-red-400"
-                }`}
-              >
-                {isPositive6h ? "+" : ""}
-                {data.priceChange6h.toFixed(2)}%
-              </div>
-            </div>
-            <div className="text-center p-2 bg-muted/30 rounded">
-              <div className="text-xs text-muted-foreground font-medium mb-1">
-                24H
-              </div>
-              <div
-                className={`text-sm font-bold ${
-                  isPositive24h
-                    ? "text-green-600 dark:text-green-400"
-                    : "text-red-600 dark:text-red-400"
-                }`}
-              >
-                {isPositive24h ? "+" : ""}
-                {data.priceChange24h.toFixed(2)}%
-              </div>
+            <div className="text-xs font-semibold text-foreground">
+              {formatNumber(data.marketCap)}
             </div>
           </div>
 
-          {/* Market Data */}
-          <div className="grid grid-cols-2 gap-3 w-full pt-2 border-t border-border">
-            <div className="text-center">
-              <div className="text-xs text-muted-foreground font-medium mb-1">
-                MARKET CAP
-              </div>
-              <div className="text-sm font-semibold text-foreground">
-                {formatNumber(data.marketCap)}
-              </div>
+          {/* Volume */}
+          <div className="text-left">
+            <div className="text-[10px] text-muted-foreground font-medium mb-0.5 uppercase">
+              Vol 24H
             </div>
-            <div className="text-center">
-              <div className="text-xs text-muted-foreground font-medium mb-1">
-                VOLUME 24H
-              </div>
-              <div className="text-sm font-semibold text-foreground">
-                {formatNumber(data.volume24h)}
-              </div>
+            <div className="text-xs font-semibold text-foreground">
+              {formatNumber(data.volume24h)}
             </div>
           </div>
 
-          {/* Additional Info */}
-          <div className="grid grid-cols-2 gap-3 w-full">
-            <div className="text-center">
-              <div className="text-xs text-muted-foreground font-medium mb-1">
-                LIQUIDITY
-              </div>
-              <div className="text-sm font-semibold text-foreground">
-                {formatNumber(data.totalLiquidityUSD)}
-              </div>
+          {/* 1H Change */}
+          <div className="text-left">
+            <div className="text-[10px] text-muted-foreground font-medium mb-0.5 uppercase">
+              1H
             </div>
-            <div className="text-center">
-              <div className="text-xs text-muted-foreground font-medium mb-1">
-                DEX
-              </div>
-              <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded font-medium inline-block">
-                {data.primaryDex}
-              </span>
+            <div
+              className={`text-xs font-bold ${
+                isPositive1h
+                  ? "text-green-600 dark:text-green-400"
+                  : "text-red-600 dark:text-red-400"
+              }`}
+            >
+              {isPositive1h ? "+" : ""}
+              {data.priceChange1h.toFixed(2)}%
             </div>
           </div>
 
-          {/* Address */}
-          <div className="text-xs text-muted-foreground/60 font-mono pt-2 border-t border-border w-full text-center">
-            {data.address.slice(0, 8)}...{data.address.slice(-8)}
+          {/* 6H Change */}
+          <div className="text-left">
+            <div className="text-[10px] text-muted-foreground font-medium mb-0.5 uppercase">
+              6H
+            </div>
+            <div
+              className={`text-xs font-bold ${
+                isPositive6h
+                  ? "text-green-600 dark:text-green-400"
+                  : "text-red-600 dark:text-red-400"
+              }`}
+            >
+              {isPositive6h ? "+" : ""}
+              {data.priceChange6h.toFixed(2)}%
+            </div>
+          </div>
+
+          {/* Liquidity */}
+          <div className="text-left">
+            <div className="text-[10px] text-muted-foreground font-medium mb-0.5 uppercase">
+              Liquidity
+            </div>
+            <div className="text-xs font-semibold text-foreground">
+              {formatNumber(data.totalLiquidityUSD)}
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Row - DEX and Address */}
+        <div className="flex items-center justify-between pt-2 border-t border-border">
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] text-muted-foreground uppercase">
+              DEX:
+            </span>
+            <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded font-medium">
+              {data.primaryDex}
+            </span>
+          </div>
+          <div className="text-[10px] text-muted-foreground/60 font-mono">
+            {data.address.slice(0, 6)}...{data.address.slice(-4)}
           </div>
         </div>
       </Card>

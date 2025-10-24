@@ -112,7 +112,7 @@ export default function TokenDetailsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center ">
+      <div className="flex items-center justify-center">
         <div className="w-full h-[80vh] flex items-center justify-center">
           <LoaderDemo number={3} />
         </div>
@@ -168,23 +168,24 @@ export default function TokenDetailsPage() {
     <div className="min-h-screen bg-background">
       {/* Header with Token Image */}
       {tokenData.headerImage && (
-        <div className="relative w-full h-48 bg-linear-to-r from-purple-500/20 to-blue-500/20">
+        <div className="relative w-full h-32 md:h-48 bg-gradient-to-r from-purple-500/20 to-blue-500/20">
           <Image
             src={tokenData.headerImage}
             alt={`${tokenData.name} header`}
             fill
             className="object-cover opacity-50"
+            priority
           />
         </div>
       )}
 
       {/* Main Container */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
         {/* Back Button */}
-        <div className="py-6">
+        <div className="py-4 md:py-6">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors bg-accent/50 hover:bg-accent px-3 py-2 rounded-lg"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Tokens
@@ -192,47 +193,50 @@ export default function TokenDetailsPage() {
         </div>
 
         {/* Token Header Section */}
-        <div className="bg-card rounded-xl border border-border p-6 mb-6">
-          <div className="flex items-start gap-6">
+        <div className="bg-card rounded-xl border border-border p-4 md:p-6 mb-4 md:mb-6">
+          <div className="flex flex-col sm:flex-row items-start gap-4 md:gap-6">
             {tokenData.imageUrl && (
-              <div className="relative w-24 h-24 rounded-2xl overflow-hidden border-2 border-border ">
+              <div className="relative w-16 h-16 md:w-24 md:h-24 rounded-2xl overflow-hidden border-2 border-border flex-shrink-0">
                 <Image
                   src={tokenData.imageUrl}
                   alt={tokenData.name}
                   fill
                   className="object-cover"
+                  priority
                 />
               </div>
             )}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-3 mb-3 flex-wrap">
-                <h1 className="text-4xl font-bold text-foreground">
+            <div className="flex-1 min-w-0 w-full">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 md:gap-3 mb-3 flex-wrap">
+                <h1 className="text-2xl md:text-4xl font-bold text-foreground break-words">
                   {tokenData.name}
                 </h1>
-                <span className="text-lg font-semibold text-muted-foreground bg-accent px-4 py-1.5 rounded-full border border-border">
-                  {tokenData.symbol}
-                </span>
-                <span className="text-xs font-medium text-muted-foreground bg-primary/10 px-3 py-1.5 rounded-full">
-                  {tokenData.viralMetrics.marketCapRank}
-                </span>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-sm md:text-lg font-semibold text-muted-foreground bg-accent px-3 py-1 md:px-4 md:py-1.5 rounded-full border border-border">
+                    {tokenData.symbol}
+                  </span>
+                  <span className="text-xs font-medium text-muted-foreground bg-primary/10 px-2 py-1 md:px-3 md:py-1.5 rounded-full">
+                    {tokenData.viralMetrics.marketCapRank}
+                  </span>
+                </div>
               </div>
-              <p className="text-xs text-muted-foreground font-mono bg-accent/50 px-3 py-2 rounded-lg inline-block mb-4 break-all">
+              <p className="text-xs text-muted-foreground font-mono bg-accent/50 px-2 py-1.5 md:px-3 md:py-2 rounded-lg inline-block mb-3 md:mb-4 break-all">
                 {tokenAddress}
               </p>
 
               {/* Social Links */}
               {(tokenData.websites || tokenData.socials) && (
-                <div className="flex items-center gap-4 flex-wrap">
+                <div className="flex items-center gap-2 md:gap-4 flex-wrap">
                   {tokenData.websites?.map((website, idx) => (
                     <a
                       key={idx}
                       href={website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors bg-accent/30 px-4 py-2 rounded-lg hover:bg-accent/50"
+                      className="flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-muted-foreground hover:text-foreground transition-colors bg-accent/30 px-2 py-1.5 md:px-4 md:py-2 rounded-lg hover:bg-accent/50"
                     >
-                      <Globe className="w-4 h-4" />
-                      Website
+                      <Globe className="w-3 h-3 md:w-4 md:h-4" />
+                      <span className="hidden sm:inline">Website</span>
                       <ExternalLink className="w-3 h-3" />
                     </a>
                   ))}
@@ -242,10 +246,10 @@ export default function TokenDetailsPage() {
                       href={social.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors bg-accent/30 px-4 py-2 rounded-lg hover:bg-accent/50"
+                      className="flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-muted-foreground hover:text-foreground transition-colors bg-accent/30 px-2 py-1.5 md:px-4 md:py-2 rounded-lg hover:bg-accent/50"
                     >
                       {getSocialIcon(social.type)}
-                      {social.type}
+                      <span className="hidden sm:inline">{social.type}</span>
                       <ExternalLink className="w-3 h-3" />
                     </a>
                   ))}
@@ -256,19 +260,19 @@ export default function TokenDetailsPage() {
         </div>
 
         {/* Key Metrics Row */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div className="bg-card rounded-xl border border-border p-6 hover:shadow-lg transition-shadow">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-2 bg-blue-500/10 rounded-lg">
-                <DollarSign className="w-5 h-5 text-blue-500" />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-6">
+          <div className="bg-card rounded-xl border border-border p-4 md:p-6 hover:shadow-lg transition-shadow">
+            <div className="flex items-center justify-between mb-3 md:mb-4">
+              <div className="p-1.5 md:p-2 bg-blue-500/10 rounded-lg">
+                <DollarSign className="w-4 h-4 md:w-5 md:h-5 text-blue-500" />
               </div>
               <div className="text-right">
                 <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium">
-                  Price USD
+                  Price
                 </p>
               </div>
             </div>
-            <p className="text-3xl font-bold text-foreground mb-3">
+            <p className="text-xl md:text-3xl font-bold text-foreground mb-2 md:mb-3">
               ${tokenData.priceUSD.toFixed(6)}
             </p>
             <div className="flex flex-col gap-1">
@@ -301,10 +305,10 @@ export default function TokenDetailsPage() {
             </div>
           </div>
 
-          <div className="bg-card rounded-xl border border-border p-6 hover:shadow-lg transition-shadow">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-2 bg-purple-500/10 rounded-lg">
-                <TrendingUp className="w-5 h-5 text-purple-500" />
+          <div className="bg-card rounded-xl border border-border p-4 md:p-6 hover:shadow-lg transition-shadow">
+            <div className="flex items-center justify-between mb-3 md:mb-4">
+              <div className="p-1.5 md:p-2 bg-purple-500/10 rounded-lg">
+                <TrendingUp className="w-4 h-4 md:w-5 md:h-5 text-purple-500" />
               </div>
               <div className="text-right">
                 <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium">
@@ -312,7 +316,7 @@ export default function TokenDetailsPage() {
                 </p>
               </div>
             </div>
-            <p className="text-3xl font-bold text-foreground mb-3">
+            <p className="text-xl md:text-3xl font-bold text-foreground mb-2 md:mb-3">
               {formatCurrency(tokenData.marketCap)}
             </p>
             <p className="text-xs text-muted-foreground">
@@ -323,10 +327,10 @@ export default function TokenDetailsPage() {
             </p>
           </div>
 
-          <div className="bg-card rounded-xl border border-border p-6 hover:shadow-lg transition-shadow">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-2 bg-green-500/10 rounded-lg">
-                <BarChart3 className="w-5 h-5 text-green-500" />
+          <div className="bg-card rounded-xl border border-border p-4 md:p-6 hover:shadow-lg transition-shadow">
+            <div className="flex items-center justify-between mb-3 md:mb-4">
+              <div className="p-1.5 md:p-2 bg-green-500/10 rounded-lg">
+                <BarChart3 className="w-4 h-4 md:w-5 md:h-5 text-green-500" />
               </div>
               <div className="text-right">
                 <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium">
@@ -334,7 +338,7 @@ export default function TokenDetailsPage() {
                 </p>
               </div>
             </div>
-            <p className="text-3xl font-bold text-foreground mb-3">
+            <p className="text-xl md:text-3xl font-bold text-foreground mb-2 md:mb-3">
               {formatCurrency(tokenData.volume24h)}
             </p>
             <div className="flex items-center justify-between text-xs text-muted-foreground">
@@ -353,22 +357,22 @@ export default function TokenDetailsPage() {
             </div>
           </div>
 
-          <div className="bg-card rounded-xl border border-border p-6 hover:shadow-lg transition-shadow">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-2 bg-orange-500/10 rounded-lg">
-                <Activity className="w-5 h-5 text-orange-500" />
+          <div className="bg-card rounded-xl border border-border p-4 md:p-6 hover:shadow-lg transition-shadow">
+            <div className="flex items-center justify-between mb-3 md:mb-4">
+              <div className="p-1.5 md:p-2 bg-orange-500/10 rounded-lg">
+                <Activity className="w-4 h-4 md:w-5 md:h-5 text-orange-500" />
               </div>
               <div className="text-right">
                 <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium">
-                  Total Liquidity
+                  Liquidity
                 </p>
               </div>
             </div>
-            <p className="text-3xl font-bold text-foreground mb-3">
+            <p className="text-xl md:text-3xl font-bold text-foreground mb-2 md:mb-3">
               {formatCurrency(tokenData.totalLiquidityUSD)}
             </p>
             <p className="text-xs text-muted-foreground">
-              Vol/Liq Ratio:{" "}
+              Vol/Liq:{" "}
               <span className="font-semibold">
                 {(tokenData.viralMetrics.volumeToLiquidityRatio * 100).toFixed(
                   2
@@ -379,48 +383,62 @@ export default function TokenDetailsPage() {
           </div>
         </div>
 
-        {/* Two Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        {/* Full Width Chart */}
+        <div className="mb-4 md:mb-6">
+          <div className="bg-card rounded-xl border border-border p-4 md:p-6">
+            <h3 className="text-lg font-semibold text-foreground mb-4 md:mb-6">
+              Price Chart
+            </h3>
+            <div className="h-[400px] md:h-[500px] lg:h-[600px]">
+              <PriceChartWidget tokenAddress={tokenAddress} />
+            </div>
+          </div>
+        </div>
+
+        {/* Two Column Layout for Info Cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 mb-6">
           {/* Left Column - Info Cards */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="lg:col-span-1 space-y-4 md:space-y-6">
             {/* Token Info Card */}
-            <div className="bg-card rounded-xl border border-border p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-blue-500/10 rounded-lg">
-                  <Layers className="w-5 h-5 text-blue-500" />
+            <div className="bg-card rounded-xl border border-border p-4 md:p-6">
+              <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
+                <div className="p-1.5 md:p-2 bg-blue-500/10 rounded-lg">
+                  <Layers className="w-4 h-4 md:w-5 md:h-5 text-blue-500" />
                 </div>
-                <h3 className="text-lg font-semibold text-foreground">
+                <h3 className="text-base md:text-lg font-semibold text-foreground">
                   Token Information
                 </h3>
               </div>
-              <div className="space-y-4">
+              <div className="space-y-3 md:space-y-4">
                 <div className="flex justify-between items-center py-2 border-b border-border/50">
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-xs md:text-sm text-muted-foreground">
                     Decimals
                   </span>
-                  <span className="text-sm font-semibold text-foreground">
+                  <span className="text-xs md:text-sm font-semibold text-foreground">
                     {tokenData.decimals}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-border/50">
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-xs md:text-sm text-muted-foreground">
                     Total Supply
                   </span>
-                  <span className="text-sm font-semibold text-foreground">
+                  <span className="text-xs md:text-sm font-semibold text-foreground">
                     {formatNumber(tokenData.totalSupply)}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-border/50">
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-xs md:text-sm text-muted-foreground">
                     Creation Block
                   </span>
-                  <span className="text-sm font-semibold text-foreground">
+                  <span className="text-xs md:text-sm font-semibold text-foreground">
                     {tokenData.creationBlock}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-2">
-                  <span className="text-sm text-muted-foreground">Age</span>
-                  <span className="text-sm font-semibold text-foreground">
+                  <span className="text-xs md:text-sm text-muted-foreground">
+                    Age
+                  </span>
+                  <span className="text-xs md:text-sm font-semibold text-foreground">
                     {tokenData.viralMetrics.ageInDays} days
                   </span>
                 </div>
@@ -428,106 +446,169 @@ export default function TokenDetailsPage() {
             </div>
 
             {/* DEX Presence Card */}
-            <div className="bg-card rounded-xl border border-border p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-purple-500/10 rounded-lg">
-                  <Layers className="w-5 h-5 text-purple-500" />
+            <div className="bg-card rounded-xl border border-border p-4 md:p-6">
+              <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
+                <div className="p-1.5 md:p-2 bg-purple-500/10 rounded-lg">
+                  <Layers className="w-4 h-4 md:w-5 md:h-5 text-purple-500" />
                 </div>
-                <h3 className="text-lg font-semibold text-foreground">
+                <h3 className="text-base md:text-lg font-semibold text-foreground">
                   DEX Presence
                 </h3>
               </div>
-              <div className="space-y-4">
+              <div className="space-y-3 md:space-y-4">
                 <div className="flex justify-between items-center py-2 border-b border-border/50">
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-xs md:text-sm text-muted-foreground">
                     Total Pairs
                   </span>
-                  <span className="text-sm font-semibold text-foreground">
+                  <span className="text-xs md:text-sm font-semibold text-foreground">
                     {tokenData.totalPairs}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-border/50">
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-xs md:text-sm text-muted-foreground">
                     Primary DEX
                   </span>
-                  <span className="text-sm font-semibold text-foreground capitalize">
+                  <span className="text-xs md:text-sm font-semibold text-foreground capitalize">
                     {tokenData.primaryDex}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-border/50">
-                  <span className="text-sm text-muted-foreground">Chains</span>
-                  <span className="text-sm font-semibold text-foreground">
+                  <span className="text-xs md:text-sm text-muted-foreground">
+                    Chains
+                  </span>
+                  <span className="text-xs md:text-sm font-semibold text-foreground">
                     {tokenData.viralMetrics.multiChainPresence}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-2">
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-xs md:text-sm text-muted-foreground">
                     DEX Diversity
                   </span>
-                  <span className="text-sm font-semibold text-foreground">
+                  <span className="text-xs md:text-sm font-semibold text-foreground">
                     {tokenData.viralMetrics.dexDiversity}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Viral Metrics Card */}
-            <div className="bg-card rounded-xl border border-border p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-green-500/10 rounded-lg">
-                  <Clock className="w-5 h-5 text-green-500" />
-                </div>
-                <h3 className="text-lg font-semibold text-foreground">
-                  Viral Metrics
-                </h3>
-              </div>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center py-2 border-b border-border/50">
-                  <span className="text-sm text-muted-foreground">
-                    Liquidity Score
-                  </span>
-                  <span className="text-sm font-semibold text-foreground">
-                    {formatCurrency(tokenData.viralMetrics.liquidityScore)}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center py-2 border-b border-border/50">
-                  <span className="text-sm text-muted-foreground">
-                    Price Stability
-                  </span>
-                  <span className="text-sm font-semibold text-foreground">
-                    {tokenData.viralMetrics.priceStability.toFixed(1)}/100
-                  </span>
-                </div>
-                <div className="flex justify-between items-center py-2 border-b border-border/50">
-                  <span className="text-sm text-muted-foreground">
-                    Has Media
-                  </span>
-                  <span className="text-sm font-semibold text-foreground">
-                    {tokenData.viralMetrics.hasMedia ? "✅ Yes" : "❌ No"}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center py-2">
-                  <span className="text-sm text-muted-foreground">
-                    Multi-Chain
-                  </span>
-                  <span className="text-sm font-semibold text-foreground">
-                    {tokenData.viralMetrics.multiChainPresence > 1
-                      ? "✅ Yes"
-                      : "❌ No"}
                   </span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Right Column - Chart */}
-          <div className="lg:col-span-2">
-            <div className="bg-card rounded-xl border border-border p-6 h-full">
-              <h3 className="text-lg font-semibold text-foreground mb-6">
-                Price Chart
-              </h3>
-              <div style={{ height: "600px" }}>
-                <PriceChartWidget tokenAddress={tokenAddress} />
+          {/* Right Column - Viral Metrics & Additional Info */}
+          <div className="lg:col-span-2 space-y-4 md:space-y-6">
+            {/* Viral Metrics Card */}
+            <div className="bg-card rounded-xl border border-border p-4 md:p-6">
+              <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
+                <div className="p-1.5 md:p-2 bg-green-500/10 rounded-lg">
+                  <Clock className="w-4 h-4 md:w-5 md:h-5 text-green-500" />
+                </div>
+                <h3 className="text-base md:text-lg font-semibold text-foreground">
+                  Viral Metrics
+                </h3>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="text-center p-3 bg-accent/30 rounded-lg">
+                  <div className="text-xs text-muted-foreground mb-1">
+                    Liquidity Score
+                  </div>
+                  <div className="text-lg font-bold text-foreground">
+                    {formatCurrency(tokenData.viralMetrics.liquidityScore)}
+                  </div>
+                </div>
+                <div className="text-center p-3 bg-accent/30 rounded-lg">
+                  <div className="text-xs text-muted-foreground mb-1">
+                    Price Stability
+                  </div>
+                  <div className="text-lg font-bold text-foreground">
+                    {tokenData.viralMetrics.priceStability.toFixed(1)}/100
+                  </div>
+                </div>
+                <div className="text-center p-3 bg-accent/30 rounded-lg">
+                  <div className="text-xs text-muted-foreground mb-1">
+                    Has Media
+                  </div>
+                  <div className="text-lg font-bold text-foreground">
+                    {tokenData.viralMetrics.hasMedia ? "✅ Yes" : "❌ No"}
+                  </div>
+                </div>
+                <div className="text-center p-3 bg-accent/30 rounded-lg">
+                  <div className="text-xs text-muted-foreground mb-1">
+                    Multi-Chain
+                  </div>
+                  <div className="text-lg font-bold text-foreground">
+                    {tokenData.viralMetrics.multiChainPresence > 1
+                      ? "✅ Yes"
+                      : "❌ No"}
+                  </div>
+                </div>
+                <div className="text-center p-3 bg-accent/30 rounded-lg">
+                  <div className="text-xs text-muted-foreground mb-1">
+                    DEX Diversity
+                  </div>
+                  <div className="text-lg font-bold text-foreground">
+                    {tokenData.viralMetrics.dexDiversity}
+                  </div>
+                </div>
+                <div className="text-center p-3 bg-accent/30 rounded-lg">
+                  <div className="text-xs text-muted-foreground mb-1">Age</div>
+                  <div className="text-lg font-bold text-foreground">
+                    {tokenData.viralMetrics.ageInDays}d
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Additional Stats Card */}
+            <div className="bg-card rounded-xl border border-border p-4 md:p-6">
+              <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
+                <div className="p-1.5 md:p-2 bg-orange-500/10 rounded-lg">
+                  <Activity className="w-4 h-4 md:w-5 md:h-5 text-orange-500" />
+                </div>
+                <h3 className="text-base md:text-lg font-semibold text-foreground">
+                  Performance Metrics
+                </h3>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+                <div className="text-center p-3 bg-accent/20 rounded-lg">
+                  <div className="text-xs text-muted-foreground mb-1">
+                    6h Volume
+                  </div>
+                  <div className="text-sm font-bold text-foreground">
+                    {formatCurrency(tokenData.volume6h)}
+                  </div>
+                </div>
+                <div className="text-center p-3 bg-accent/20 rounded-lg">
+                  <div className="text-xs text-muted-foreground mb-1">
+                    1h Volume
+                  </div>
+                  <div className="text-sm font-bold text-foreground">
+                    {formatCurrency(tokenData.volume1h)}
+                  </div>
+                </div>
+                <div className="text-center p-3 bg-accent/20 rounded-lg">
+                  <div className="text-xs text-muted-foreground mb-1">
+                    6h Change
+                  </div>
+                  <div
+                    className={`text-sm font-bold ${
+                      tokenData.priceChange6h >= 0
+                        ? "text-green-500"
+                        : "text-red-500"
+                    }`}
+                  >
+                    {tokenData.priceChange6h >= 0 ? "+" : ""}
+                    {tokenData.priceChange6h.toFixed(2)}%
+                  </div>
+                </div>
+                <div className="text-center p-3 bg-accent/20 rounded-lg">
+                  <div className="text-xs text-muted-foreground mb-1">
+                    Vol/Liq Ratio
+                  </div>
+                  <div className="text-sm font-bold text-foreground">
+                    {(
+                      tokenData.viralMetrics.volumeToLiquidityRatio * 100
+                    ).toFixed(2)}
+                    %
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -536,14 +617,14 @@ export default function TokenDetailsPage() {
         {/* Trading Pairs & Transactions Tabs */}
         <Card className="bg-card rounded-xl border border-border overflow-hidden">
           <Tabs defaultValue="pairs" className="w-full">
-            <div className="border-b border-border bg-accent/30 px-6">
-              <TabsList className="h-auto bg-transparent p-0 space-x-1">
+            <div className="border-b border-border bg-accent/30 px-4 md:px-6">
+              <TabsList className="h-auto bg-transparent p-0 space-x-1 w-full overflow-x-auto">
                 <TabsTrigger
                   value="pairs"
-                  className="relative rounded-none border-b-2 border-transparent px-6 py-4 font-semibold transition-all hover:bg-accent/50 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none"
+                  className="relative rounded-none border-b-2 border-transparent px-4 md:px-6 py-3 md:py-4 font-semibold transition-all hover:bg-accent/50 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none whitespace-nowrap"
                 >
                   <Layers className="w-4 h-4 mr-2" />
-                  Trading Pairs Across Chains
+                  Trading Pairs
                   {tokenData.chains && (
                     <span className="ml-2 bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs font-bold">
                       {tokenData.chains.length}
@@ -552,7 +633,7 @@ export default function TokenDetailsPage() {
                 </TabsTrigger>
                 <TabsTrigger
                   value="transactions"
-                  className="relative rounded-none border-b-2 border-transparent px-6 py-4 font-semibold transition-all hover:bg-accent/50 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none"
+                  className="relative rounded-none border-b-2 border-transparent px-4 md:px-6 py-3 md:py-4 font-semibold transition-all hover:bg-accent/50 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none whitespace-nowrap"
                 >
                   <Activity className="w-4 h-4 mr-2" />
                   Recent Transactions
@@ -560,31 +641,28 @@ export default function TokenDetailsPage() {
               </TabsList>
             </div>
 
-            <TabsContent value="pairs" className="p-6 m-0">
+            <TabsContent value="pairs" className="p-4 md:p-6 m-0">
               {tokenData.chains && tokenData.chains.length > 0 ? (
                 <div className="overflow-x-auto">
-                  <table className="w-full">
+                  <table className="w-full min-w-[800px]">
                     <thead>
                       <tr className="border-b border-border">
-                        <th className="text-left text-xs font-bold text-muted-foreground uppercase tracking-wider py-4 px-4">
+                        <th className="text-left text-xs font-bold text-muted-foreground uppercase tracking-wider py-3 md:py-4 px-2 md:px-4">
                           Chain
                         </th>
-                        <th className="text-left text-xs font-bold text-muted-foreground uppercase tracking-wider py-4 px-4">
+                        <th className="text-left text-xs font-bold text-muted-foreground uppercase tracking-wider py-3 md:py-4 px-2 md:px-4">
                           DEX
                         </th>
-                        <th className="text-right text-xs font-bold text-muted-foreground uppercase tracking-wider py-4 px-4">
+                        <th className="text-right text-xs font-bold text-muted-foreground uppercase tracking-wider py-3 md:py-4 px-2 md:px-4">
                           Price
                         </th>
-                        <th className="text-right text-xs font-bold text-muted-foreground uppercase tracking-wider py-4 px-4">
+                        <th className="text-right text-xs font-bold text-muted-foreground uppercase tracking-wider py-3 md:py-4 px-2 md:px-4">
                           Liquidity
                         </th>
-                        <th className="text-right text-xs font-bold text-muted-foreground uppercase tracking-wider py-4 px-4">
+                        <th className="text-right text-xs font-bold text-muted-foreground uppercase tracking-wider py-3 md:py-4 px-2 md:px-4">
                           24h Volume
                         </th>
-                        <th className="text-right text-xs font-bold text-muted-foreground uppercase tracking-wider py-4 px-4">
-                          Labels
-                        </th>
-                        <th className="text-center text-xs font-bold text-muted-foreground uppercase tracking-wider py-4 px-4">
+                        <th className="text-center text-xs font-bold text-muted-foreground uppercase tracking-wider py-3 md:py-4 px-2 md:px-4">
                           View
                         </th>
                       </tr>
@@ -595,45 +673,33 @@ export default function TokenDetailsPage() {
                           key={idx}
                           className="hover:bg-accent/30 transition-colors group"
                         >
-                          <td className="py-4 px-4">
-                            <span className="text-sm font-semibold capitalize bg-linear-to-r from-blue-500/10 to-purple-500/10 px-3 py-1.5 rounded-full border border-border">
+                          <td className="py-3 md:py-4 px-2 md:px-4">
+                            <span className="text-xs md:text-sm font-semibold capitalize bg-gradient-to-r from-blue-500/10 to-purple-500/10 px-2 py-1 md:px-3 md:py-1.5 rounded-full border border-border">
                               {chain.chainId}
                             </span>
                           </td>
-                          <td className="py-4 px-4">
-                            <span className="text-sm font-semibold capitalize text-foreground">
+                          <td className="py-3 md:py-4 px-2 md:px-4">
+                            <span className="text-xs md:text-sm font-semibold capitalize text-foreground">
                               {chain.dexId}
                             </span>
                           </td>
-                          <td className="py-4 px-4 text-sm font-bold text-right text-foreground">
+                          <td className="py-3 md:py-4 px-2 md:px-4 text-xs md:text-sm font-bold text-right text-foreground">
                             ${chain.priceUSD.toFixed(6)}
                           </td>
-                          <td className="py-4 px-4 text-sm font-bold text-right text-green-500">
+                          <td className="py-3 md:py-4 px-2 md:px-4 text-xs md:text-sm font-bold text-right text-green-500">
                             {formatCurrency(chain.liquidityUSD)}
                           </td>
-                          <td className="py-4 px-4 text-sm font-bold text-right text-blue-500">
+                          <td className="py-3 md:py-4 px-2 md:px-4 text-xs md:text-sm font-bold text-right text-blue-500">
                             {formatCurrency(chain.volume24h)}
                           </td>
-                          <td className="py-4 px-4 text-xs text-right">
-                            <div className="flex flex-wrap gap-1.5 justify-end">
-                              {chain.labels.map((label, i) => (
-                                <span
-                                  key={i}
-                                  className="bg-primary/10 text-primary px-2.5 py-1 rounded-md font-medium"
-                                >
-                                  {label}
-                                </span>
-                              ))}
-                            </div>
-                          </td>
-                          <td className="py-4 px-4 text-center">
+                          <td className="py-3 md:py-4 px-2 md:px-4 text-center">
                             <a
                               href={chain.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center justify-center p-2 text-primary hover:text-primary/80 hover:bg-primary/10 rounded-lg transition-all group-hover:scale-110"
+                              className="inline-flex items-center justify-center p-1.5 md:p-2 text-primary hover:text-primary/80 hover:bg-primary/10 rounded-lg transition-all group-hover:scale-110"
                             >
-                              <ExternalLink className="w-4 h-4" />
+                              <ExternalLink className="w-3 h-3 md:w-4 md:h-4" />
                             </a>
                           </td>
                         </tr>
@@ -642,7 +708,7 @@ export default function TokenDetailsPage() {
                   </table>
                 </div>
               ) : (
-                <div className="text-center py-12">
+                <div className="text-center py-8 md:py-12">
                   <p className="text-muted-foreground">
                     No trading pairs available
                   </p>
@@ -650,7 +716,7 @@ export default function TokenDetailsPage() {
               )}
             </TabsContent>
 
-            <TabsContent value="transactions" className="p-6 m-0">
+            <TabsContent value="transactions" className="p-4 md:p-6 m-0">
               <TokenTransactionsList
                 tokenAddress={tokenAddress}
                 decimals={tokenData.decimals}

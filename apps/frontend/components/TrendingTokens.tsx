@@ -38,7 +38,7 @@ const TrendingTokens = () => {
 
   const [page, setPage] = React.useState(1);
   const [viewMode, setViewMode] = React.useState<"list" | "grid">("list");
-  const ITEMS_PER_PAGE = 10;
+  const ITEMS_PER_PAGE = viewMode === "grid" ? 9 : 10;
 
   if (isLoading)
     return (
@@ -71,6 +71,11 @@ const TrendingTokens = () => {
   const handlePrev = () => setPage((prev) => Math.max(prev - 1, 1));
   const handleNext = () => setPage((prev) => Math.min(prev + 1, totalPages));
 
+  const handleViewModeChange = (mode: "list" | "grid") => {
+    setViewMode(mode);
+    setPage(1); // Reset to first page when changing view mode
+  };
+
   return (
     <div className="w-full max-w-full mx-auto space-y-4 sm:space-y-6 overflow-x-hidden">
       {/* Header Section */}
@@ -79,7 +84,7 @@ const TrendingTokens = () => {
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="h-6 sm:h-8 w-1 bg-primary rounded-full"></div>
             <div>
-              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground tracking-tight">
+              <h1 className="text-xl sm:text-xs md:text-xl font-bold text-foreground tracking-tight">
                 Trending Tokens
               </h1>
               <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground mt-0.5">
@@ -93,7 +98,7 @@ const TrendingTokens = () => {
             <Button
               variant={viewMode === "list" ? "default" : "ghost"}
               size="sm"
-              onClick={() => setViewMode("list")}
+              onClick={() => handleViewModeChange("list")}
               className="h-8 px-3"
             >
               <List className="h-4 w-4 mr-1" />
@@ -102,7 +107,7 @@ const TrendingTokens = () => {
             <Button
               variant={viewMode === "grid" ? "default" : "ghost"}
               size="sm"
-              onClick={() => setViewMode("grid")}
+              onClick={() => handleViewModeChange("grid")}
               className="h-8 px-3"
             >
               <LayoutGrid className="h-4 w-4 mr-1" />
@@ -160,7 +165,7 @@ const TrendingTokens = () => {
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3">
           {paginatedTokens.map((token, index) => (
             <TrendingTokenCardGrid
               key={token.address}
