@@ -1,12 +1,7 @@
 import fetchLatestTweets from "@/lib/fetchtweets";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarSeparator,
-} from "./ui/sidebar";
 import { TweetCard } from "./ui/tweet-card";
 import { AlertCircle } from "lucide-react";
+import { SidebarWrapper } from "./SidebarWrapper";
 
 const AppSideBar = async () => {
   // Fallback tweet IDs in case API fails
@@ -35,24 +30,22 @@ const AppSideBar = async () => {
   }
 
   return (
-    <Sidebar className="border-r border-sidebar-border scrollbar-hide">
-      <SidebarHeader className="mt-4 px-4">
+    <SidebarWrapper>
+      <div className="sticky top-0 bg-card/95 backdrop-blur-sm z-10 border-b border-border px-4 py-4">
         <h2 className="text-xl font-bold text-foreground">Trending Tweets</h2>
         <p className="text-xs text-muted-foreground mt-1">
           {error ? "Showing cached tweets" : "Latest from Ethereum"}
         </p>
-      </SidebarHeader>
-
-      <SidebarSeparator className="my-4" />
+      </div>
 
       {error && (
-        <div className="mx-4 mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20 flex items-start gap-2">
+        <div className="mx-4 mt-4 mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20 flex items-start gap-2">
           <AlertCircle className="h-4 w-4 text-destructive mt-0.5 shrink-0" />
           <p className="text-xs text-destructive">{error}</p>
         </div>
       )}
 
-      <SidebarContent className="flex-1 overflow-y-auto scrollbar-hide px-4">
+      <div className="flex-1 px-4 py-4">
         <div className="space-y-6">
           {tweets.length > 0 ? (
             tweets.map((tweet: any, index: number) => (
@@ -68,8 +61,8 @@ const AppSideBar = async () => {
             </div>
           )}
         </div>
-      </SidebarContent>
-    </Sidebar>
+      </div>
+    </SidebarWrapper>
   );
 };
 

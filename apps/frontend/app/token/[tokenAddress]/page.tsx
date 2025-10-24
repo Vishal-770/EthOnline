@@ -112,7 +112,7 @@ export default function TokenDetailsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center ">
         <div className="w-full h-[80vh] flex items-center justify-center">
           <LoaderDemo number={3} />
         </div>

@@ -23,11 +23,13 @@
     "@envio-dev/hypersync-client": "^0.6.6",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
+    "@types/redis": "^4.0.10",
     "axios": "^1.12.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "ethers": "^6.15.0",
     "express": "^5.1.0",
+    "redis": "^5.9.0",
     "viem": "^2.38.3"
   },
   "devDependencies": {

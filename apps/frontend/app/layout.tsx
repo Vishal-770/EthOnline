@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Saira, Fira_Code } from "next/font/google";
 import "./globals.css";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { cookies } from "next/headers";
 import AppSideBar from "@/components/AppSideBar";
 import NavBar from "@/components/AppNavbar";
 import ThemeProviderWrapper from "@/components/ThemeProvider";
@@ -28,22 +26,23 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const cookieStore = await cookies();
-  const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
-
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${saira.variable} ${firaCode.variable} antialiased flex min-h-screen`}
+        className={`${saira.variable} ${firaCode.variable} antialiased min-h-screen overflow-x-hidden`}
       >
         <ThemeProviderWrapper>
-          <SidebarProvider defaultOpen={defaultOpen}>
-            <AppSideBar />
-            <main className="w-full">
-              <NavBar />
-              <div className="px-4">{children}</div>
-            </main>
-          </SidebarProvider>
+          <div className="flex flex-col h-screen">
+            <NavBar />
+            <div className="flex flex-1 overflow-hidden relative">
+              <AppSideBar />
+              <main className="flex-1 overflow-y-auto w-full">
+                <div className="px-3 sm:px-4 md:px-6 py-4 md:py-6">
+                  {children}
+                </div>
+              </main>
+            </div>
+          </div>
         </ThemeProviderWrapper>
       </body>
     </html>

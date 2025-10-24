@@ -12,7 +12,6 @@ import { getApiEndpoint } from "@/lib/env";
 interface TrendingTokenCardProps {
   tokenAddress: string;
   rank?: number;
-  viewMode?: "list" | "grid";
 }
 
 interface ChainData {
@@ -84,23 +83,33 @@ const formatNumber = (num: number): string => {
   return `$${num.toFixed(2)}`;
 };
 
+const formatPrice = (price: number): string => {
+  if (price < 0.000001) return price.toExponential(2);
+  if (price < 0.01) return price.toFixed(6);
+  if (price < 1) return price.toFixed(4);
+  return price.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 4,
+  });
+};
+
 const TrendingTokenCard: React.FC<TrendingTokenCardProps> = ({
   tokenAddress,
   rank,
-  viewMode = "list",
 }) => {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["token-metadata", tokenAddress],
     queryFn: () => fetchTokenMetadata(tokenAddress),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    retry: 2,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 
   if (isLoading) {
     return (
-      <div
-        className={`w-full ${
-          viewMode === "grid" ? "h-64" : "h-28"
-        } flex items-center justify-center bg-card/50 border border-border rounded-lg animate-pulse`}
-      >
+      <div className="w-full h-20 flex items-center justify-center bg-card/50 border border-border rounded-lg animate-pulse">
         <LoaderDemo number={1} />
       </div>
     );
@@ -108,223 +117,327 @@ const TrendingTokenCard: React.FC<TrendingTokenCardProps> = ({
 
   if (isError || !data) {
     return (
-      <div
-        className={`w-full ${
-          viewMode === "grid" ? "h-64" : "h-28"
-        } flex items-center justify-center bg-card/50 border border-border rounded-lg`}
-      >
+      <div className="w-full h-20 flex items-center justify-center bg-card/50 border border-border rounded-lg">
         <span className="text-destructive text-sm">Failed to load token</span>
       </div>
     );
   }
 
-  const isPositive = data.priceChange24h >= 0;
+  const isPositive24h = data.priceChange24h >= 0;
+  const isPositive1h = data.priceChange1h >= 0;
+  const isPositive6h = data.priceChange6h >= 0;
 
-  // Grid View Layout
-  if (viewMode === "grid") {
-    return (
-      <Link href={`/token/${tokenAddress}`} className="block w-full group">
-        <Card className="relative flex flex-col h-full p-5 border border-border bg-card hover:bg-accent/5 hover:border-primary/20 rounded-lg transition-all duration-150">
-          {/* Rank Badge */}
+  return (
+    <Link href={`/token/${tokenAddress}`} className="block w-full group">
+      <Card className="relative w-full p-3 sm:p-4 border border-border bg-card hover:bg-accent/5 hover:border-primary/20 rounded-lg transition-all duration-150 overflow-hidden">
+        {/* Desktop & Tablet Layout */}
+        <div className="hidden sm:flex items-center gap-2 sm:gap-3 lg:gap-4 w-full">
+          {/* Rank */}
           {rank && (
-            <div className="absolute top-3 right-3 bg-muted text-muted-foreground text-xs font-semibold px-2 py-1 rounded-md">
-              #{rank}
+            <div className="w-8 text-center shrink-0">
+              <div className="text-xs text-muted-foreground font-medium mb-1">
+                RANK
+              </div>
+              <div className="text-sm font-bold text-foreground">#{rank}</div>
             </div>
           )}
 
           {/* Token Info */}
-          <div className="flex items-start gap-3 mb-4">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
             <div className="relative shrink-0">
               <Image
                 src={data.imageUrl || "/image.png"}
                 alt={data.name}
-                width={48}
-                height={48}
+                width={40}
+                height={40}
                 className="rounded-full border border-border"
               />
               {data.viralMetrics?.multiChainPresence > 1 && (
-                <div className="absolute -bottom-1 -right-1 bg-primary text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-card">
+                <div className="absolute -bottom-1 -right-1 bg-primary text-white text-[10px] font-bold px-1 py-0.5 rounded-full border-2 border-card">
                   {data.viralMetrics.multiChainPresence}
                 </div>
               )}
             </div>
             <div className="min-w-0 flex-1">
-              <h3 className="truncate text-sm font-bold text-foreground mb-0.5">
-                {data.name}
-              </h3>
-              <p className="text-xs text-muted-foreground font-medium">
-                {data.symbol}
-              </p>
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="text-sm font-bold text-foreground truncate">
+                  {data.name}
+                </h3>
+                <span className="text-xs text-muted-foreground font-medium bg-muted px-2 py-0.5 rounded whitespace-nowrap">
+                  {data.symbol}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <p className="text-xs text-muted-foreground/60 font-mono">
+                  {data.address.slice(0, 6)}...{data.address.slice(-4)}
+                </p>
+                <span className="text-xs bg-blue-500/10 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded whitespace-nowrap">
+                  {data.viralMetrics.ageInDays}d
+                </span>
+              </div>
             </div>
           </div>
 
           {/* Price */}
-          <div className="mb-2">
-            <div className="text-lg font-bold text-foreground mb-1">
-              $
-              {data.priceUSD < 0.000001
-                ? data.priceUSD.toExponential(2)
-                : data.priceUSD.toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 6,
-                  })}
+          <div className="w-20 sm:w-24 text-right shrink-0">
+            <div className="text-xs text-muted-foreground font-medium mb-1">
+              PRICE
+            </div>
+            <div className="text-xs sm:text-sm font-bold text-foreground">
+              ${formatPrice(data.priceUSD)}
+            </div>
+          </div>
+
+          {/* Price Changes */}
+          <div className="hidden md:flex gap-2 lg:gap-3 xl:gap-4 shrink-0">
+            <div className="w-12 lg:w-14 xl:w-16 text-right">
+              <div className="text-xs text-muted-foreground font-medium mb-1">
+                1H
+              </div>
+              <div
+                className={`text-xs lg:text-sm font-bold ${
+                  isPositive1h
+                    ? "text-green-600 dark:text-green-400"
+                    : "text-red-600 dark:text-red-400"
+                }`}
+              >
+                {isPositive1h ? "+" : ""}
+                {data.priceChange1h.toFixed(2)}%
+              </div>
+            </div>
+            <div className="w-12 lg:w-14 xl:w-16 text-right">
+              <div className="text-xs text-muted-foreground font-medium mb-1">
+                6H
+              </div>
+              <div
+                className={`text-xs lg:text-sm font-bold ${
+                  isPositive6h
+                    ? "text-green-600 dark:text-green-400"
+                    : "text-red-600 dark:text-red-400"
+                }`}
+              >
+                {isPositive6h ? "+" : ""}
+                {data.priceChange6h.toFixed(2)}%
+              </div>
+            </div>
+            <div className="w-12 lg:w-14 xl:w-16 text-right">
+              <div className="text-xs text-muted-foreground font-medium mb-1">
+                24H
+              </div>
+              <div
+                className={`text-xs lg:text-sm font-bold ${
+                  isPositive24h
+                    ? "text-green-600 dark:text-green-400"
+                    : "text-red-600 dark:text-red-400"
+                }`}
+              >
+                {isPositive24h ? "+" : ""}
+                {data.priceChange24h.toFixed(2)}%
+              </div>
+            </div>
+          </div>
+
+          {/* Market Data */}
+          <div className="hidden lg:flex gap-3 xl:gap-4 2xl:gap-6 shrink-0">
+            <div className="w-20 xl:w-24 text-right">
+              <div className="text-xs text-muted-foreground font-medium mb-1">
+                MARKET CAP
+              </div>
+              <div className="text-xs xl:text-sm font-semibold text-foreground">
+                {formatNumber(data.marketCap)}
+              </div>
+            </div>
+
+            <div className="w-20 xl:w-24 text-right hidden xl:block">
+              <div className="text-xs text-muted-foreground font-medium mb-1">
+                VOLUME 24H
+              </div>
+              <div className="text-xs xl:text-sm font-semibold text-foreground">
+                {formatNumber(data.volume24h)}
+              </div>
+            </div>
+
+            <div className="w-20 xl:w-24 text-right hidden 2xl:block">
+              <div className="text-xs text-muted-foreground font-medium mb-1">
+                LIQUIDITY
+              </div>
+              <div className="text-xs xl:text-sm font-semibold text-foreground">
+                {formatNumber(data.totalLiquidityUSD)}
+              </div>
+            </div>
+          </div>
+
+          {/* DEX & Additional Info */}
+          <div className="hidden xl:flex items-center gap-3 2xl:gap-4 shrink-0">
+            <div className="text-right">
+              <div className="text-xs text-muted-foreground font-medium mb-1">
+                DEX
+              </div>
+              <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded font-medium">
+                {data.primaryDex}
+              </span>
+            </div>
+
+            <div className="text-right hidden 2xl:block">
+              <div className="text-xs text-muted-foreground font-medium mb-1">
+                VOL/LIQ
+              </div>
+              <div className="text-xs xl:text-sm font-semibold text-foreground">
+                {data.viralMetrics.volumeToLiquidityRatio.toFixed(2)}
+              </div>
+            </div>
+
+            <div className="text-right hidden 2xl:block">
+              <div className="text-xs text-muted-foreground font-medium mb-1">
+                PAIRS
+              </div>
+              <div className="text-xs xl:text-sm font-semibold text-foreground">
+                {data.totalPairs}
+              </div>
+            </div>
+          </div>
+
+          {/* Trend Indicator */}
+          <div className="hidden sm:block shrink-0">
+            <div className="text-xs text-muted-foreground font-medium mb-1">
+              TREND
             </div>
             <div
-              className={`inline-flex items-center gap-1 text-xs font-bold px-2 py-1 rounded ${
-                isPositive
+              className={`text-xs font-bold px-2 py-1 rounded whitespace-nowrap ${
+                isPositive24h
                   ? "bg-green-500/10 text-green-600 dark:text-green-400"
                   : "bg-red-500/10 text-red-600 dark:text-red-400"
               }`}
             >
-              {isPositive ? "↑" : "↓"}
-              {Math.abs(data.priceChange24h).toFixed(2)}%
+              {isPositive24h ? "BULLISH" : "BEARISH"}
             </div>
           </div>
+        </div>
 
-          {/* Stats */}
-          <div className="space-y-2 mt-auto pt-3 border-t border-border">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">Market Cap</span>
-              <span className="font-semibold text-foreground">
-                {formatNumber(data.marketCap)}
-              </span>
-            </div>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">Liquidity</span>
-              <span className="font-semibold text-foreground">
-                {formatNumber(data.totalLiquidityUSD)}
-              </span>
-            </div>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">Volume 24h</span>
-              <span className="font-semibold text-foreground">
-                {formatNumber(data.volume24h)}
-              </span>
-            </div>
-            <div className="flex items-center justify-between text-xs pt-1">
-              <span className="text-muted-foreground">DEX</span>
-              <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded font-medium">
-                {data.primaryDex}
-              </span>
-            </div>
-          </div>
-        </Card>
-      </Link>
-    );
-  }
-
-  // List View Layout
-  return (
-    <Link href={`/token/${tokenAddress}`} className="block w-full group">
-      <Card className="relative flex items-center gap-4 w-full p-4 border border-border bg-card hover:bg-accent/5 hover:border-primary/20 rounded-lg transition-all duration-150">
-        {/* Rank */}
-        {rank && (
-          <div className="hidden sm:flex items-center justify-center w-8 text-sm font-semibold text-muted-foreground">
-            {rank}
-          </div>
-        )}
-
-        {/* Left: Logo + Name/Symbol */}
-        <div className="flex items-center gap-3 flex-1 min-w-0">
-          <div className="relative shrink-0">
-            <Image
-              src={data.imageUrl || "/image.png"}
-              alt={data.name}
-              width={44}
-              height={44}
-              className="rounded-full border border-border"
-            />
-            {data.viralMetrics?.multiChainPresence > 1 && (
-              <div className="absolute -bottom-0.5 -right-0.5 bg-primary text-white text-[9px] font-bold px-1 py-0.5 rounded-full border border-card">
-                {data.viralMetrics.multiChainPresence}
+        {/* Mobile Layout - Vertical Card */}
+        <div className="sm:hidden space-y-3">
+          {/* Top Row: Rank, Token Info, Trend Badge */}
+          <div className="flex items-start gap-3">
+            {/* Rank */}
+            {rank && (
+              <div className="text-center shrink-0">
+                <div className="text-[10px] text-muted-foreground font-medium mb-0.5">
+                  RANK
+                </div>
+                <div className="text-xs font-bold text-foreground bg-muted px-2 py-1 rounded">
+                  #{rank}
+                </div>
               </div>
             )}
-          </div>
 
-          <div className="min-w-0 flex-1">
-            <h3 className="truncate text-sm font-bold text-foreground">
-              {data.name}
-            </h3>
-            <div className="flex items-center gap-1.5 mt-0.5">
-              <p className="text-xs text-muted-foreground font-medium">
-                {data.symbol}
-              </p>
-              <span className="text-xs text-muted-foreground/40">•</span>
-              <p className="text-xs text-muted-foreground/60 font-mono hidden sm:block">
-                {data.address.slice(0, 6)}...{data.address.slice(-4)}
-              </p>
+            {/* Token Info */}
+            <div className="flex items-start gap-2 flex-1 min-w-0">
+              <div className="relative shrink-0">
+                <Image
+                  src={data.imageUrl || "/image.png"}
+                  alt={data.name}
+                  width={36}
+                  height={36}
+                  className="rounded-full border border-border"
+                />
+                {data.viralMetrics?.multiChainPresence > 1 && (
+                  <div className="absolute -bottom-1 -right-1 bg-primary text-white text-[9px] font-bold px-1 py-0.5 rounded-full border-2 border-card">
+                    {data.viralMetrics.multiChainPresence}
+                  </div>
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5 mb-0.5">
+                  <h3 className="text-sm font-bold text-foreground truncate">
+                    {data.name}
+                  </h3>
+                  <span className="text-[10px] text-muted-foreground font-medium bg-muted px-1.5 py-0.5 rounded whitespace-nowrap">
+                    {data.symbol}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <p className="text-[10px] text-muted-foreground/60 font-mono">
+                    {data.address.slice(0, 6)}...{data.address.slice(-4)}
+                  </p>
+                  <span className="text-[10px] bg-blue-500/10 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded">
+                    {data.viralMetrics.ageInDays}d
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Trend Badge */}
+            <div
+              className={`text-[10px] font-bold px-2 py-1 rounded whitespace-nowrap shrink-0 ${
+                isPositive24h
+                  ? "bg-green-500/10 text-green-600 dark:text-green-400"
+                  : "bg-red-500/10 text-red-600 dark:text-red-400"
+              }`}
+            >
+              {isPositive24h ? "↑" : "↓"} {data.priceChange24h.toFixed(1)}%
             </div>
           </div>
-        </div>
 
-        {/* Price & Change */}
-        <div className="flex flex-col items-end gap-1 min-w-[120px]">
-          <div className="text-sm font-bold text-foreground">
-            $
-            {data.priceUSD < 0.000001
-              ? data.priceUSD.toExponential(2)
-              : data.priceUSD.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-                })}
+          {/* Price Section */}
+          <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
+            <div>
+              <div className="text-[10px] text-muted-foreground font-medium mb-0.5">
+                PRICE
+              </div>
+              <div className="text-sm font-bold text-foreground">
+                ${formatPrice(data.priceUSD)}
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-[10px] text-muted-foreground font-medium mb-0.5">
+                MARKET CAP
+              </div>
+              <div className="text-sm font-semibold text-foreground">
+                {formatNumber(data.marketCap)}
+              </div>
+            </div>
           </div>
-          <div
-            className={`flex items-center gap-0.5 text-xs font-bold px-2 py-0.5 rounded ${
-              isPositive
-                ? "bg-green-500/10 text-green-600 dark:text-green-400"
-                : "bg-red-500/10 text-red-600 dark:text-red-400"
-            }`}
-          >
-            {isPositive ? "↑" : "↓"}
-            {Math.abs(data.priceChange24h).toFixed(2)}%
-          </div>
-        </div>
 
-        {/* Market Data - Desktop */}
-        <div className="hidden lg:flex items-center gap-6 text-right">
-          <div className="flex flex-col items-end min-w-[90px]">
-            <span className="text-xs text-muted-foreground mb-0.5">
-              Market Cap
-            </span>
-            <span className="text-sm font-semibold text-foreground">
-              {formatNumber(data.marketCap)}
-            </span>
-          </div>
-          <div className="flex flex-col items-end min-w-[90px]">
-            <span className="text-xs text-muted-foreground mb-0.5">
-              Liquidity
-            </span>
-            <span className="text-sm font-semibold text-foreground">
-              {formatNumber(data.totalLiquidityUSD)}
-            </span>
-          </div>
-          <div className="flex flex-col items-end min-w-[90px]">
-            <span className="text-xs text-muted-foreground mb-0.5">
-              Volume 24h
-            </span>
-            <span className="text-sm font-semibold text-foreground">
-              {formatNumber(data.volume24h)}
-            </span>
-          </div>
-          <div className="flex flex-col items-end min-w-[70px]">
-            <span className="text-xs text-muted-foreground mb-0.5">DEX</span>
-            <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded font-medium">
-              {data.primaryDex}
-            </span>
-          </div>
-        </div>
-
-        {/* Mobile: Compact stats */}
-        <div className="flex lg:hidden flex-col gap-1 text-right min-w-[85px]">
-          <div className="text-xs text-muted-foreground">
-            <span className="font-semibold text-foreground">
-              {formatNumber(data.marketCap)}
-            </span>
-          </div>
-          <div className="text-xs text-muted-foreground">
-            <span className="font-semibold text-foreground">
-              {formatNumber(data.totalLiquidityUSD)}
-            </span>
+          {/* Stats Grid */}
+          <div className="grid grid-cols-3 gap-2 text-center">
+            <div className="p-2 bg-muted/30 rounded">
+              <div className="text-[10px] text-muted-foreground font-medium mb-0.5">
+                1H
+              </div>
+              <div
+                className={`text-xs font-bold ${
+                  isPositive1h
+                    ? "text-green-600 dark:text-green-400"
+                    : "text-red-600 dark:text-red-400"
+                }`}
+              >
+                {isPositive1h ? "+" : ""}
+                {data.priceChange1h.toFixed(1)}%
+              </div>
+            </div>
+            <div className="p-2 bg-muted/30 rounded">
+              <div className="text-[10px] text-muted-foreground font-medium mb-0.5">
+                6H
+              </div>
+              <div
+                className={`text-xs font-bold ${
+                  isPositive6h
+                    ? "text-green-600 dark:text-green-400"
+                    : "text-red-600 dark:text-red-400"
+                }`}
+              >
+                {isPositive6h ? "+" : ""}
+                {data.priceChange6h.toFixed(1)}%
+              </div>
+            </div>
+            <div className="p-2 bg-muted/30 rounded">
+              <div className="text-[10px] text-muted-foreground font-medium mb-0.5">
+                VOL 24H
+              </div>
+              <div className="text-xs font-semibold text-foreground">
+                {formatNumber(data.volume24h)}
+              </div>
+            </div>
           </div>
         </div>
       </Card>

@@ -5,6 +5,8 @@ export interface Transaction {
   blockNumber: number;
   timestamp: number;
   transactionHash: string;
+  transactionIndex: number;
+  logIndex: number;
   from: string;
   to: string;
   value: string;
@@ -614,6 +616,7 @@ async function main() {
   console.log(aggregator.exportToJSON(combinedAnalysis));
 }
 
-main().catch(console.error);
+  // main().catch(console.error);
+
 
 export { OnChainAggregator };

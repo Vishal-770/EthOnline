@@ -15,11 +15,9 @@ interface Token {
 }
 
 async function getTokens(): Promise<Token[]> {
-  const { data } = await axios.get(getApiEndpoint('/token-addresses'));
+  const { data } = await axios.get(getApiEndpoint("/token-addresses"));
   return data;
 }
-
-type ViewMode = "list" | "grid";
 
 const TrendingTokens = () => {
   const {
@@ -29,12 +27,15 @@ const TrendingTokens = () => {
   } = useQuery({
     queryKey: ["trending-tokens"],
     queryFn: getTokens,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    retry: 2,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 
   const [page, setPage] = React.useState(1);
-  const [viewMode, setViewMode] = React.useState<ViewMode>("list");
-
-  const ITEMS_PER_PAGE = viewMode === "grid" ? 10 : 10; // Grid: 2x5, List: 10
+  const ITEMS_PER_PAGE = 10;
 
   if (isLoading)
     return (
@@ -68,84 +69,28 @@ const TrendingTokens = () => {
   const handleNext = () => setPage((prev) => Math.min(prev + 1, totalPages));
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    <div className="w-full max-w-full mx-auto space-y-4 sm:space-y-6 overflow-x-hidden">
       {/* Header Section */}
-      <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="h-8 w-1 bg-primary rounded-full"></div>
+      <div className="space-y-3 sm:space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="h-6 sm:h-8 w-1 bg-primary rounded-full"></div>
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground tracking-tight">
                 Trending Tokens
               </h1>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
+              <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground mt-0.5">
                 Discover the hottest tokens in the crypto market
               </p>
             </div>
           </div>
-
-          {/* View Mode Toggle */}
-          <div className="flex items-center gap-2 bg-muted p-1 rounded-lg">
-            <button
-              onClick={() => {
-                setViewMode("list");
-                setPage(1);
-              }}
-              className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all ${
-                viewMode === "list"
-                  ? "bg-card text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              </svg>
-              List
-            </button>
-            <button
-              onClick={() => {
-                setViewMode("grid");
-                setPage(1);
-              }}
-              className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all ${
-                viewMode === "grid"
-                  ? "bg-card text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"
-                />
-              </svg>
-              Grid
-            </button>
-          </div>
         </div>
 
         {/* Stats Bar */}
-        <div className="flex flex-wrap items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-card border border-border rounded-lg">
-          <div className="flex items-center gap-2">
-            <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
-            <span className="text-xs sm:text-sm text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 md:gap-4 p-2 sm:p-3 md:p-4 bg-card border border-border rounded-lg text-xs sm:text-sm">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="h-1.5 w-1.5 sm:h-2 sm:w-2 bg-green-500 rounded-full animate-pulse"></div>
+            <span className="text-muted-foreground">
               <span className="font-semibold text-foreground">
                 {tokens.length}
               </span>{" "}
@@ -153,18 +98,18 @@ const TrendingTokens = () => {
             </span>
           </div>
           <div className="h-3 w-px bg-border"></div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs sm:text-sm text-muted-foreground">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <span className="text-muted-foreground">
               Page <span className="font-semibold text-foreground">{page}</span>{" "}
-              of{" "}
+              /{" "}
               <span className="font-semibold text-foreground">
                 {totalPages}
               </span>
             </span>
           </div>
           <div className="h-3 w-px bg-border hidden sm:block"></div>
-          <div className="hidden sm:flex items-center gap-2">
-            <span className="text-xs sm:text-sm text-muted-foreground">
+          <div className="hidden sm:flex items-center gap-1.5 sm:gap-2">
+            <span className="text-muted-foreground">
               Showing{" "}
               <span className="font-semibold text-foreground">
                 {startIndex + 1}
@@ -178,30 +123,16 @@ const TrendingTokens = () => {
         </div>
       </div>
 
-      {/* Token Display */}
-      {viewMode === "grid" ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {paginatedTokens.map((token, index) => (
-            <TrendingTokenCard
-              key={token.address}
-              tokenAddress={token.address}
-              rank={startIndex + index + 1}
-              viewMode="grid"
-            />
-          ))}
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {paginatedTokens.map((token, index) => (
-            <TrendingTokenCard
-              key={token.address}
-              tokenAddress={token.address}
-              rank={startIndex + index + 1}
-              viewMode="list"
-            />
-          ))}
-        </div>
-      )}
+      {/* Token Display - List Only */}
+      <div className="space-y-2 sm:space-y-3">
+        {paginatedTokens.map((token, index) => (
+          <TrendingTokenCard
+            key={token.address}
+            tokenAddress={token.address}
+            rank={startIndex + index + 1}
+          />
+        ))}
+      </div>
 
       {/* Pagination Controls */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-card border border-border rounded-lg">

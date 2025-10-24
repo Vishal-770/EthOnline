@@ -2,6 +2,7 @@ import { HypersyncClient, LogField, BlockField, TransactionField } from "@envio-
 import type { Query } from "@envio-dev/hypersync-client";
 import { ethers } from "ethers";
 import * as dotenv from "dotenv";
+import type { Transaction } from "./aggregate.ts";
 
 dotenv.config();
 
@@ -10,26 +11,26 @@ const hypersyncUrl = "https://eth.hypersync.xyz";
 const TRANSFER_EVENT_SIGNATURE = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
 const APPROVAL_EVENT_SIGNATURE = "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925";
 
-interface TransactionInfo {
-  blockNumber: number;
-  timestamp: number;
-  transactionHash: string;
-  transactionIndex: number;
-  from: string;
-  to: string;
-  value: string;
-  gasUsed: string;
-  gasPrice: string;
-  logIndex: number;
-  eventType: string;
-  eventData: {
-    from?: string;
-    to?: string;
-    value?: string;
-    owner?: string;
-    spender?: string;
-  };
-}
+// interface TransactionInfo {
+//   blockNumber: number;
+//   timestamp: number;
+//   transactionHash: string;
+//   transactionIndex: number;
+//   from: string;
+//   to: string;
+//   value: string;
+//   gasUsed: string;
+//   gasPrice: string;
+//   logIndex: number;
+//   eventType: string;
+//   eventData: {
+//     from?: string;
+//     to?: string;
+//     value?: string;
+//     owner?: string;
+//     spender?: string;
+//   };
+// }
 
 export async function getAllTokenTransactions(tokenAddress:string) {
   console.log(`🔗 Connecting to HyperSync: ${hypersyncUrl}`);
@@ -40,7 +41,7 @@ export async function getAllTokenTransactions(tokenAddress:string) {
     bearerToken: "c09215fd-568a-48f0-83b3-c96c2572ad85"
   });
 
-  const allTransactions: TransactionInfo[] = [];
+  const allTransactions: Transaction[] = [];
   let fromBlock = 0;
   let hasMore = true;
   let batchCount = 0;
@@ -151,7 +152,7 @@ export async function getAllTokenTransactions(tokenAddress:string) {
           }
         }
 
-        const txInfo: TransactionInfo = {
+        const txInfo: Transaction = {
           blockNumber: log.blockNumber ?? 0,
           timestamp: block?.timestamp ?? 0,
           transactionHash: log.transactionHash ?? "",
@@ -223,8 +224,8 @@ export async function getAllTokenTransactions(tokenAddress:string) {
   allTransactions.forEach(tx => {
     if (tx.eventData.from) uniqueAddresses.add(tx.eventData.from);
     if (tx.eventData.to) uniqueAddresses.add(tx.eventData.to);
-    if (tx.eventData.owner) uniqueAddresses.add(tx.eventData.owner);
-    if (tx.eventData.spender) uniqueAddresses.add(tx.eventData.spender);
+    // if (tx.eventData.owner) uniqueAddresses.add(tx.eventData.owner);
+    // if (tx.eventData.spender) uniqueAddresses.add(tx.eventData.spender);
   });
 
   console.log("\n📊 TRANSACTION SUMMARY:");
