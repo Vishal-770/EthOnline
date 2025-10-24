@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { getEtherscanLink } from "@/lib/env";
 
 interface Transfer {
   blockNumber: number;
@@ -429,7 +430,10 @@ export default function ERC20Dashboard() {
                         {response.data.tokenAddress}
                       </p>
                       <a
-                        href={`https://etherscan.io/token/${response.data.tokenAddress}`}
+                        href={getEtherscanLink(
+                          "token",
+                          response.data.tokenAddress
+                        )}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="shrink-0"
@@ -528,7 +532,10 @@ export default function ERC20Dashboard() {
                               </td>
                               <td className="px-4 py-4">
                                 <a
-                                  href={`https://etherscan.io/tx/${transfer.transactionHash}`}
+                                  href={getEtherscanLink(
+                                    "tx",
+                                    transfer.transactionHash
+                                  )}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="flex items-center gap-2 text-primary hover:text-primary/80 font-mono text-xs group-hover:underline"
@@ -539,7 +546,10 @@ export default function ERC20Dashboard() {
                               </td>
                               <td className="px-4 py-4">
                                 <a
-                                  href={`https://etherscan.io/address/${transfer.from}`}
+                                  href={getEtherscanLink(
+                                    "address",
+                                    transfer.from
+                                  )}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="flex items-center gap-2 text-primary hover:text-primary/80 font-mono text-xs group-hover:underline"
@@ -550,7 +560,10 @@ export default function ERC20Dashboard() {
                               </td>
                               <td className="px-4 py-4">
                                 <a
-                                  href={`https://etherscan.io/address/${transfer.to}`}
+                                  href={getEtherscanLink(
+                                    "address",
+                                    transfer.to
+                                  )}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="flex items-center gap-2 text-primary hover:text-primary/80 font-mono text-xs group-hover:underline"

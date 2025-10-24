@@ -10,7 +10,8 @@ import * as dotenv from "dotenv";
 
 dotenv.config();
 
-const hypersyncUrl = "https://eth.hypersync.xyz";
+const hypersyncUrl = process.env.HYPERSYNC_URL || "https://eth.hypersync.xyz";
+const hypersyncBearerToken = process.env.HYPERSYNC_BEARER_TOKEN || "";
 const rpcUrl = process.env.RPC_URL || "https://eth.llamarpc.com";
 
 const ERC20_ABI = [
@@ -28,7 +29,7 @@ interface TokenData {
   totalSupply: string;
 
   creationBlock: string;
-  creationTimestamp?: number;
+  creationTimestamp?: number | undefined;
 
   marketCap: number;
   fullyDilutedValuation: number;
@@ -78,13 +79,13 @@ export async function metadata(tokenAddress: string) {
 
   const hs = HypersyncClient.new({
     url: hypersyncUrl,
-    bearerToken: "c09215fd-568a-48f0-83b3-c96c2572ad85",
+    bearerToken: hypersyncBearerToken,
   });
 
   console.log("📦 Fetching token creation data...");
 
   let creationBlock = "Unknown";
-  let creationTimestamp: number | undefined;
+  let creationTimestamp: number | undefined = undefined;
 
   try {
     const query: Query = {
@@ -105,10 +106,18 @@ export async function metadata(tokenAddress: string) {
 
     const response = await hs.get(query);
 
-    if (response?.data?.logs && response.data.logs.length > 0) {
+    if (
+      response?.data?.logs &&
+      response.data.logs.length > 0 &&
+      response.data.logs[0]
+    ) {
       creationBlock =
         response.data.logs[0].blockNumber?.toString() ?? "Unknown";
-      if (response.data.blocks && response.data.blocks.length > 0) {
+      if (
+        response.data.blocks &&
+        response.data.blocks.length > 0 &&
+        response.data.blocks[0]
+      ) {
         creationTimestamp = response.data.blocks[0].timestamp;
       }
     }
@@ -138,10 +147,10 @@ export async function metadata(tokenAddress: string) {
     const [nameResult, symbolResult, decimalsResult, totalSupplyResult] =
       (await Promise.race([
         Promise.all([
-          contract.name(),
-          contract.symbol(),
-          contract.decimals(),
-          contract.totalSupply(),
+          contract.name?.() ?? Promise.resolve("Unknown"),
+          contract.symbol?.() ?? Promise.resolve("Unknown"),
+          contract.decimals?.() ?? Promise.resolve(18n),
+          contract.totalSupply?.() ?? Promise.resolve(0n),
         ]),
         timeout(10000),
       ])) as [string, string, bigint, bigint];

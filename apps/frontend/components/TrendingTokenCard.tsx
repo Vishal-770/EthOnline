@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { LoaderDemo } from "./Loader";
+import { getApiEndpoint } from "@/lib/env";
 
 interface TrendingTokenCardProps {
   tokenAddress: string;
@@ -71,7 +72,7 @@ async function fetchTokenMetadata(
   tokenAddress: string
 ): Promise<TokenMetadata> {
   const { data } = await axios.get(
-    `http://localhost:3001/token-metadata/${tokenAddress}`
+    getApiEndpoint(`/token-metadata/${tokenAddress}`)
   );
   return data;
 }

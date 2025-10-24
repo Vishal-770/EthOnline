@@ -1,9 +1,14 @@
 "use client";
 import React, { useEffect, useRef } from "react";
+import { env } from "@/lib/env";
 
 const PRICE_CHART_ID = "price-chart-widget-container";
 
-export const PriceChartWidget = ({ tokenAddress }: { tokenAddress: string }) => {
+export const PriceChartWidget = ({
+  tokenAddress,
+}: {
+  tokenAddress: string;
+}) => {
   const containerRef = useRef(null);
 
   useEffect(() => {
@@ -34,7 +39,7 @@ export const PriceChartWidget = ({ tokenAddress }: { tokenAddress: string }) => 
     if (!document.getElementById("moralis-chart-widget")) {
       const script = document.createElement("script");
       script.id = "moralis-chart-widget";
-      script.src = "https://moralis.com/static/embed/chart.js";
+      script.src = env.moralisChartUrl;
       script.type = "text/javascript";
       script.async = true;
       script.onload = loadWidget;

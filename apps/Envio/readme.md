@@ -1,3 +1,75 @@
+# Envio Backend API
+
+Backend API service for token analytics using Envio Hypersync and on-chain data.
+
+## Features
+
+- 🔗 Fetch token metadata from blockchain
+- 📊 Aggregate token analytics data  
+- 💱 Track token transactions
+- 🚀 Real-time data from Hypersync
+- 📈 DexScreener market data integration
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js >= 18.0.0
+- npm, yarn, or pnpm
+
+### Installation
+
+```bash
+npm install
+```
+
+### Environment Setup
+
+Copy `.env.example` to `.env`:
+
+```bash
+cp .env.example .env
+```
+
+Update the following variables in `.env`:
+- `HYPERSYNC_BEARER_TOKEN` - Your Hypersync API token
+- `RPC_URL` - Ethereum RPC endpoint  
+- `PORT` - Server port (default: 3001)
+
+### Development
+
+```bash
+npm run dev
+```
+
+### Production
+
+```bash
+npm run build
+npm start
+```
+
+## API Endpoints
+
+- `GET /` - Health check
+- `GET /token-metadata/:address` - Token metadata and analytics
+- `GET /token-addresses` - List of tracked tokens
+- `GET /transactions/:address` - Token transactions
+
+## Deployment
+
+### Docker
+
+```bash
+docker-compose up -d
+```
+
+### Railway/Render/Heroku
+
+See full deployment guide in the README.
+
+## Data Flow Architecture
+
 📁 Input Data
     ├── token_transactions.json (6,896 transactions)
     └── token_analysis.json (market data)

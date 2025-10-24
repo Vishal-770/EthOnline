@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { ArrowRight, Loader2, ExternalLink } from "lucide-react";
 import { Button } from "./ui/button";
+import { getEtherscanLink } from "@/lib/env";
 
 interface Transfer {
   from: string;
@@ -147,7 +148,7 @@ export default function TokenTransactionsList({
                 </td>
                 <td className="px-4 py-3">
                   <a
-                    href={`https://etherscan.io/address/${transfer.from}`}
+                    href={getEtherscanLink("address", transfer.from)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-primary hover:underline font-mono text-xs flex items-center gap-1"
@@ -158,7 +159,7 @@ export default function TokenTransactionsList({
                 </td>
                 <td className="px-4 py-3">
                   <a
-                    href={`https://etherscan.io/address/${transfer.to}`}
+                    href={getEtherscanLink("address", transfer.to)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-primary hover:underline font-mono text-xs flex items-center gap-1"
@@ -175,7 +176,7 @@ export default function TokenTransactionsList({
                 </td>
                 <td className="px-4 py-3">
                   <a
-                    href={`https://etherscan.io/tx/${transfer.transactionHash}`}
+                    href={getEtherscanLink("tx", transfer.transactionHash)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-primary hover:underline font-mono text-xs flex items-center gap-1"

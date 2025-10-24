@@ -1,4 +1,5 @@
 import axios, { AxiosError } from "axios";
+import { env } from "./env";
 
 interface Tweet {
   id: string;
@@ -22,10 +23,10 @@ interface TwitterAPIError {
 async function fetchLatestTweets(): Promise<Tweet[]> {
   try {
     const response = await axios.get<TwitterAPIResponse>(
-      "https://api.twitterapi.io/twitter/tweet/advanced_search?queryType=Latest&query=Ethereum&maxResults=10",
+      `${env.twitterApiUrl}/twitter/tweet/advanced_search?queryType=Latest&query=Ethereum&maxResults=10`,
       {
         headers: {
-          "X-API-Key": process.env.NEXT_PUBLIC_TWITTER_API_KEY || "",
+          "X-API-Key": env.twitterApiKey,
         },
         timeout: 10000, // 10 second timeout
       }

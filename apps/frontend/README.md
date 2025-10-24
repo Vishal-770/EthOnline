@@ -1,8 +1,35 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+## 🚀 Quick Start
 
-First, run the development server:
+### Prerequisites
+- Node.js 18+ installed
+- Backend API (Envio service) running or deployed
+
+### Setup
+
+1. **Install dependencies:**
+```bash
+npm install
+```
+
+2. **Configure environment variables:**
+```bash
+cp .env.local.example .env.local
+```
+
+Edit `.env.local` and set your values:
+```bash
+# Backend API URL (required)
+NEXT_PUBLIC_ENVIO_API_URL=http://localhost:3001
+
+# Twitter API Key (optional)
+NEXT_PUBLIC_TWITTER_API_KEY=your_key_here
+
+# Other variables use defaults
+```
+
+3. **Run the development server:**
 
 ```bash
 npm run dev
@@ -15,6 +42,52 @@ bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## 📦 Environment Variables
+
+All hardcoded values have been moved to environment variables for production deployment. See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed deployment instructions.
+
+### Required Variables:
+- `NEXT_PUBLIC_ENVIO_API_URL` - Backend API URL
+- `NEXT_PUBLIC_TWITTER_API_KEY` - Twitter API key (optional)
+- `NEXT_PUBLIC_ETHERSCAN_URL` - Etherscan URL (has default)
+- `NEXT_PUBLIC_MORALIS_CHART_URL` - Moralis chart URL (has default)
+- `NEXT_PUBLIC_TWITTER_API_URL` - Twitter API URL (has default)
+
+## 🏗️ Project Structure
+
+```
+apps/frontend/
+├── app/                    # Next.js app directory
+│   ├── api/               # API routes
+│   ├── erc20/             # ERC20 token pages
+│   └── token/             # Individual token pages
+├── components/            # React components
+├── lib/                   # Utility functions
+│   ├── env.ts            # Environment variable configuration
+│   ├── utils.ts          # Helper functions
+│   └── fetchtweets.ts    # Twitter integration
+├── public/               # Static assets
+├── .env.local.example    # Example environment variables
+└── DEPLOYMENT.md         # Deployment guide
+```
+
+## 🚀 Deployment
+
+For production deployment instructions, see [DEPLOYMENT.md](./DEPLOYMENT.md).
+
+Quick deploy options:
+- **Vercel** (recommended): One-click deploy
+- **Netlify**: Easy static hosting
+- **Docker**: Containerized deployment
+- **VPS**: Traditional server deployment
+
+## 🧪 Building for Production
+
+```bash
+npm run build
+npm run start
+```
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 

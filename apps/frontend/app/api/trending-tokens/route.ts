@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getApiEndpoint } from "@/lib/env";
 
 export async function GET(request: NextRequest) {
   try {
     // Fetch trending token addresses from Envio backend
-    const envioUrl = `http://localhost:3001/token-addresses`;
+    const envioUrl = getApiEndpoint("/token-addresses");
     const response = await fetch(envioUrl, {
       cache: "no-store", // Disable caching for real-time data
     });
@@ -23,7 +24,7 @@ export async function GET(request: NextRequest) {
 
       try {
         const metadataResponse = await fetch(
-          `http://localhost:3001/token-metadata/${address}`,
+          getApiEndpoint(`/token-metadata/${address}`),
           { cache: "no-store" }
         );
 

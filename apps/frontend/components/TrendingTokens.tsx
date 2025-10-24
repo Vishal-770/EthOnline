@@ -6,6 +6,7 @@ import React from "react";
 import TrendingTokenCard from "./TrendingTokenCard";
 import { Button } from "@/components/ui/button";
 import { LoaderDemo } from "./Loader";
+import { getApiEndpoint } from "@/lib/env";
 
 interface Token {
   address: string;
@@ -14,7 +15,7 @@ interface Token {
 }
 
 async function getTokens(): Promise<Token[]> {
-  const { data } = await axios.get("http://localhost:3001/token-addresses");
+  const { data } = await axios.get(getApiEndpoint('/token-addresses'));
   return data;
 }
 

@@ -60,18 +60,6 @@ const redditClient: Snoowrap = new Snoowrap({
   password: process.env.REDDIT_PASSWORD!,
 });
 
-interface TweetPost {
-  id: string;
-  text: string;
-  author_id: string;
-  created_at: string;
-  public_metrics: {
-    like_count: number;
-    retweet_count: number;
-    reply_count: number;
-  };
-}
-
 function convertTweetToSocialPost(tweet: TweetV2SingleResult): SocialPost {
   return {
     id: tweet.id,

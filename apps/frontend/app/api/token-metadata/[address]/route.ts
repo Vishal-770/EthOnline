@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getApiEndpoint } from "@/lib/env";
 
 export async function GET(
   request: NextRequest,
@@ -15,7 +16,7 @@ export async function GET(
     }
 
     // Fetch from Envio backend
-    const envioUrl = `http://localhost:3001/token-metadata/${address}`;
+    const envioUrl = getApiEndpoint(`/token-metadata/${address}`);
     const response = await fetch(envioUrl, {
       cache: "no-store", // Disable caching for real-time data
     });
