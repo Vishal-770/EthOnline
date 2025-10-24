@@ -11,27 +11,6 @@ const hypersyncUrl = "https://eth.hypersync.xyz";
 const TRANSFER_EVENT_SIGNATURE = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
 const APPROVAL_EVENT_SIGNATURE = "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925";
 
-// interface TransactionInfo {
-//   blockNumber: number;
-//   timestamp: number;
-//   transactionHash: string;
-//   transactionIndex: number;
-//   from: string;
-//   to: string;
-//   value: string;
-//   gasUsed: string;
-//   gasPrice: string;
-//   logIndex: number;
-//   eventType: string;
-//   eventData: {
-//     from?: string;
-//     to?: string;
-//     value?: string;
-//     owner?: string;
-//     spender?: string;
-//   };
-// }
-
 export async function getAllTokenTransactions(tokenAddress:string) {
   console.log(`🔗 Connecting to HyperSync: ${hypersyncUrl}`);
   console.log(`📍 Fetching all transactions for token: ${tokenAddress}\n`);
