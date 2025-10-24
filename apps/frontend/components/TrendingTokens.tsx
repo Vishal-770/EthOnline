@@ -4,9 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import React from "react";
 import TrendingTokenCard from "./TrendingTokenCard";
+import TrendingTokenCardGrid from "./TrendingTokenCardGrid";
 import { Button } from "@/components/ui/button";
 import { LoaderDemo } from "./Loader";
 import { getApiEndpoint } from "@/lib/env";
+import { LayoutGrid, List } from "lucide-react";
 
 interface Token {
   address: string;
@@ -35,6 +37,7 @@ const TrendingTokens = () => {
   });
 
   const [page, setPage] = React.useState(1);
+  const [viewMode, setViewMode] = React.useState<"list" | "grid">("list");
   const ITEMS_PER_PAGE = 10;
 
   if (isLoading)
@@ -84,6 +87,28 @@ const TrendingTokens = () => {
               </p>
             </div>
           </div>
+
+          {/* View Mode Toggle */}
+          <div className="flex items-center gap-2 bg-muted p-1 rounded-lg">
+            <Button
+              variant={viewMode === "list" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setViewMode("list")}
+              className="h-8 px-3"
+            >
+              <List className="h-4 w-4 mr-1" />
+              <span className="hidden sm:inline">List</span>
+            </Button>
+            <Button
+              variant={viewMode === "grid" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setViewMode("grid")}
+              className="h-8 px-3"
+            >
+              <LayoutGrid className="h-4 w-4 mr-1" />
+              <span className="hidden sm:inline">Grid</span>
+            </Button>
+          </div>
         </div>
 
         {/* Stats Bar */}
@@ -123,16 +148,28 @@ const TrendingTokens = () => {
         </div>
       </div>
 
-      {/* Token Display - List Only */}
-      <div className="space-y-2 sm:space-y-3">
-        {paginatedTokens.map((token, index) => (
-          <TrendingTokenCard
-            key={token.address}
-            tokenAddress={token.address}
-            rank={startIndex + index + 1}
-          />
-        ))}
-      </div>
+      {/* Token Display - List or Grid */}
+      {viewMode === "list" ? (
+        <div className="space-y-2 sm:space-y-3">
+          {paginatedTokens.map((token, index) => (
+            <TrendingTokenCard
+              key={token.address}
+              tokenAddress={token.address}
+              rank={startIndex + index + 1}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {paginatedTokens.map((token, index) => (
+            <TrendingTokenCardGrid
+              key={token.address}
+              tokenAddress={token.address}
+              rank={startIndex + index + 1}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Pagination Controls */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-card border border-border rounded-lg">
