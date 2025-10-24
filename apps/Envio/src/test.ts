@@ -8,7 +8,7 @@ dotenv.config();
 
 const hypersyncUrl = "https://eth.hypersync.xyz";
 const rpcUrl = process.env.RPC_URL || "https://eth.llamarpc.com";
-const tokenAddress = "0x00c83aecc790e8a4453e5dd3b0b4b3680501a7a7"
+
 
 const ERC20_ABI = [
   "function name() view returns (string)",
@@ -70,7 +70,7 @@ interface TokenData {
   };
 }
 
-async function main() {
+export async function metadata(tokenAddress:string) {
   console.log(`🔗 Connecting to HyperSync: ${hypersyncUrl}`);
 
   const hs = HypersyncClient.new({
@@ -308,7 +308,7 @@ async function main() {
     typeof value === 'bigint' ? value.toString() : value
   , 2);
   
-  await fs.writeFile(outputPath, jsonString);
+  // await fs.writeFile(outputPath, jsonString);
   
   console.log("\n✅ Comprehensive token data saved to:", outputPath);
   console.log("\n📊 SUMMARY:");
@@ -346,8 +346,8 @@ async function main() {
   return tokenData;
 }
 
-main()
-  .then((data) => {
-    console.log("\n✅ Analysis complete!");
-  })
-  .catch(console.error);
+// metadata("0x00c83aecc790e8a4453e5dd3b0b4b3680501a7a7")
+//   .then((data) => {
+//     console.log("\n✅ Analysis complete!");
+//   })
+//   .catch(console.error);

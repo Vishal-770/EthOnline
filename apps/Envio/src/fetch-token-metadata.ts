@@ -143,4 +143,4 @@ function main(){
     console.log(metadata);
   });
 }
-main();
+// main();
