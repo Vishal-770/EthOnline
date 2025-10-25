@@ -270,9 +270,10 @@ export default function TokenDetailsPage() {
           </div>
         </div>
 
-        {/* Key Metrics Row */}
+        {/* Key Metrics Row - Fixed Equal Height */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-6">
-          <div className="bg-card rounded-xl border border-border p-4 md:p-6 hover:shadow-lg transition-shadow">
+          {/* Price Card */}
+          <div className="bg-card rounded-xl border border-border p-4 md:p-6 hover:shadow-lg transition-shadow flex flex-col h-full">
             <div className="flex items-center justify-between mb-3 md:mb-4">
               <div className="p-1.5 md:p-2 bg-blue-500/10 rounded-lg">
                 <DollarSign className="w-4 h-4 md:w-5 md:h-5 text-blue-500" />
@@ -283,40 +284,43 @@ export default function TokenDetailsPage() {
                 </p>
               </div>
             </div>
-            <p className="text-xl md:text-3xl font-bold text-foreground mb-2 md:mb-3">
-              ${tokenData.priceUSD.toFixed(6)}
-            </p>
-            <div className="flex flex-col gap-1">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground">1h:</span>
-                <span
-                  className={
-                    tokenData.priceChange1h >= 0
-                      ? "text-green-500 font-semibold"
-                      : "text-red-500 font-semibold"
-                  }
-                >
-                  {tokenData.priceChange1h >= 0 ? "+" : ""}
-                  {tokenData.priceChange1h.toFixed(2)}%
-                </span>
-              </div>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground">24h:</span>
-                <span
-                  className={
-                    tokenData.priceChange24h >= 0
-                      ? "text-green-500 font-semibold"
-                      : "text-red-500 font-semibold"
-                  }
-                >
-                  {tokenData.priceChange24h >= 0 ? "+" : ""}
-                  {tokenData.priceChange24h.toFixed(2)}%
-                </span>
+            <div className="flex-1 flex flex-col justify-between">
+              <p className="text-xl md:text-3xl font-bold text-foreground mb-2 md:mb-3">
+                ${tokenData.priceUSD.toFixed(6)}
+              </p>
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">1h:</span>
+                  <span
+                    className={
+                      tokenData.priceChange1h >= 0
+                        ? "text-green-500 font-semibold"
+                        : "text-red-500 font-semibold"
+                    }
+                  >
+                    {tokenData.priceChange1h >= 0 ? "+" : ""}
+                    {tokenData.priceChange1h.toFixed(2)}%
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">24h:</span>
+                  <span
+                    className={
+                      tokenData.priceChange24h >= 0
+                        ? "text-green-500 font-semibold"
+                        : "text-red-500 font-semibold"
+                    }
+                  >
+                    {tokenData.priceChange24h >= 0 ? "+" : ""}
+                    {tokenData.priceChange24h.toFixed(2)}%
+                  </span>
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-card rounded-xl border border-border p-4 md:p-6 hover:shadow-lg transition-shadow">
+          {/* Market Cap Card */}
+          <div className="bg-card rounded-xl border border-border p-4 md:p-6 hover:shadow-lg transition-shadow flex flex-col h-full">
             <div className="flex items-center justify-between mb-3 md:mb-4">
               <div className="p-1.5 md:p-2 bg-purple-500/10 rounded-lg">
                 <TrendingUp className="w-4 h-4 md:w-5 md:h-5 text-purple-500" />
@@ -327,18 +331,21 @@ export default function TokenDetailsPage() {
                 </p>
               </div>
             </div>
-            <p className="text-xl md:text-3xl font-bold text-foreground mb-2 md:mb-3">
-              {formatCurrency(tokenData.marketCap)}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              FDV:{" "}
-              <span className="font-semibold">
-                {formatCurrency(tokenData.fullyDilutedValuation)}
-              </span>
-            </p>
+            <div className="flex-1 flex flex-col justify-between">
+              <p className="text-xl md:text-3xl font-bold text-foreground mb-2 md:mb-3">
+                {formatCurrency(tokenData.marketCap)}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                FDV:{" "}
+                <span className="font-semibold">
+                  {formatCurrency(tokenData.fullyDilutedValuation)}
+                </span>
+              </p>
+            </div>
           </div>
 
-          <div className="bg-card rounded-xl border border-border p-4 md:p-6 hover:shadow-lg transition-shadow">
+          {/* Volume Card */}
+          <div className="bg-card rounded-xl border border-border p-4 md:p-6 hover:shadow-lg transition-shadow flex flex-col h-full">
             <div className="flex items-center justify-between mb-3 md:mb-4">
               <div className="p-1.5 md:p-2 bg-green-500/10 rounded-lg">
                 <BarChart3 className="w-4 h-4 md:w-5 md:h-5 text-green-500" />
@@ -349,26 +356,29 @@ export default function TokenDetailsPage() {
                 </p>
               </div>
             </div>
-            <p className="text-xl md:text-3xl font-bold text-foreground mb-2 md:mb-3">
-              {formatCurrency(tokenData.volume24h)}
-            </p>
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>
-                6h:{" "}
-                <span className="font-semibold">
-                  {formatCurrency(tokenData.volume6h)}
+            <div className="flex-1 flex flex-col justify-between">
+              <p className="text-xl md:text-3xl font-bold text-foreground mb-2 md:mb-3">
+                {formatCurrency(tokenData.volume24h)}
+              </p>
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>
+                  6h:{" "}
+                  <span className="font-semibold">
+                    {formatCurrency(tokenData.volume6h)}
+                  </span>
                 </span>
-              </span>
-              <span>
-                1h:{" "}
-                <span className="font-semibold">
-                  {formatCurrency(tokenData.volume1h)}
+                <span>
+                  1h:{" "}
+                  <span className="font-semibold">
+                    {formatCurrency(tokenData.volume1h)}
+                  </span>
                 </span>
-              </span>
+              </div>
             </div>
           </div>
 
-          <div className="bg-card rounded-xl border border-border p-4 md:p-6 hover:shadow-lg transition-shadow">
+          {/* Liquidity Card */}
+          <div className="bg-card rounded-xl border border-border p-4 md:p-6 hover:shadow-lg transition-shadow flex flex-col h-full">
             <div className="flex items-center justify-between mb-3 md:mb-4">
               <div className="p-1.5 md:p-2 bg-orange-500/10 rounded-lg">
                 <Activity className="w-4 h-4 md:w-5 md:h-5 text-orange-500" />
@@ -379,18 +389,20 @@ export default function TokenDetailsPage() {
                 </p>
               </div>
             </div>
-            <p className="text-xl md:text-3xl font-bold text-foreground mb-2 md:mb-3">
-              {formatCurrency(tokenData.totalLiquidityUSD)}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              Vol/Liq:{" "}
-              <span className="font-semibold">
-                {(tokenData.viralMetrics.volumeToLiquidityRatio * 100).toFixed(
-                  2
-                )}
-                %
-              </span>
-            </p>
+            <div className="flex-1 flex flex-col justify-between">
+              <p className="text-xl md:text-3xl font-bold text-foreground mb-2 md:mb-3">
+                {formatCurrency(tokenData.totalLiquidityUSD)}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Vol/Liq:{" "}
+                <span className="font-semibold">
+                  {(
+                    tokenData.viralMetrics.volumeToLiquidityRatio * 100
+                  ).toFixed(2)}
+                  %
+                </span>
+              </p>
+            </div>
           </div>
         </div>
 

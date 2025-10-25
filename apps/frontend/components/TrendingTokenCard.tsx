@@ -14,6 +14,7 @@ interface TrendingTokenCardProps {
   tokenAddress: string;
   rank?: number;
   chain?: ChainConfig;
+  trendingScore?: number;
 }
 
 interface ChainData {
@@ -99,15 +100,18 @@ const TrendingTokenCard: React.FC<TrendingTokenCardProps> = ({
   tokenAddress,
   rank,
   chain,
+  trendingScore,
 }) => {
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["token-metadata", tokenAddress],
+    queryKey: ["token-metadata", tokenAddress, chain?.slug || "ethereum"],
     queryFn: () => fetchTokenMetadata(tokenAddress),
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
-    retry: 2,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    staleTime: 10 * 60 * 1000, // Token metadata stays fresh for 10 minutes
+    gcTime: 60 * 60 * 1000, // Cache persists for 1 hour
+    retry: 2, // Retry failed requests twice
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000), // Exponential backoff
+    refetchOnWindowFocus: false, // Don't refetch on window focus (metadata doesn't change often)
+    refetchOnMount: false, // Don't refetch on component mount
+    refetchOnReconnect: false, // Don't refetch on reconnect
   });
 
   if (isLoading) {
@@ -309,17 +313,23 @@ const TrendingTokenCard: React.FC<TrendingTokenCardProps> = ({
           {/* Trend Indicator */}
           <div className="hidden sm:block shrink-0">
             <div className="text-xs text-muted-foreground font-medium mb-1">
-              TREND
+              {trendingScore ? "SCORE" : "TREND"}
             </div>
-            <div
-              className={`text-xs font-bold px-2 py-1 rounded whitespace-nowrap ${
-                isPositive24h
-                  ? "bg-green-500/10 text-green-600 dark:text-green-400"
-                  : "bg-red-500/10 text-red-600 dark:text-red-400"
-              }`}
-            >
-              {isPositive24h ? "BULLISH" : "BEARISH"}
-            </div>
+            {trendingScore ? (
+              <div className="text-xs font-bold px-2 py-1 rounded whitespace-nowrap bg-gradient-to-r from-orange-500/10 to-red-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20">
+                🔥 {trendingScore}
+              </div>
+            ) : (
+              <div
+                className={`text-xs font-bold px-2 py-1 rounded whitespace-nowrap ${
+                  isPositive24h
+                    ? "bg-green-500/10 text-green-600 dark:text-green-400"
+                    : "bg-red-500/10 text-red-600 dark:text-red-400"
+                }`}
+              >
+                {isPositive24h ? "BULLISH" : "BEARISH"}
+              </div>
+            )}
           </div>
         </div>
 
@@ -376,15 +386,21 @@ const TrendingTokenCard: React.FC<TrendingTokenCardProps> = ({
             </div>
 
             {/* Trend Badge */}
-            <div
-              className={`text-[10px] font-bold px-2 py-1 rounded whitespace-nowrap shrink-0 ${
-                isPositive24h
-                  ? "bg-green-500/10 text-green-600 dark:text-green-400"
-                  : "bg-red-500/10 text-red-600 dark:text-red-400"
-              }`}
-            >
-              {isPositive24h ? "↑" : "↓"} {data.priceChange24h.toFixed(1)}%
-            </div>
+            {trendingScore ? (
+              <div className="text-[10px] font-bold px-2 py-1 rounded whitespace-nowrap shrink-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20">
+                🔥 {trendingScore}
+              </div>
+            ) : (
+              <div
+                className={`text-[10px] font-bold px-2 py-1 rounded whitespace-nowrap shrink-0 ${
+                  isPositive24h
+                    ? "bg-green-500/10 text-green-600 dark:text-green-400"
+                    : "bg-red-500/10 text-red-600 dark:text-red-400"
+                }`}
+              >
+                {isPositive24h ? "↑" : "↓"} {data.priceChange24h.toFixed(1)}%
+              </div>
+            )}
           </div>
 
           {/* Price Section */}

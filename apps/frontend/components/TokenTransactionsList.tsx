@@ -44,15 +44,18 @@ export default function TokenTransactionsList({
       let data;
       const chainSlug = chain?.slug || "ethereum";
 
-      if (chainSlug !== "ethereum") {
-        // Use POST endpoint for non-ethereum chains
-        const response = await axios.post(
-          getApiEndpoint(`/transactions/${tokenAddress}`),
-          { hypersyncurl: chain?.hypersyncUrl }
-        );
+      if (chainSlug !== "ethereum" && chain?.hypersyncUrl) {
+        // Use POST endpoint for non-ethereum chains with pagination
+        const response = await axios.post("/api/erc20-transfers", {
+          tokenAddress,
+          decimals,
+          fromBlock,
+          limit: 10,
+          hypersyncUrl: chain.hypersyncUrl,
+        });
         data = response.data;
       } else {
-        // Use GET endpoint for ethereum
+        // Use GET endpoint for ethereum with pagination
         const params = new URLSearchParams({
           tokenAddress,
           decimals: decimals.toString(),

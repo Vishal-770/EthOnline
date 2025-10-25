@@ -7,62 +7,38 @@ import TrendingTokenCard from "./TrendingTokenCard";
 import TrendingTokenCardGrid from "./TrendingTokenCardGrid";
 import { Button } from "@/components/ui/button";
 import { LoaderDemo } from "./Loader";
-import { getApiEndpoint } from "@/lib/env";
 import { LayoutGrid, List } from "lucide-react";
-import type { ChainConfig } from "@/lib/chains";
+import { CHAINS } from "@/lib/chains";
 
-interface Token {
+interface TrendingToken {
   address: string;
-  firstSeenBlock: number;
-  firstSeenTimestamp: number;
-  chainId?: number;
-  chainName?: string;
+  trendingscore: number;
+  rank: number;
+  block?: number;
+  timestamp?: number;
 }
 
-interface TrendingTokensProps {
-  chain?: ChainConfig;
-}
-
-async function getTokens(chainSlug?: string): Promise<Token[]> {
-  if (chainSlug && chainSlug !== "ethereum") {
-    // For non-ethereum chains, use POST endpoint with hypersync URL
-    const { data } = await axios.post(getApiEndpoint("/token-addresses"), {
-      hypersyncurl: getHypersyncUrl(chainSlug),
-      days: 365,
-    });
-    return data;
-  }
-  // For ethereum, use the default GET endpoint
-  const { data } = await axios.get(getApiEndpoint("/token-addresses"));
+async function fetchTrendingEthereumTokens(): Promise<TrendingToken[]> {
+  const { data } = await axios.get("http://localhost:3002/top-tokens");
   return data;
 }
 
-function getHypersyncUrl(chainSlug: string): string {
-  const urls: Record<string, string> = {
-    base: "https://base.hypersync.xyz",
-    polygon: "https://polygon.hypersync.xyz",
-    arbitrum: "https://arbitrum.hypersync.xyz",
-    optimism: "https://optimism.hypersync.xyz",
-    ethereum: "https://eth.hypersync.xyz",
-  };
-  return urls[chainSlug] || urls.ethereum;
-}
-
-const TrendingTokens: React.FC<TrendingTokensProps> = ({ chain }) => {
+const TrendingEthereumToken = () => {
   const {
     data: tokens,
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["trending-tokens", chain?.slug || "ethereum"],
-    queryFn: () => getTokens(chain?.slug),
-    staleTime: 5 * 60 * 1000, // Data stays fresh for 5 minutes
-    gcTime: 30 * 60 * 1000, // Cache persists for 30 minutes
+    queryKey: ["trending-ethereum-tokens"],
+    queryFn: fetchTrendingEthereumTokens,
+    staleTime: 3 * 60 * 1000, // Data stays fresh for 3 minutes (trending data changes more frequently)
+    gcTime: 15 * 60 * 1000, // Cache persists for 15 minutes
     retry: 3, // Retry failed requests 3 times
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
-    refetchOnWindowFocus: true, // Refetch when window regains focus
+    refetchOnWindowFocus: true, // Refetch when window regains focus (trending data should be current)
     refetchOnMount: false, // Don't refetch on component mount if data is fresh
     refetchOnReconnect: true, // Refetch when network reconnects
+    refetchInterval: 5 * 60 * 1000, // Auto-refetch every 5 minutes for trending data
   });
 
   const [page, setPage] = React.useState(1);
@@ -74,7 +50,7 @@ const TrendingTokens: React.FC<TrendingTokensProps> = ({ chain }) => {
       <div className="w-full min-h-[80vh] flex flex-col items-center justify-center space-y-4">
         <LoaderDemo number={3} />
         <p className="text-muted-foreground text-sm animate-pulse">
-          Loading trending tokens...
+          Loading trending Ethereum tokens...
         </p>
       </div>
     );
@@ -114,41 +90,45 @@ const TrendingTokens: React.FC<TrendingTokensProps> = ({ chain }) => {
             <div className="h-6 sm:h-8 w-1 bg-primary rounded-full"></div>
             <div>
               <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground tracking-tight">
-                {chain ? `${chain.name} ` : ""}Trending Tokens
+                🔥 Trending Ethereum Tokens
               </h1>
               <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground mt-0.5">
-                Discover the hottest tokens on {chain?.name || "Ethereum"}
+                Top performing tokens ranked by trending score
               </p>
             </div>
           </div>
 
           {/* View Mode Toggle */}
           <div className="flex items-center gap-2 bg-muted p-1 rounded-lg">
-            <Button
-              variant={viewMode === "list" ? "default" : "ghost"}
-              size="sm"
+            <button
               onClick={() => handleViewModeChange("list")}
-              className="h-8 px-3"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs sm:text-sm font-medium transition-all ${
+                viewMode === "list"
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
             >
-              <List className="h-4 w-4 mr-1" />
+              <List className="w-3 h-3 sm:w-4 sm:h-4" />
               <span className="hidden sm:inline">List</span>
-            </Button>
-            <Button
-              variant={viewMode === "grid" ? "default" : "ghost"}
-              size="sm"
+            </button>
+            <button
               onClick={() => handleViewModeChange("grid")}
-              className="h-8 px-3"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs sm:text-sm font-medium transition-all ${
+                viewMode === "grid"
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
             >
-              <LayoutGrid className="h-4 w-4 mr-1" />
+              <LayoutGrid className="w-3 h-3 sm:w-4 sm:h-4" />
               <span className="hidden sm:inline">Grid</span>
-            </Button>
+            </button>
           </div>
         </div>
 
         {/* Stats Bar */}
         <div className="flex flex-wrap items-center gap-2 sm:gap-3 md:gap-4 p-2 sm:p-3 md:p-4 bg-card border border-border rounded-lg text-xs sm:text-sm">
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            <div className="h-1.5 w-1.5 sm:h-2 sm:w-2 bg-green-500 rounded-full animate-pulse"></div>
+          <div className="flex items-center gap-2">
+            <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
             <span className="text-muted-foreground">
               <span className="font-semibold text-foreground">
                 {tokens.length}
@@ -157,17 +137,17 @@ const TrendingTokens: React.FC<TrendingTokensProps> = ({ chain }) => {
             </span>
           </div>
           <div className="h-3 w-px bg-border"></div>
-          <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="flex items-center gap-2">
             <span className="text-muted-foreground">
               Page <span className="font-semibold text-foreground">{page}</span>{" "}
-              /{" "}
+              of{" "}
               <span className="font-semibold text-foreground">
                 {totalPages}
               </span>
             </span>
           </div>
           <div className="h-3 w-px bg-border hidden sm:block"></div>
-          <div className="hidden sm:flex items-center gap-1.5 sm:gap-2">
+          <div className="hidden sm:flex items-center gap-2">
             <span className="text-muted-foreground">
               Showing{" "}
               <span className="font-semibold text-foreground">
@@ -182,26 +162,28 @@ const TrendingTokens: React.FC<TrendingTokensProps> = ({ chain }) => {
         </div>
       </div>
 
-      {/* Token Display - List or Grid */}
+      {/* Token Display */}
       {viewMode === "list" ? (
-        <div className="space-y-2 sm:space-y-3">
-          {paginatedTokens.map((token, index) => (
+        <div className="space-y-3">
+          {paginatedTokens.map((token) => (
             <TrendingTokenCard
               key={token.address}
               tokenAddress={token.address}
-              rank={startIndex + index + 1}
-              chain={chain}
+              rank={token.rank}
+              chain={CHAINS.ethereum}
+              trendingScore={token.trendingscore}
             />
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3">
-          {paginatedTokens.map((token, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {paginatedTokens.map((token) => (
             <TrendingTokenCardGrid
               key={token.address}
               tokenAddress={token.address}
-              rank={startIndex + index + 1}
-              chain={chain}
+              rank={token.rank}
+              chain={CHAINS.ethereum}
+              trendingScore={token.trendingscore}
             />
           ))}
         </div>
@@ -232,44 +214,10 @@ const TrendingTokens: React.FC<TrendingTokensProps> = ({ chain }) => {
           Previous
         </Button>
 
-        <div className="flex items-center gap-1.5">
-          {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-            let pageNum;
-            if (totalPages <= 5) {
-              pageNum = i + 1;
-            } else if (page <= 3) {
-              pageNum = i + 1;
-            } else if (page >= totalPages - 2) {
-              pageNum = totalPages - 4 + i;
-            } else {
-              pageNum = page - 2 + i;
-            }
-
-            return (
-              <Button
-                key={pageNum}
-                variant={page === pageNum ? "default" : "outline"}
-                size="sm"
-                onClick={() => setPage(pageNum)}
-                className="w-9 h-9 text-sm"
-              >
-                {pageNum}
-              </Button>
-            );
-          })}
-          {totalPages > 5 && page < totalPages - 2 && (
-            <>
-              <span className="text-muted-foreground px-1">...</span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPage(totalPages)}
-                className="w-9 h-9 text-sm"
-              >
-                {totalPages}
-              </Button>
-            </>
-          )}
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">
+            Page {page} of {totalPages}
+          </span>
         </div>
 
         <Button
@@ -299,4 +247,4 @@ const TrendingTokens: React.FC<TrendingTokensProps> = ({ chain }) => {
   );
 };
 
-export default TrendingTokens;
+export default TrendingEthereumToken;

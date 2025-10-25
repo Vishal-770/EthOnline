@@ -121,8 +121,25 @@ async function fetchERC20TransactionsPaginated(
   fromBlock?: number,
   limit: number = 10
 ): Promise<PaginatedResponse> {
+  return fetchERC20TransactionsPaginatedWithUrl(
+    tokenAddress,
+    decimals,
+    fromBlock,
+    limit
+  );
+}
+
+async function fetchERC20TransactionsPaginatedWithUrl(
+  tokenAddress: string,
+  decimals: number = 18,
+  fromBlock?: number,
+  limit: number = 10,
+  hypersyncUrl?: string
+): Promise<PaginatedResponse> {
   try {
-    const client = HypersyncClient.new(null);
+    const client = hypersyncUrl
+      ? HypersyncClient.new({ url: hypersyncUrl })
+      : HypersyncClient.new(null);
     const decoder = Decoder.fromSignatures([
       "Transfer(address indexed from, address indexed to, uint256 value)",
     ]);
@@ -406,6 +423,65 @@ export async function GET(request: NextRequest) {
     return Response.json(result);
   } catch (error) {
     console.error("Error in GET handler:", error);
+    return Response.json(
+      {
+        success: false,
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
+      },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+
+    const {
+      tokenAddress: tokenAddressRaw,
+      decimals = 18,
+      fromBlock,
+      limit = 10,
+      hypersyncUrl,
+    } = body;
+
+    if (!tokenAddressRaw) {
+      return Response.json(
+        {
+          success: false,
+          error: "tokenAddress is required",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Validate and normalize the address
+    const tokenAddress = validateAndNormalizeAddress(tokenAddressRaw);
+    if (!tokenAddress) {
+      return Response.json(
+        {
+          success: false,
+          error: `Invalid token address: ${tokenAddressRaw}. Must be a valid 40-character hex string (with or without 0x prefix)`,
+        },
+        { status: 400 }
+      );
+    }
+
+    console.log(`Validated token address: ${tokenAddress}`);
+    console.log(`Using Hypersync URL: ${hypersyncUrl || "default"}`);
+
+    const result = await fetchERC20TransactionsPaginatedWithUrl(
+      tokenAddress,
+      decimals,
+      fromBlock,
+      limit,
+      hypersyncUrl
+    );
+
+    return Response.json(result);
+  } catch (error) {
+    console.error("Error in POST handler:", error);
     return Response.json(
       {
         success: false,

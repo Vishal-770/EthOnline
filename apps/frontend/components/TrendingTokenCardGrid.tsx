@@ -14,6 +14,7 @@ interface TrendingTokenCardGridProps {
   tokenAddress: string;
   rank?: number;
   chain?: ChainConfig;
+  trendingScore?: number;
 }
 
 interface ChainData {
@@ -99,15 +100,18 @@ const TrendingTokenCardGrid: React.FC<TrendingTokenCardGridProps> = ({
   tokenAddress,
   rank,
   chain,
+  trendingScore,
 }) => {
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["token-metadata", tokenAddress],
+    queryKey: ["token-metadata", tokenAddress, chain?.slug || "ethereum"],
     queryFn: () => fetchTokenMetadata(tokenAddress),
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
-    retry: 2,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    staleTime: 10 * 60 * 1000, // Token metadata stays fresh for 10 minutes
+    gcTime: 60 * 60 * 1000, // Cache persists for 1 hour
+    retry: 2, // Retry failed requests twice
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000), // Exponential backoff
+    refetchOnWindowFocus: false, // Don't refetch on window focus (metadata doesn't change often)
+    refetchOnMount: false, // Don't refetch on component mount
+    refetchOnReconnect: false, // Don't refetch on reconnect
   });
 
   if (isLoading) {
@@ -179,17 +183,23 @@ const TrendingTokenCardGrid: React.FC<TrendingTokenCardGridProps> = ({
             </div>
           </div>
 
-          {/* 24H Change Badge */}
-          <div
-            className={`shrink-0 text-xs font-bold px-2 py-1 rounded ${
-              isPositive24h
-                ? "bg-green-500/10 text-green-600 dark:text-green-400"
-                : "bg-red-500/10 text-red-600 dark:text-red-400"
-            }`}
-          >
-            {isPositive24h ? "+" : ""}
-            {data.priceChange24h.toFixed(2)}%
-          </div>
+          {/* 24H Change Badge or Trending Score */}
+          {trendingScore ? (
+            <div className="shrink-0 text-xs font-bold px-2 py-1 rounded bg-linear-to-r from-orange-500/10 to-red-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20">
+              🔥 {trendingScore}
+            </div>
+          ) : (
+            <div
+              className={`shrink-0 text-xs font-bold px-2 py-1 rounded ${
+                isPositive24h
+                  ? "bg-green-500/10 text-green-600 dark:text-green-400"
+                  : "bg-red-500/10 text-red-600 dark:text-red-400"
+              }`}
+            >
+              {isPositive24h ? "+" : ""}
+              {data.priceChange24h.toFixed(2)}%
+            </div>
+          )}
         </div>
 
         {/* Stats Grid - Horizontal Layout */}
