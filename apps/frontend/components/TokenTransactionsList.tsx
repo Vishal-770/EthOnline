@@ -96,6 +96,17 @@ export default function TokenTransactionsList({
       fetchTransactions(nextFromBlock);
     }
   };
+  function formatAmount(amount: number) {
+    if (amount === null || amount === undefined) return "0";
+
+    const num = Number(amount);
+
+    if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(3) + "B";
+    if (num >= 1_000_000) return (num / 1_000_000).toFixed(3) + "M";
+    if (num >= 1_000) return (num / 1_000).toFixed(3) + "K";
+
+    return num.toFixed(3);
+  }
 
   const formatAddress = (address: string) => {
     if (!address || address.length < 10) return address;
@@ -198,7 +209,7 @@ export default function TokenTransactionsList({
                   </a>
                 </td>
                 <td className="px-4 py-3 text-right font-mono text-foreground">
-                  {transfer.amountFormatted}
+                  {formatAmount(Number(transfer.amountFormatted))}
                 </td>
                 <td className="px-4 py-3 text-muted-foreground text-xs">
                   {formatTimestamp(transfer.timestamp)}
