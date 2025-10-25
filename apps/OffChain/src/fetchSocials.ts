@@ -91,36 +91,6 @@ function convertRedditToSocialPost(post: Submission): SocialPost {
   };
 }
 
-async function fetchTweets(memeCoins: String[], cryptoTerms: String[], trendingHashtags: String[]): Promise<SocialPost[]> {
-  console.log('🐦 Fetching tweets...\n');
-
-  const allTweets: TweetV2SingleResult[] = [];
-
-  console.log('Strategy 1: Searching by meme coin names...');
-  const coinQuery = memeCoins.slice(0, 10).map(k => `"${k}"`).join(' OR ') + ' -is:retweet lang:en';
-  await searchTweets(coinQuery, allTweets, 1);
-
-  console.log('Strategy 2: Searching by crypto terms...');
-  const termsQuery = cryptoTerms.map(k => `"${k}"`).join(' OR ') + ' -is:retweet lang:en';
-  await searchTweets(termsQuery, allTweets, 1);
-
-  console.log('Strategy 3: Searching by trending hashtags...');
-  const hashtagQuery = trendingHashtags.join(' OR ') + ' -is:retweet lang:en';
-  await searchTweets(hashtagQuery, allTweets, 1);
-
-  console.log('Strategy 4: Searching for pump signals...');
-  const pumpQuery = '(pump OR moon OR 100x OR 1000x) (coin OR token OR crypto) -is:retweet lang:en';
-  await searchTweets(pumpQuery, allTweets, 1);
-
-  const uniqueTweets = Array.from(
-    new Map(allTweets.map(t => [t.id, t])).values()
-  );
-
-  console.log(`\n✅ Total unique tweets fetched: ${uniqueTweets.length}\n`);
-
-  return uniqueTweets.map(convertTweetToSocialPost);
-}
-
 async function searchTweets(
   query: string, 
   collection: TweetV2SingleResult[], 
@@ -145,29 +115,47 @@ async function searchTweets(
   }
 }
 
+
+async function fetchTweets(memeCoins: String[], cryptoTerms: String[], trendingHashtags: String[]): Promise<SocialPost[]> {
+  console.log('🐦 Fetching tweets...\n');
+
+  const allTweets: TweetV2SingleResult[] = [];
+
+  // Reduced strategies - only fetch what we need
+  console.log('Strategy 1: Searching by meme coin names...');
+  const coinQuery = memeCoins.slice(0, 3).map(k => `"${k}"`).join(' OR ') + ' -is:retweet lang:en';
+  await searchTweets(coinQuery, allTweets, 3);
+
+  console.log('Strategy 2: Searching by crypto terms...');
+  const termsQuery = cryptoTerms.slice(0, 2).map(k => `"${k}"`).join(' OR ') + ' -is:retweet lang:en';
+  await searchTweets(termsQuery, allTweets, 3);
+
+  const uniqueTweets = Array.from(
+    new Map(allTweets.map(t => [t.id, t])).values()
+  );
+
+  console.log(`\n✅ Total unique tweets fetched: ${uniqueTweets.length}\n`);
+
+  return uniqueTweets.map(convertTweetToSocialPost);
+}
+
 async function fetchReddit(memeCoins: String[], cryptoTerms: String[], subreddits: String[]): Promise<SocialPost[]> {
   console.log('\n📱 Fetching Reddit posts...\n');
 
-//   const subreddits: string[] = [
-//     'CryptoCurrency', 'Bitcoin', 'ethtrader', 'CryptoMarkets',
-//     'SatoshiStreetBets', 'CryptoMoonShots', 'CryptoCurrencyTrading',
-//     'altcoin', 'defi', 'NFT', 'dogecoin', 'SHIBArmy',
-//     'wallstreetbets', 'memecoins', 'CryptoMars'
-//   ];
-
   const allPosts: Submission[] = [];
 
+  // Reduced: Only search 2 subreddits with fewer coins
   console.log('Strategy 1: Searching by meme coin names...');
-  for (const sub of subreddits.slice(0, 8)) {
+  for (const sub of subreddits.slice(0, 2)) {
     try {
       const subreddit = await redditClient.getSubreddit(sub);
       
-      for (const coin of memeCoins.slice(0, 15)) {
+      for (const coin of memeCoins.slice(0, 3)) {
         const results: Submission[] = await subreddit.search({
           query: coin,
           sort: 'new',
           time: 'week',
-          limit: 5,
+          limit: 2,
         });
         results.forEach(p => allPosts.push(p));
       }
@@ -178,39 +166,15 @@ async function fetchReddit(memeCoins: String[], cryptoTerms: String[], subreddit
     }
   }
 
-  console.log('\nStrategy 2: Searching by crypto terms...');
-  for (const sub of subreddits.slice(0, 8)) {
-    try {
-      const subreddit = await redditClient.getSubreddit(sub);
-      
-      for (const term of cryptoTerms) {
-        const results: Submission[] = await subreddit.search({
-          query: term,
-          sort: 'hot',
-          time: 'week',
-          limit: 10,
-        });
-        results.forEach(p => allPosts.push(p));
-      }
-      
-      console.log(`  ✓ Searched r/${sub}`);
-    } catch (error) {
-      console.error(`  ✗ Error searching r/${sub}:`, error);
-    }
-  }
-
-  console.log('\nStrategy 3: Getting hot posts from meme coin subreddits...');
-  const memeSubreddits = ['CryptoMoonShots', 'SatoshiStreetBets', 'memecoins'];
-  
-  for (const sub of memeSubreddits) {
-    try {
-      const subreddit = await redditClient.getSubreddit(sub);
-      const hotPosts: Submission[] = await subreddit.getHot({ limit: 25 });
-      hotPosts.forEach(p => allPosts.push(p));
-      console.log(`  ✓ Got hot posts from r/${sub}`);
-    } catch (error) {
-      console.error(`  ✗ Error getting hot posts from r/${sub}:`, error);
-    }
+  // Reduced: Only get hot posts from 1 subreddit
+  console.log('\nStrategy 2: Getting hot posts from meme coin subreddit...');
+  try {
+    const subreddit = await redditClient.getSubreddit('CryptoMoonShots');
+    const hotPosts: Submission[] = await subreddit.getHot({ limit: 10 });
+    hotPosts.forEach(p => allPosts.push(p));
+    console.log(`  ✓ Got hot posts from r/CryptoMoonShots`);
+  } catch (error) {
+    console.error(`  ✗ Error getting hot posts:`, error);
   }
 
   const uniquePosts = Array.from(
@@ -231,16 +195,20 @@ export async function fetchAllSocialData(): Promise<SocialPost[]> {
   
   try {
     const tweets = await fetchTweets(memeCoins, cryptoTerms, trendingHashtags);
-    allPosts.push(...tweets);
+    // Limit to 5 tweets
+    allPosts.push(...tweets.slice(0, 5));
     
     const redditPosts = await fetchReddit(memeCoins, cryptoTerms, subreddits);
-    allPosts.push(...redditPosts);
+    // Limit to 10 Reddit posts
+    allPosts.push(...redditPosts.slice(0, 10));
   } catch (error) {
     console.error('Fatal error:', error);
   }
   
   console.log('\n' + '='.repeat(60));
   console.log(`🎯 Data fetch complete! Total posts: ${allPosts.length}`);
+  console.log(`   - Tweets: ${allPosts.filter(p => p.platform === 'twitter').length}`);
+  console.log(`   - Reddit posts: ${allPosts.filter(p => p.platform === 'reddit').length}`);
   
   return allPosts;
 }
