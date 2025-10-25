@@ -65,9 +65,9 @@ const NavBar = () => {
             </Button>
           </Link>
 
-          <Link href="/ai">
+          <Link href="/chat">
             <Button
-              variant={pathname === "/ai" ? "secondary" : "ghost"}
+              variant={pathname === "/chat" ? "secondary" : "ghost"}
               size="sm"
               className="gap-2 font-medium text-blue-600 hover:text-blue-700 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 transition-colors"
             >
@@ -126,9 +126,9 @@ const NavBar = () => {
               </Button>
             </Link>
 
-            <Link href="/ai" onClick={() => setMenuOpen(false)}>
+            <Link href="/chat" onClick={() => setMenuOpen(false)}>
               <Button
-                variant={pathname === "/ai" ? "secondary" : "ghost"}
+                variant={pathname === "/chat" ? "secondary" : "ghost"}
                 size="sm"
                 className="w-full justify-start gap-2 text-blue-600 border border-blue-500/20 bg-blue-500/10"
               >
