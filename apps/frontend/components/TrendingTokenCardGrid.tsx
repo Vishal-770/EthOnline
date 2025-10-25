@@ -137,6 +137,14 @@ const TrendingTokenCardGrid: React.FC<TrendingTokenCardGridProps> = ({
   const chainSlug = chain?.slug || "ethereum";
   const tokenLink = `/token/${chainSlug}/${tokenAddress}`;
 
+  // Debug logging
+  console.log('TrendingTokenCardGrid Debug:', {
+    tokenAddress,
+    chain,
+    chainSlug,
+    tokenLink
+  });
+
   return (
     <Link href={tokenLink} className="block w-full group">
       <Card className="relative w-full p-3 border border-border bg-card hover:bg-accent/5 hover:border-primary/20 rounded-lg transition-all duration-150 overflow-hidden">

@@ -135,10 +135,15 @@ const TrendingTokenCard: React.FC<TrendingTokenCardProps> = ({
   const isPositive6h = data.priceChange6h >= 0;
 
   const chainSlug = chain?.slug || "ethereum";
-  const tokenLink =
-    chainSlug === "ethereum"
-      ? `/token/${chainSlug}/${tokenAddress}`
-      : `/token/${chainSlug}/${tokenAddress}`;
+  const tokenLink = `/token/${chainSlug}/${tokenAddress}`;
+
+  // Debug logging
+  console.log('TrendingTokenCard Debug:', {
+    tokenAddress,
+    chain,
+    chainSlug,
+    tokenLink
+  });
 
   return (
     <Link href={tokenLink} className="block w-full group">
