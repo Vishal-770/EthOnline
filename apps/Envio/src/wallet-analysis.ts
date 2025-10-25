@@ -72,7 +72,7 @@ interface OtherToken {
   chain: string;
 }
 
-async function analyzeTokenWalletsMultiChain(tokenAddress: string) {
+export async function analyzeTokenWalletsMultiChain(tokenAddress: string) {
   const allWallets: WalletData[] = [];
   const otherTokens: Record<string, OtherToken[]> = {};
 
@@ -146,73 +146,82 @@ async function analyzeTokenWalletsMultiChain(tokenAddress: string) {
   });
 
   // Get other recent tokens for top wallets
-  console.log(`\n🔎 Finding other tokens bought by top wallets in the last 24h...`);
-  
-  for (const wallet of topWallets) {
-    otherTokens[wallet.address] = [];
-    
-    for (const [chainKey, chain] of Object.entries(CHAIN_CONFIGS)) {
-      try {
-        const provider = new ethers.JsonRpcProvider(chain.rpcUrl);
-        const currentBlock = await provider.getBlockNumber();
-        const blocksPerDay = Math.floor(86400 / chain.blockTime);
+  // Get other recent tokens for top wallets
+console.log(`\n🔎 Finding other tokens bought by top wallets in the last 24h...`);
 
-        const hypersync = HypersyncClient.new({
-          url: chain.hypersyncUrl,
-          bearerToken: process.env.HYPERSYNC_BEARER_TOKEN || "",
-        });
+for (const wallet of topWallets) {
+  otherTokens[wallet.address] = [];
 
-        const recentQuery: Query = {
-          fromBlock: Math.max(0, currentBlock - blocksPerDay),
-          toBlock: currentBlock,
-          logs: [
-            {
-              topics: [
-                [ethers.id("Transfer(address,address,uint256)")],
-                [],
-                [ethers.zeroPadValue(wallet.address, 32)],
-              ],
-            },
-          ],
-          fieldSelection: { log: [LogField.Address] },
-          maxNumLogs: 1000,
-        };
+  for (const [chainKey, chain] of Object.entries(CHAIN_CONFIGS)) {
+    try {
+      const provider = new ethers.JsonRpcProvider(chain.rpcUrl);
+      const currentBlock = await provider.getBlockNumber();
+      const blocksPerDay = Math.floor(86400 / chain.blockTime);
 
-        const recentRes = await hypersync.get(recentQuery);
-        if (!recentRes?.data?.logs) continue;
+      const hypersync = HypersyncClient.new({
+        url: chain.hypersyncUrl,
+        bearerToken: process.env.HYPERSYNC_BEARER_TOKEN || "",
+      });
 
-        const uniqueTokens = new Set<string>();
-        for (const log of recentRes.data.logs) {
-          const token = log.address.toLowerCase();
-          if (token !== tokenAddress.toLowerCase()) {
-            uniqueTokens.add(token);
-          }
+      const recentQuery: Query = {
+        fromBlock: Math.max(0, currentBlock - blocksPerDay),
+        toBlock: currentBlock,
+        logs: [
+          {
+            topics: [
+              [ethers.id("Transfer(address,address,uint256)")],
+              [],
+              [ethers.zeroPadValue(wallet.address, 32)],
+            ],
+          },
+        ],
+        fieldSelection: { log: [LogField.Address] },
+        maxNumLogs: 1000,
+      };
+
+      const recentRes = await hypersync.get(recentQuery);
+      if (!recentRes?.data?.logs) continue;
+
+      const uniqueTokens = new Set<string>();
+      for (const log of recentRes.data.logs) {
+        const token = log.address.toLowerCase();
+        if (token !== tokenAddress.toLowerCase()) {
+          uniqueTokens.add(token);
+          if (uniqueTokens.size >= 50) break; // ✅ Limit to 50 tokens
         }
-
-        // Add all unique tokens
-        uniqueTokens.forEach(token => {
-          otherTokens[wallet.address].push({ token, chain: chainKey });
-        });
-      } catch (err) {
-        console.error(`Error fetching tokens for ${wallet.address} on ${chainKey}:`, err);
       }
-    }
-  }
 
-  console.log("\n📊 Other recent tokens bought by top wallets:");
-  for (const [walletAddr, tokens] of Object.entries(otherTokens)) {
-    if (tokens.length > 0) {
-      console.log(`\n${walletAddr}:`);
-      tokens.forEach(t => console.log(`  - ${t.token} (${t.chain})`));
-    } else {
-      console.log(`\n${walletAddr}: No other tokens found in last 24h`);
+      // Add all unique tokens
+      uniqueTokens.forEach(token => {
+        otherTokens[wallet.address].push({ token, chain: chainKey });
+      });
+
+      // Stop if we've reached 50 tokens for this wallet
+      if (otherTokens[wallet.address].length >= 50) break;
+
+    } catch (err) {
+      console.error(`Error fetching tokens for ${wallet.address} on ${chainKey}:`, err);
     }
   }
+}
+
+
+  // console.log("\n📊 Other recent tokens bought by top wallets:");
+  // for (const [walletAddr, tokens] of Object.entries(otherTokens)) {
+  //   if (tokens.length > 0) {
+  //     console.log(`\n${walletAddr}:`);
+  //     tokens.forEach(t => console.log(`  - ${t.token} (${t.chain})`));
+  //   } else {
+  //     console.log(`\n${walletAddr}: No other tokens found in last 24h`);
+  //   }
+  // }
+
+  console.log("Topwallets: ", topWallets)
+  console.log("\nTokens: ", otherTokens)
 
   return { topWallets, otherTokens };
 }
 
-// ================= USAGE =================
 (async () => {
   const TOKEN = "0xE0Db8f00c7b3cd24d44e0C7230749D4cBCe6ca95"; // your token
   try {
