@@ -287,7 +287,9 @@ const TrendingTokenCard: React.FC<TrendingTokenCardProps> = ({
                 DEX
               </div>
               <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded font-medium">
-                {data.primaryDex}
+                {data.primaryDex.length > 15
+                  ? `${data.primaryDex.substring(0, 10)}...${data.primaryDex.slice(-4)}`
+                  : data.primaryDex}
               </span>
             </div>
 

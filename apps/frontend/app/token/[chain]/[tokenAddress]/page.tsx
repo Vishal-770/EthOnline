@@ -492,7 +492,9 @@ export default function TokenDetailsPage() {
                     Primary DEX
                   </span>
                   <span className="text-xs md:text-sm font-semibold text-foreground capitalize">
-                    {tokenData.primaryDex}
+                    {tokenData.primaryDex.length > 15
+                      ? `${tokenData.primaryDex.substring(0, 10)}...${tokenData.primaryDex.slice(-4)}`
+                      : tokenData.primaryDex}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-border/50">

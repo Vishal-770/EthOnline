@@ -2,7 +2,11 @@ import fetchLatestTweets from "@/lib/fetchtweets";
 import { TweetCard } from "./ui/tweet-card";
 import { AlertCircle } from "lucide-react";
 import { SidebarWrapper } from "./SidebarWrapper";
-
+import axios from "axios";
+async function FetchTweet() {
+  const tweets = await axios.get(`http://localhost:3002/allposts`);
+  return tweets.data;
+}
 const AppSideBar = async () => {
   // Fallback tweet IDs in case API fails
   const fallbackTweetIds = [
@@ -15,7 +19,7 @@ const AppSideBar = async () => {
   let error = null;
 
   try {
-    tweets = await fetchLatestTweets();
+    tweets = await FetchTweet();
 
     // If no tweets returned, use fallback
     if (!tweets || tweets.length === 0) {
