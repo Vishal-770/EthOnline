@@ -27,6 +27,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { LoaderDemo } from "@/components/Loader";
 import { getChainBySlug, type ChainConfig } from "@/lib/chains";
+import { CompactTrading } from "@/components/CompactTrading";
 
 interface ChainData {
   chainId: string;
@@ -206,29 +207,15 @@ function TokenSidebar({ tokenData }: { tokenData: TokenMetadata }) {
           </div>
         </div>
       </div>
-      {/* Buy/Sell Buttons */}
-      <Card className="bg-gradient-to-br from-card to-card/80 rounded-xl border border-border/50 shadow-lg backdrop-blur-sm">
-        <div className="p-3">
-          <div className="space-y-2">
-            <div className="flex gap-2">
-              <button className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-2.5 px-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-1.5 text-xs shadow-lg hover:shadow-green-500/25 hover:scale-[1.02]">
-                <ShoppingCart className="w-3.5 h-3.5" />
-                Buy
-              </button>
-              <button className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold py-2.5 px-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-1.5 text-xs shadow-lg hover:shadow-red-500/25 hover:scale-[1.02]">
-                <ArrowDownLeft className="w-3.5 h-3.5" />
-                Sell
-              </button>
-            </div>
-            <div className="text-center">
-              <button className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center gap-1 mx-auto px-2 py-1.5 rounded-md hover:bg-accent/50">
-                View on DexScreener
-                <ArrowUpRight className="w-3 h-3" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </Card>
+      
+      {/* Compact Trading Interface */}
+      <CompactTrading
+        tokenAddress={tokenData.address}
+        tokenSymbol={tokenData.symbol}
+        tokenDecimals={tokenData.decimals}
+        tokenPrice={tokenData.priceUSD}
+        tokenName={tokenData.name}
+      />
 
       {/* Token Sidebar */}
 {/* Token Sidebar */}
