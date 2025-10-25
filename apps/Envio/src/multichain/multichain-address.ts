@@ -19,35 +19,45 @@ export const CHAINS = [
     name: "Ethereum",
     url: "https://eth.hypersync.xyz",
     blocksPerDay: 7200, // 12s blocks
-    bearerToken: process.env.HYPERSYNC_BEARER_TOKEN || "c09215fd-568a-48f0-83b3-c96c2572ad85",
+    bearerToken:
+      process.env.HYPERSYNC_BEARER_TOKEN ||
+      "c09215fd-568a-48f0-83b3-c96c2572ad85",
   },
   {
     id: 8453,
     name: "Base",
     url: "https://base.hypersync.xyz",
     blocksPerDay: 43200, // 2s blocks
-    bearerToken: process.env.HYPERSYNC_BEARER_TOKEN || "c09215fd-568a-48f0-83b3-c96c2572ad85",
+    bearerToken:
+      process.env.HYPERSYNC_BEARER_TOKEN ||
+      "c09215fd-568a-48f0-83b3-c96c2572ad85",
   },
   {
     id: 137,
     name: "Polygon",
     url: "https://polygon.hypersync.xyz",
     blocksPerDay: 43200, // 2s blocks
-    bearerToken: process.env.HYPERSYNC_BEARER_TOKEN || "c09215fd-568a-48f0-83b3-c96c2572ad85",
+    bearerToken:
+      process.env.HYPERSYNC_BEARER_TOKEN ||
+      "c09215fd-568a-48f0-83b3-c96c2572ad85",
   },
   {
     id: 10,
     name: "Optimism",
     url: "https://optimism.hypersync.xyz",
     blocksPerDay: 43200, // 2s blocks
-    bearerToken: process.env.HYPERSYNC_BEARER_TOKEN || "c09215fd-568a-48f0-83b3-c96c2572ad85",
+    bearerToken:
+      process.env.HYPERSYNC_BEARER_TOKEN ||
+      "c09215fd-568a-48f0-83b3-c96c2572ad85",
   },
   {
     id: 42161,
     name: "Arbitrum",
     url: "https://arbitrum.hypersync.xyz",
     blocksPerDay: 28800, // 3s blocks
-    bearerToken: process.env.HYPERSYNC_BEARER_TOKEN || "c09215fd-568a-48f0-83b3-c96c2572ad85",
+    bearerToken:
+      process.env.HYPERSYNC_BEARER_TOKEN ||
+      "c09215fd-568a-48f0-83b3-c96c2572ad85",
   },
 ];
 
@@ -65,10 +75,10 @@ export interface TokenAddress {
  * Fetch token addresses from a single chain
  */
 async function fetchTokensFromChain(
-  chain: typeof CHAINS[0],
+  chain: (typeof CHAINS)[0],
   daysToLookBack: number
 ): Promise<TokenAddress[]> {
-  console.log(`\n📡 Fetching from ${chain.name} (Chain ID: ${chain.id})...`);
+  // console.log(`\n📡 Fetching from ${chain.name} (Chain ID: ${chain.id})...`);
 
   const client = HypersyncClient.new({
     url: chain.url,
@@ -88,7 +98,10 @@ async function fetchTokensFromChain(
 
   const heightRes = await client.get(heightQuery);
   const currentBlock = heightRes.nextBlock - 1;
-  const startBlock = Math.max(0, currentBlock - chain.blocksPerDay * daysToLookBack);
+  const startBlock = Math.max(
+    0,
+    currentBlock - chain.blocksPerDay * daysToLookBack
+  );
 
   console.log(`   Current block: ${currentBlock}`);
   console.log(`   Start block: ${startBlock}`);
@@ -191,7 +204,9 @@ async function fetchTokensFromChain(
     })
   );
 
-  console.log(`   ✅ Found ${chainTokens.length} unique tokens on ${chain.name}`);
+  console.log(
+    `   ✅ Found ${chainTokens.length} unique tokens on ${chain.name}`
+  );
 
   return chainTokens;
 }
@@ -221,7 +236,8 @@ export async function fetchTokenAddressesMultichain(
     if (result.status === "fulfilled") {
       allTokens.push(...result.value);
     } else {
-      console.error(`❌ Failed to fetch from ${chains[index].name}:`, result.reason);
+      const chainName = chains[index]?.name || "Unknown";
+      // Failed to fetch from chain
     }
   });
 
@@ -237,10 +253,13 @@ export async function fetchTokenAddressesMultichain(
 
   // Print distribution by chain
   console.log("📊 Distribution by chain:");
-  const distribution = allTokens.reduce((acc, token) => {
-    acc[token.chainName] = (acc[token.chainName] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  const distribution = allTokens.reduce(
+    (acc, token) => {
+      acc[token.chainName] = (acc[token.chainName] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
   console.table(distribution);
 
   // Save to file
@@ -274,13 +293,16 @@ export async function fetchRecentMemeCandidates(
 ): Promise<TokenAddress[]> {
   console.log("\n🎯 FINDING MEME COIN CANDIDATES");
   console.log("━".repeat(70));
-  console.log(`Looking for tokens created in the last ${hoursToLookBack} hours\n`);
+  console.log(
+    `Looking for tokens created in the last ${hoursToLookBack} hours\n`
+  );
 
   const daysToLookBack = Math.ceil(hoursToLookBack / 24);
   const allTokens = await fetchTokenAddressesMultichain(daysToLookBack);
 
   // Filter to only very recent tokens
-  const cutoffTimestamp = Math.floor(Date.now() / 1000) - hoursToLookBack * 3600;
+  const cutoffTimestamp =
+    Math.floor(Date.now() / 1000) - hoursToLookBack * 3600;
   const recentTokens = allTokens.filter(
     (token) => token.firstSeenTimestamp >= cutoffTimestamp
   );

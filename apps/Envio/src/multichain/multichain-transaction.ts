@@ -7,7 +7,7 @@ import {
 import type { Query } from "@envio-dev/hypersync-client";
 import * as dotenv from "dotenv";
 import fs from "fs/promises";
-import { CHAINS } from "./multichain-address.ts";
+import { CHAINS } from "./multichain-address.js";
 
 dotenv.config();
 
@@ -63,7 +63,9 @@ async function fetchTransactionsForChain(
 
   const hs = HypersyncClient.new({
     url: hypersyncUrl,
-    bearerToken: process.env.HYPERSYNC_BEARER_TOKEN || "c09215fd-568a-48f0-83b3-c96c2572ad85",
+    bearerToken:
+      process.env.HYPERSYNC_BEARER_TOKEN ||
+      "c09215fd-568a-48f0-83b3-c96c2572ad85",
   });
 
   const allTransactions: Transaction[] = [];
@@ -123,7 +125,9 @@ async function fetchTransactionsForChain(
 
       // Process logs
       for (const log of response.data.logs) {
-        const block = response.data.blocks?.find((b) => b.number === log.blockNumber);
+        const block = response.data.blocks?.find(
+          (b) => b.number === log.blockNumber
+        );
         const transaction = response.data.transactions?.find(
           (tx) => tx.hash?.toLowerCase() === log.transactionHash?.toLowerCase()
         );
@@ -216,10 +220,15 @@ async function fetchTransactionsForChain(
   });
 
   // Calculate quick stats
-  const transferCount = allTransactions.filter((tx) => tx.eventType === "Transfer").length;
-  const approvalCount = allTransactions.filter((tx) => tx.eventType === "Approval").length;
+  const transferCount = allTransactions.filter(
+    (tx) => tx.eventType === "Transfer"
+  ).length;
+  const approvalCount = allTransactions.filter(
+    (tx) => tx.eventType === "Approval"
+  ).length;
   const firstActivity = allTransactions[0]?.timestamp || 0;
-  const lastActivity = allTransactions[allTransactions.length - 1]?.timestamp || 0;
+  const lastActivity =
+    allTransactions[allTransactions.length - 1]?.timestamp || 0;
   const ageInHours = Math.floor((lastActivity - firstActivity) / 3600);
   const txPerHour = ageInHours > 0 ? allTransactions.length / ageInHours : 0;
 
@@ -263,7 +272,10 @@ export async function getAllTokenTransactionsMultichain(
   console.log(`Chains: ${chainsToFetch.map((c) => c.name).join(", ")}\n`);
 
   const startTime = Date.now();
-  const byChain = new Map<number, { transactions: Transaction[]; stats: QuickStats }>();
+  const byChain = new Map<
+    number,
+    { transactions: Transaction[]; stats: QuickStats }
+  >();
 
   // Fetch from all chains in parallel
   const results = await Promise.allSettled(
@@ -277,13 +289,13 @@ export async function getAllTokenTransactionsMultichain(
   results.forEach((result, index) => {
     if (result.status === "fulfilled") {
       const chain = chainsToFetch[index];
-      byChain.set(chain.id, result.value);
-      allTransactions.push(...result.value.transactions);
+      if (chain) {
+        byChain.set(chain.id, result.value);
+        allTransactions.push(...result.value.transactions);
+      }
     } else {
-      console.error(
-        `❌ Failed to fetch from ${chainsToFetch[index].name}:`,
-        result.reason
-      );
+      const chainName = chainsToFetch[index]?.name || "Unknown";
+      // Failed to fetch transactions
     }
   });
 
@@ -297,15 +309,19 @@ export async function getAllTokenTransactionsMultichain(
   // Aggregate stats
   const aggregatedStats = {
     totalTransactions: allTransactions.length,
-    totalTransfers: allTransactions.filter((tx) => tx.eventType === "Transfer").length,
-    totalApprovals: allTransactions.filter((tx) => tx.eventType === "Approval").length,
+    totalTransfers: allTransactions.filter((tx) => tx.eventType === "Transfer")
+      .length,
+    totalApprovals: allTransactions.filter((tx) => tx.eventType === "Approval")
+      .length,
     uniqueAddresses: new Set(
-      allTransactions.flatMap((tx) => [
-        tx.eventData.from,
-        tx.eventData.to,
-        tx.eventData.owner,
-        tx.eventData.spender,
-      ].filter(Boolean))
+      allTransactions.flatMap((tx) =>
+        [
+          tx.eventData.from,
+          tx.eventData.to,
+          tx.eventData.owner,
+          tx.eventData.spender,
+        ].filter(Boolean)
+      )
     ).size,
     chainCount: byChain.size,
     byChain: Object.fromEntries(
@@ -331,10 +347,10 @@ export async function getAllTokenTransactionsMultichain(
   console.log("📊 Aggregated Stats:");
   console.table({
     "Total Transactions": aggregatedStats.totalTransactions,
-    "Transfers": aggregatedStats.totalTransfers,
-    "Approvals": aggregatedStats.totalApprovals,
+    Transfers: aggregatedStats.totalTransfers,
+    Approvals: aggregatedStats.totalApprovals,
     "Unique Addresses": aggregatedStats.uniqueAddresses,
-    "Chains": aggregatedStats.chainCount,
+    Chains: aggregatedStats.chainCount,
   });
 
   console.log("\n📊 By Chain:");
@@ -353,7 +369,9 @@ export async function getAllTokenTransactionsMultichain(
       `./transactions_${tokenAddress.slice(0, 10)}.json`,
       JSON.stringify(output, null, 2)
     );
-    console.log(`\n💾 Saved to: ./transactions_${tokenAddress.slice(0, 10)}.json`);
+    console.log(
+      `\n💾 Saved to: ./transactions_${tokenAddress.slice(0, 10)}.json`
+    );
   } catch (error) {
     console.error("Failed to save file:", error);
   }
@@ -366,7 +384,9 @@ export async function getAllTokenTransactionsMultichain(
  */
 export async function batchFetchTransactions(
   tokens: Array<{ address: string; chainId?: number }>
-): Promise<Map<string, { allTransactions: Transaction[]; aggregatedStats: any }>> {
+): Promise<
+  Map<string, { allTransactions: Transaction[]; aggregatedStats: any }>
+> {
   console.log(`\n🚀 BATCH TRANSACTION FETCHER`);
   console.log("━".repeat(70));
   console.log(`Fetching transactions for ${tokens.length} tokens\n`);
@@ -380,7 +400,10 @@ export async function batchFetchTransactions(
     const batchResults = await Promise.allSettled(
       batch.map(async (token) => {
         const chainIds = token.chainId ? [token.chainId] : undefined;
-        const data = await getAllTokenTransactionsMultichain(token.address, chainIds);
+        const data = await getAllTokenTransactionsMultichain(
+          token.address,
+          chainIds
+        );
         return {
           key: `${token.chainId || "all"}-${token.address}`,
           data: {
@@ -403,29 +426,33 @@ export async function batchFetchTransactions(
     }
   }
 
-  console.log(`\n✅ Batch complete. Fetched ${results.size}/${tokens.length} tokens`);
+  console.log(
+    `\n✅ Batch complete. Fetched ${results.size}/${tokens.length} tokens`
+  );
 
   return results;
 }
 
 // CLI execution
 // if (require.main === module) {
-  const args = process.argv.slice(2);
-  const tokenAddress = "0x00c83aecc790e8a4453e5dd3b0b4b3680501a7a7";
-  const chainIds = args[1]
-    ? args[1].split(",").map((id) => parseInt(id.trim()))
-    : undefined;
+const args = process.argv.slice(2);
+const tokenAddress = "0x00c83aecc790e8a4453e5dd3b0b4b3680501a7a7";
+const chainIds = args[1]
+  ? args[1].split(",").map((id) => parseInt(id.trim()))
+  : undefined;
 
-  if (!tokenAddress) {
-    console.error("Usage: ts-node multichain-transactions.ts <tokenAddress> [chainIds]");
-    console.error("Example: ts-node multichain-transactions.ts 0x123... 1,8453");
+if (!tokenAddress) {
+  console.error(
+    "Usage: ts-node multichain-transactions.ts <tokenAddress> [chainIds]"
+  );
+  console.error("Example: ts-node multichain-transactions.ts 0x123... 1,8453");
+  process.exit(1);
+}
+
+getAllTokenTransactionsMultichain(tokenAddress, chainIds)
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error("Error:", error);
     process.exit(1);
-  }
-
-  getAllTokenTransactionsMultichain(tokenAddress, chainIds)
-    .then(() => process.exit(0))
-    .catch((error) => {
-      console.error("Error:", error);
-      process.exit(1);
-    });
+  });
 // }
