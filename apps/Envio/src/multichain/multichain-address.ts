@@ -254,10 +254,10 @@ export async function fetchTokenAddressesMultichain(
       tokens: allTokens,
     };
 
-    await fs.writeFile(
-      "./multichain_token_addresses.json",
-      JSON.stringify(output, null, 2)
-    );
+    // await fs.writeFile(
+    //   "./multichain_token_addresses.json",
+    //   JSON.stringify(output, null, 2)
+    // );
     console.log("\n💾 Saved to: ./multichain_token_addresses.json");
   } catch (error) {
     console.error("Failed to save file:", error);

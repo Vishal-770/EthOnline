@@ -1,0 +1,147 @@
+{
+  "address": "0x13A7DeDb7169a17bE92B0E3C7C2315B46f4772B3",
+  "chainId": 1,
+  "chainName": "Ethereum",
+  "name": "Unknown",
+  "symbol": "Unknown",
+  "decimals": 18,
+  "totalSupply": "0.0",
+  "creationBlock": "Unknown",
+  "marketCap": 1993735,
+  "fullyDilutedValuation": 1993735,
+  "priceUSD": 0.00002001,
+  "totalLiquidityUSD": 313514.68,
+  "volume24h": 5176.17,
+  "volume6h": 3458.5299999999997,
+  "volume1h": 44.839999999999996,
+  "priceChange1h": 0.355,
+  "priceChange6h": 2.3683333333333336,
+  "priceChange24h": 3.81,
+  "imageUrl": "https://dd.dexscreener.com/ds-data/tokens/arbitrum/0x13a7dedb7169a17be92b0e3c7c2315b46f4772b3.png?key=46601a",
+  "headerImage": "https://dd.dexscreener.com/ds-data/tokens/arbitrum/0x13a7dedb7169a17be92b0e3c7c2315b46f4772b3/header.png?key=46601a",
+  "websites": [
+    "https://boopthecoin.com/"
+  ],
+  "socials": [
+    {
+      "type": "twitter",
+      "url": "https://twitter.com/boopthecoin"
+    },
+    {
+      "type": "telegram",
+      "url": "https://t.me/boopthecoin"
+    }
+  ],
+  "chains": [
+    {
+      "chainId": "arbitrum",
+      "dexId": "camelot",
+      "pairAddress": "0x184fb097196a4E2Be8Dfd44b341cB7D13b41Ea7E",
+      "liquidityUSD": 240730.35,
+      "volume24h": 4457.72,
+      "priceUSD": 0.00002001,
+      "labels": [],
+      "url": "https://dexscreener.com/arbitrum/0x184fb097196a4e2be8dfd44b341cb7d13b41ea7e"
+    },
+    {
+      "chainId": "arbitrum",
+      "dexId": "uniswap",
+      "pairAddress": "0xe24F62341D84D11078188d83cA3be118193D6389",
+      "liquidityUSD": 37966.86,
+      "volume24h": 115.5,
+      "priceUSD": 0.00002001,
+      "labels": [],
+      "url": "https://dexscreener.com/arbitrum/0xe24f62341d84d11078188d83ca3be118193d6389"
+    },
+    {
+      "chainId": "arbitrum",
+      "dexId": "camelot",
+      "pairAddress": "0x92d06120691219fF49Ba5d65777ad557Fd4f80D7",
+      "liquidityUSD": 16244.73,
+      "volume24h": 193.57,
+      "priceUSD": 0.00002003,
+      "labels": [
+        "v3"
+      ],
+      "url": "https://dexscreener.com/arbitrum/0x92d06120691219ff49ba5d65777ad557fd4f80d7"
+    },
+    {
+      "chainId": "arbitrum",
+      "dexId": "uniswap",
+      "pairAddress": "0x9fA1D2D02788dC55803844ACD867ecFFf3660a26",
+      "liquidityUSD": 479.93,
+      "volume24h": 4.38,
+      "priceUSD": 0.00002003,
+      "labels": [
+        "v2"
+      ],
+      "url": "https://dexscreener.com/arbitrum/0x9fa1d2d02788dc55803844acd867ecfff3660a26"
+    },
+    {
+      "chainId": "arbitrum",
+      "dexId": "deltaswap",
+      "pairAddress": "0xF7F53ea6352C1741d45abe8062603e05EF9678f5",
+      "liquidityUSD": 515.62,
+      "volume24h": 4.59,
+      "priceUSD": 0.00002003,
+      "labels": [],
+      "url": "https://dexscreener.com/arbitrum/0xf7f53ea6352c1741d45abe8062603e05ef9678f5"
+    },
+    {
+      "chainId": "arbitrum",
+      "dexId": "uniswap",
+      "pairAddress": "0xe75c5310d7b963B84Ac74979A3e3163b9e14C1FB",
+      "liquidityUSD": 17577.19,
+      "volume24h": 400.41,
+      "priceUSD": 0.167,
+      "labels": [],
+      "url": "https://dexscreener.com/arbitrum/0xe75c5310d7b963b84ac74979a3e3163b9e14c1fb"
+    }
+  ],
+  "totalPairs": 6,
+  "primaryDex": "camelot",
+  "viralMetrics": {
+    "multiChainPresence": 1,
+    "liquidityScore": 313514.68,
+    "volumeToLiquidityRatio": 0.01651013598470094,
+    "priceStability": 97.82222222222222,
+    "dexDiversity": 3,
+    "hasMedia": true,
+    "ageInDays": 0,
+    "ageInHours": 0,
+    "marketCapRank": "Small ($1M-$10M)",
+    "isNewToken": true,
+    "hasStrongVolume": false,
+    "isMultichain": false,
+    "hasGoodLiquidity": true,
+    "momentumScore": 30
+  },
+  "onChainActivity": {
+    "totalTransactions": 839,
+    "totalTransfers": 611,
+    "totalApprovals": 228,
+    "uniqueAddresses": 240,
+    "transfers24h": 275,
+    "transfers7d": 611,
+    "avgTransfersPerDay": 248.51312227845122,
+    "activityTrend": "stable",
+    "top10HoldersPercentage": 96,
+    "holderConcentration": "high",
+    "activityByChain": {
+      "Arbitrum": {
+        "transactions": 839,
+        "transfers": 611,
+        "uniqueAddresses": 240,
+        "txPerHour": 14.220338983050848
+      }
+    }
+  },
+  "riskAnalysis": {
+    "suspiciousPatterns": [
+      "Extreme holder concentration (>80%)"
+    ],
+    "riskScore": 30,
+    "overallScore": 29.666666666666664,
+    "investmentSignal": "sell"
+  }
+}

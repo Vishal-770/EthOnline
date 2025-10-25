@@ -10,10 +10,6 @@ import * as dotenv from "dotenv";
 
 dotenv.config();
 
-const hypersyncUrl = process.env.HYPERSYNC_URL || "https://eth.hypersync.xyz";
-const hypersyncBearerToken = process.env.HYPERSYNC_BEARER_TOKEN || "";
-const rpcUrl = process.env.RPC_URL || "https://eth.llamarpc.com";
-
 const ERC20_ABI = [
   "function name() view returns (string)",
   "function symbol() view returns (string)",
@@ -21,8 +17,57 @@ const ERC20_ABI = [
   "function totalSupply() view returns (uint256)",
 ];
 
+// Chain configuration
+interface ChainConfig {
+  chainId: number;
+  hypersyncUrl: string;
+  rpcUrl: string;
+  name: string;
+}
+
+const CHAIN_CONFIGS: Record<string, ChainConfig> = {
+  eth: {
+    chainId: 1,
+    hypersyncUrl: "https://eth.hypersync.xyz",
+    rpcUrl: process.env.ETH_RPC_URL || "https://eth.llamarpc.com",
+    name: "Ethereum",
+  },
+  arbitrum: {
+    chainId: 42161,
+    hypersyncUrl: "https://arbitrum.hypersync.xyz",
+    rpcUrl: process.env.ARB_RPC_URL || "https://arb1.arbitrum.io/rpc",
+    name: "Arbitrum",
+  },
+  base: {
+    chainId: 8453,
+    hypersyncUrl: "https://base.hypersync.xyz",
+    rpcUrl: process.env.BASE_RPC_URL || "https://mainnet.base.org",
+    name: "Base",
+  },
+  optimism: {
+    chainId: 10,
+    hypersyncUrl: "https://optimism.hypersync.xyz",
+    rpcUrl: process.env.OP_RPC_URL || "https://mainnet.optimism.io",
+    name: "Optimism",
+  },
+  polygon: {
+    chainId: 137,
+    hypersyncUrl: "https://polygon.hypersync.xyz",
+    rpcUrl: process.env.POLYGON_RPC_URL || "https://polygon-rpc.com",
+    name: "Polygon",
+  },
+  bsc: {
+    chainId: 56,
+    hypersyncUrl: "https://bsc.hypersync.xyz",
+    rpcUrl: process.env.BSC_RPC_URL || "https://bsc-dataseed.binance.org",
+    name: "BSC",
+  },
+};
+
 interface TokenData {
   address: string;
+  chain: string;
+  chainId: number;
   name: string;
   symbol: string;
   decimals: number;
@@ -74,11 +119,25 @@ interface TokenData {
   };
 }
 
-export async function metadata(tokenAddress: string) {
-  console.log(`🔗 Connecting to HyperSync: ${hypersyncUrl}`);
+export async function metadata(
+  tokenAddress: string,
+  chain: string = "eth"
+) {
+  const chainConfig = CHAIN_CONFIGS[chain.toLowerCase()];
+  
+  if (!chainConfig) {
+    throw new Error(
+      `Unsupported chain: ${chain}. Supported chains: ${Object.keys(CHAIN_CONFIGS).join(", ")}`
+    );
+  }
+
+  console.log(`🔗 Fetching data for ${chainConfig.name} (Chain ID: ${chainConfig.chainId})`);
+  console.log(`🔗 HyperSync URL: ${chainConfig.hypersyncUrl}`);
+
+  const hypersyncBearerToken = process.env.HYPERSYNC_BEARER_TOKEN || "";
 
   const hs = HypersyncClient.new({
-    url: hypersyncUrl,
+    url: chainConfig.hypersyncUrl,
     bearerToken: hypersyncBearerToken,
   });
 
@@ -125,7 +184,7 @@ export async function metadata(tokenAddress: string) {
     console.warn("⚠️ Could not fetch creation block:", err);
   }
 
-  console.log("📊 Fetching token metadata from RPC...");
+  console.log(`📊 Fetching token metadata from ${chainConfig.name} RPC...`);
 
   let name = "Unknown";
   let symbol = "Unknown";
@@ -133,8 +192,8 @@ export async function metadata(tokenAddress: string) {
   let totalSupply = "0";
 
   try {
-    const provider = new ethers.JsonRpcProvider(rpcUrl, undefined, {
-      staticNetwork: ethers.Network.from(1),
+    const provider = new ethers.JsonRpcProvider(chainConfig.rpcUrl, undefined, {
+      staticNetwork: ethers.Network.from(chainConfig.chainId),
     });
 
     const contract = new ethers.Contract(tokenAddress, ERC20_ABI, provider);
@@ -160,7 +219,8 @@ export async function metadata(tokenAddress: string) {
     decimals = Number(decimalsResult);
     totalSupply = ethers.formatUnits(totalSupplyResult, decimals);
   } catch (err: any) {
-    console.warn(`⚠️ RPC connection failed. Using fallback.`);
+    console.warn(`⚠️ RPC connection failed for ${chainConfig.name}:`, err.message);
+    console.warn(`Using fallback values...`);
   }
 
   console.log("📊 Fetching comprehensive market data from DexScreener...");
@@ -169,6 +229,8 @@ export async function metadata(tokenAddress: string) {
 
   let tokenData: TokenData = {
     address: tokenAddress,
+    chain: chainConfig.name,
+    chainId: chainConfig.chainId,
     name,
     symbol,
     decimals,
@@ -208,11 +270,25 @@ export async function metadata(tokenAddress: string) {
       const pairs = data.pairs;
       tokenData.totalPairs = pairs.length;
 
-      const primaryPair = pairs[0];
+      // Filter pairs for the specific chain if needed
+      const chainPairs = pairs.filter(
+        (p: any) => !chain || p.chainId === chain.toLowerCase() || p.chainId === chainConfig.name.toLowerCase()
+      );
+
+      const primaryPair = chainPairs.length > 0 ? chainPairs[0] : pairs[0];
+      
       tokenData.priceUSD = parseFloat(primaryPair.priceUsd || "0");
       tokenData.marketCap = primaryPair.marketCap || 0;
       tokenData.fullyDilutedValuation = primaryPair.fdv || 0;
       tokenData.primaryDex = primaryPair.dexId;
+
+      // If we got name/symbol from DexScreener and RPC failed, use it
+      if (name === "Unknown" && primaryPair.baseToken?.name) {
+        tokenData.name = primaryPair.baseToken.name;
+      }
+      if (symbol === "Unknown" && primaryPair.baseToken?.symbol) {
+        tokenData.symbol = primaryPair.baseToken.symbol;
+      }
 
       let totalLiquidity = 0;
       let totalVolume24h = 0;
@@ -227,7 +303,6 @@ export async function metadata(tokenAddress: string) {
 
       // Process all pairs
       for (const pair of pairs) {
-        // Chain data
         chainSet.add(pair.chainId);
         dexSet.add(pair.dexId);
 
@@ -329,7 +404,7 @@ export async function metadata(tokenAddress: string) {
   }
 
   const fs = await import("fs/promises");
-  const outputPath = "./token_analysis.json";
+  const outputPath = `./token_analysis_${chain}.json`;
 
   const jsonString = JSON.stringify(
     tokenData,
@@ -343,6 +418,7 @@ export async function metadata(tokenAddress: string) {
   console.log("\n📊 SUMMARY:");
   console.log("━".repeat(60));
   console.table({
+    Chain: tokenData.chain,
     Token: `${tokenData.name} (${tokenData.symbol})`,
     Price: `$${tokenData.priceUSD.toFixed(6)}`,
     "Market Cap": `$${tokenData.marketCap.toLocaleString()}`,
@@ -377,8 +453,10 @@ export async function metadata(tokenAddress: string) {
   return tokenData;
 }
 
-// metadata("0x00c83aecc790e8a4453e5dd3b0b4b3680501a7a7")
-//   .then((data) => {
-//     console.log("\n✅ Analysis complete!");
-//   })
-//   .catch(console.error);
+// Example usage for different chains:
+// metadata("0x00c83aecc790e8a4453e5dd3b0b4b3680501a7a7", "eth")
+// metadata("0x25118290e6A5f4139381D072181157035864099d", "arbitrum")
+// metadata("0x...", "base")
+// metadata("0x...", "optimism")
+// metadata("0x...", "polygon")
+// metadata("0x...", "bsc")

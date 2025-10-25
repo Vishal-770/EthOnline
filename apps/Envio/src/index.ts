@@ -142,6 +142,7 @@ import { getAllTokenTransactions } from "./transaction.ts";
 import { OnChainAggregator } from "./aggregate.ts";
 import { createClient } from "redis";
 import type { Transaction } from "./aggregate.ts";
+import { fetchTokenAddressesMultichain } from "./multichain/multichain-address.ts";
 
 const client = createClient({
   username: "default",
@@ -167,7 +168,6 @@ const port = 3001;
 app.use(cors());
 app.use(express.json());
 
-// -------------------- Utility Functions --------------------
 function calculateTrendingScore(metrics: any) {
   const {
     activityScore = 0,
@@ -228,13 +228,94 @@ async function analyzeAndStoreTokens(tokens: Token[]) {
   }
 }
 
-// -------------------- API Endpoints --------------------
 app.get("/", (req, res) => {
   res.send("Envio API is running");
 });
 
+// app.get("/token-addresses", async (req, res) => {
+//   try {
+//     const body = req.body;
+//     if(body.hypersyncurl ){
+//       console.log("Using custom Hypersync URL from request body:", body.hypersyncurl);
+//       const addresses = await fetchTokenAddresses(body.hypersyncurl);
+//       return res.json(addresses);
+//     }
+//     const addresses = await fetchTokenAddresses();
+
+//     res.json(addresses);
+//   } catch (error) {
+//     console.error("Error fetching token addresses:", error);
+//     res.status(500).json({ error: "Failed to fetch token addresses" });
+//   }
+// });
+
+// app.get("/token-metadata/:address", async (req, res) => {
+//   try {
+//     const address = req.params.address;
+//     const body = req.body;
+//     if(body.hypersyncurl ){
+//       console.log("Using custom Hypersync URL from request body:", body.hypersyncurl);
+//       const data = await metadata(address, body.hypersyncurl);
+//       return res.json(data);
+//     }
+//     const data = await metadata(address);
+//     res.json(data);
+//   } catch (error) {
+//     console.error("Error fetching token metadata:", error);
+//     res.status(500).json({ error: "Failed to fetch token metadata" });
+//   }
+// });
+
+// app.get("/transactions/:address", async (req, res) => {
+//   try {
+//     const tokenAddress = req.params.address as string;
+//     if (!tokenAddress) {
+//       return res.status(400).json({ error: "Token address is required" });
+//     }
+//     const body = req.body;
+//     if(body.hypersyncurl ){
+//       console.log("Using custom Hypersync URL from request body:", body.hypersyncurl);
+//       const transactions = await getAllTokenTransactions(tokenAddress, body.hypersyncurl);
+//       return res.json(transactions);
+//     }
+//     const transactions = await getAllTokenTransactions(tokenAddress);
+//     return res.json(transactions);
+//   } catch (error) {
+//     console.error("Error fetching transactions:", error);
+//     return res.status(500).json({ error: "Failed to fetch transactions" });
+//   }
+// });
+
 app.get("/token-addresses", async (req, res) => {
   try {
+    const hypersyncurl = req.body?.hypersyncurl;
+    console.log(hypersyncurl)
+    if(hypersyncurl){
+      console.log("Using custom Hypersync URL from request body:", hypersyncurl);
+      const addresses = await fetchTokenAddresses(hypersyncurl);
+      return res.json(addresses);
+    }
+    const addresses = await fetchTokenAddresses();
+    res.json(addresses);
+  } catch (error) {
+    console.error("Error fetching token addresses:", error);
+    res.status(500).json({ error: "Failed to fetch token addresses" });
+  }
+});
+
+// to get multichain transactions
+// body: eg: { "hypersyncurl": "https://arbitrum.hypersync.xyz", days:360}
+app.post("/token-addresses", async (req, res) => {
+  try {
+    const { hypersyncurl, days } = req.body;
+    console.log("Received hypersyncurl:", hypersyncurl);
+    
+    if(hypersyncurl){
+      console.log("Using custom Hypersync URL:", hypersyncurl);
+      const addresses = await fetchTokenAddresses(days, hypersyncurl);
+      return res.json(addresses);
+    }
+    
     const addresses = await fetchTokenAddresses();
     res.json(addresses);
   } catch (error) {
@@ -246,6 +327,25 @@ app.get("/token-addresses", async (req, res) => {
 app.get("/token-metadata/:address", async (req, res) => {
   try {
     const address = req.params.address;
+    const data = await metadata(address);
+    res.json(data);
+  } catch (error) {
+    console.error("Error fetching token metadata:", error);
+    res.status(500).json({ error: "Failed to fetch token metadata" });
+  }
+});
+
+// to get multichain transactions
+// body: eg: { "string": "arbitrum", }
+app.post("/token-metadata/:address", async (req, res) => {
+  try {
+    const address = req.params.address;
+    const string = req.body?.string;
+    if(string){
+      console.log("Using custom Hypersync URL from request body:", string);
+      const data = await metadata(address, string);
+      return res.json(data);
+    }
     const data = await metadata(address);
     res.json(data);
   } catch (error) {
@@ -268,9 +368,33 @@ app.get("/transactions/:address", async (req, res) => {
   }
 });
 
+
+// to get multichain transactions
+// body: eg: { "hypersyncurl": "https://arbitrum.hypersync.xyz", }
+app.post("/transactions/:address", async (req, res) => {
+  try {
+    const tokenAddress = req.params.address as string;
+    if (!tokenAddress) {
+      return res.status(400).json({ error: "Token address is required" });
+    }
+    const hypersyncurl = req.body?.hypersyncurl;
+    if(hypersyncurl){
+      console.log("Using custom Hypersync URL from request body:", hypersyncurl);
+      const transactions = await getAllTokenTransactions(tokenAddress, hypersyncurl);
+      return res.json(transactions);
+    }
+    const transactions = await getAllTokenTransactions(tokenAddress);
+    return res.json(transactions);
+  } catch (error) {
+    console.error("Error fetching transactions:", error);
+    return res.status(500).json({ error: "Failed to fetch transactions" });
+  }
+});
+
 app.post("/dbinit", async (req, res) => {
   try {
-    const tokens: Token[] = await fetchTokenAddresses();
+    // const tokens: Token[] = await fetchTokenAddresses();
+    const tokens: Token[] = await fetchTokenAddressesMultichain();
     await analyzeAndStoreTokens(tokens);
     res.json({ message: "Database initialized successfully" });
   } catch (error) {
@@ -279,14 +403,12 @@ app.post("/dbinit", async (req, res) => {
   }
 });
 
-/**
- * 🆕 Endpoint: Fetch new tokens, analyze, and push to Redis (skipping existing)
- */
 app.post("/refresh-tokens", async (req, res) => {
   try {
     console.log("\n🔄 Refreshing new tokens...\n");
 
-    const tokens: Token[] = await fetchTokenAddresses(2); // look back 2 days
+    // const tokens: Token[] = await fetchTokenAddresses(2); // look back 2 days
+    const tokens: Token[] = await fetchTokenAddressesMultichain(2); // look back 2 days
     await analyzeAndStoreTokens(tokens);
 
     res.json({ message: "New tokens fetched and updated successfully" });
@@ -296,20 +418,18 @@ app.post("/refresh-tokens", async (req, res) => {
   }
 });
 
-// -------------------- Scheduled Task (every 1 hour) --------------------
 setInterval(async () => {
   console.log("\n⏰ Hourly token refresh started...\n");
   try {
-    const tokens: Token[] = await fetchTokenAddresses(2);
+    // const tokens: Token[] = await fetchTokenAddresses(2);
+    const tokens: Token[] = await fetchTokenAddressesMultichain(2);
     await analyzeAndStoreTokens(tokens);
     console.log("✅ Hourly token refresh completed.\n");
   } catch (error) {
     console.error("❌ Hourly token refresh failed:", error);
   }
-}, 60 * 60 * 1000); // every 1 hour
-// }, 3 * 60 * 1000); // every 1 hour
+}, 60 * 60 * 1000); 
 
-// -------------------- Start Server --------------------
 app.listen(port, () => {
   console.log(`🚀 Envio API listening at http://localhost:${port}`);
 });

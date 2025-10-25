@@ -23,12 +23,12 @@ export interface TokenAddress {
 }
 
 export async function fetchTokenAddresses(
-  daysToLookBack: number = 365
+  daysToLookBack: number = 365, hypersyncUrl: string = "https://eth.hypersync.xyz",
 ): Promise<TokenAddress[]> {
-  console.log("\n🔍 STEP 1: Fetching Token Addresses...\n");
+  console.log("\n🔍 STEP 1: Fetching Token Addresses...\n" + hypersyncUrl);
 
   const hypersyncClient = HypersyncClient.new({
-    url: "https://eth.hypersync.xyz",
+    url: hypersyncUrl,
     bearerToken:
       process.env.HYPERSYNC_BEARER_TOKEN || "c09215fd-568a-48f0-83b3-c96c2572ad85",
   });
@@ -106,8 +106,8 @@ export async function fetchTokenAddresses(
 }
 
 function main() {
-  fetchTokenAddresses(10).then((addresses) => {
+  fetchTokenAddresses(10, "https://arbitrum.hypersync.xyz").then((addresses) => {
     console.log(addresses);
   });
 }
-main();
+// main();
