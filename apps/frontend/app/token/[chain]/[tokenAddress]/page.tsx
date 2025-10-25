@@ -107,23 +107,23 @@ function TokenSidebar({ tokenData }: { tokenData: TokenMetadata }) {
   };
 
   return (
-    <div className="w-full space-y-4 lg:space-y-6">
+    <div className="w-full space-y-3">
       {/* Buy/Sell Buttons */}
       <Card className="bg-gradient-to-br from-card to-card/80 rounded-xl border border-border/50 shadow-lg backdrop-blur-sm">
-        <div className="p-5">
-          <div className="space-y-4">
-            <div className="flex gap-3">
-              <button className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 text-sm shadow-lg hover:shadow-green-500/25 hover:scale-[1.02]">
-                <ShoppingCart className="w-4 h-4" />
+        <div className="p-3">
+          <div className="space-y-2">
+            <div className="flex gap-2">
+              <button className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-2.5 px-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-1.5 text-xs shadow-lg hover:shadow-green-500/25 hover:scale-[1.02]">
+                <ShoppingCart className="w-3.5 h-3.5" />
                 Buy
               </button>
-              <button className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 text-sm shadow-lg hover:shadow-red-500/25 hover:scale-[1.02]">
-                <ArrowDownLeft className="w-4 h-4" />
+              <button className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold py-2.5 px-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-1.5 text-xs shadow-lg hover:shadow-red-500/25 hover:scale-[1.02]">
+                <ArrowDownLeft className="w-3.5 h-3.5" />
                 Sell
               </button>
             </div>
             <div className="text-center">
-              <button className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center gap-1 mx-auto px-3 py-2 rounded-lg hover:bg-accent/50">
+              <button className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center gap-1 mx-auto px-2 py-1.5 rounded-md hover:bg-accent/50">
                 View on DexScreener
                 <ArrowUpRight className="w-3 h-3" />
               </button>
@@ -134,41 +134,41 @@ function TokenSidebar({ tokenData }: { tokenData: TokenMetadata }) {
 
       {/* Token Information */}
       <Card className="bg-gradient-to-br from-card to-card/80 rounded-xl border border-border/50 shadow-lg backdrop-blur-sm">
-        <CardContent className="p-5">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-blue-500/10 rounded-lg">
-              <Layers className="w-4 h-4 text-blue-500" />
+        <CardContent className="p-3">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="p-1.5 bg-blue-500/10 rounded-md">
+              <Layers className="w-3.5 h-3.5 text-blue-500" />
             </div>
-            <h3 className="text-lg font-semibold text-foreground">
+            <h3 className="text-base font-semibold text-foreground">
               Token Information
             </h3>
           </div>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center py-2 px-3 bg-accent/30 rounded-lg">
-              <span className="text-sm text-muted-foreground">Decimals</span>
-              <span className="text-sm font-bold text-foreground bg-primary/10 px-2 py-1 rounded-md">
+          <div className="space-y-2">
+            <div className="flex justify-between items-center py-1.5 px-2.5 bg-accent/30 rounded-md">
+              <span className="text-xs text-muted-foreground">Decimals</span>
+              <span className="text-xs font-bold text-foreground bg-primary/10 px-1.5 py-0.5 rounded-sm">
                 {tokenData.decimals}
               </span>
             </div>
-            <div className="flex justify-between items-center py-2 px-3 bg-accent/30 rounded-lg">
-              <span className="text-sm text-muted-foreground">
+            <div className="flex justify-between items-center py-1.5 px-2.5 bg-accent/30 rounded-md">
+              <span className="text-xs text-muted-foreground">
                 Total Supply
               </span>
-              <span className="text-sm font-bold text-foreground bg-primary/10 px-2 py-1 rounded-md">
+              <span className="text-xs font-bold text-foreground bg-primary/10 px-1.5 py-0.5 rounded-sm">
                 {formatNumber(tokenData.totalSupply)}
               </span>
             </div>
-            <div className="flex justify-between items-center py-2 px-3 bg-accent/30 rounded-lg">
-              <span className="text-sm text-muted-foreground">
+            <div className="flex justify-between items-center py-1.5 px-2.5 bg-accent/30 rounded-md">
+              <span className="text-xs text-muted-foreground">
                 Creation Block
               </span>
-              <span className="text-sm font-bold text-foreground bg-primary/10 px-2 py-1 rounded-md">
+              <span className="text-xs font-bold text-foreground bg-primary/10 px-1.5 py-0.5 rounded-sm">
                 {tokenData.creationBlock}
               </span>
             </div>
-            <div className="flex justify-between items-center py-2 px-3 bg-accent/30 rounded-lg">
-              <span className="text-sm text-muted-foreground">Age</span>
-              <span className="text-sm font-bold text-foreground bg-primary/10 px-2 py-1 rounded-md">
+            <div className="flex justify-between items-center py-1.5 px-2.5 bg-accent/30 rounded-md">
+              <span className="text-xs text-muted-foreground">Age</span>
+              <span className="text-xs font-bold text-foreground bg-primary/10 px-1.5 py-0.5 rounded-sm">
                 {tokenData.viralMetrics.ageInDays} days
               </span>
             </div>
@@ -178,8 +178,8 @@ function TokenSidebar({ tokenData }: { tokenData: TokenMetadata }) {
 
       {/* DEX Presence */}
       <Card className="bg-gradient-to-br from-card to-card/80 rounded-xl border border-border/50 shadow-lg backdrop-blur-sm">
-        <CardContent className="p-5">
-          <div className="flex items-center gap-3 mb-4">
+        <CardContent className="p-3">
+          <div className="flex items-center gap-2 mb-2.5">
             <div className="p-2 bg-purple-500/10 rounded-lg">
               <Activity className="w-4 h-4 text-purple-500" />
             </div>
@@ -187,7 +187,7 @@ function TokenSidebar({ tokenData }: { tokenData: TokenMetadata }) {
               DEX Presence
             </h3>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-2">
             <div className="flex justify-between items-center py-2 px-3 bg-accent/30 rounded-lg">
               <span className="text-sm text-muted-foreground">Total Pairs</span>
               <span className="text-sm font-bold text-foreground bg-primary/10 px-2 py-1 rounded-md">
@@ -220,8 +220,8 @@ function TokenSidebar({ tokenData }: { tokenData: TokenMetadata }) {
 
       {/* Viral Metrics */}
       <Card className="bg-gradient-to-br from-card to-card/80 rounded-xl border border-border/50 shadow-lg backdrop-blur-sm">
-        <CardContent className="p-5">
-          <div className="flex items-center gap-3 mb-4">
+        <CardContent className="p-3">
+          <div className="flex items-center gap-2 mb-2.5">
             <div className="p-2 bg-green-500/10 rounded-lg">
               <TrendingUp className="w-4 h-4 text-green-500" />
             </div>
@@ -229,7 +229,7 @@ function TokenSidebar({ tokenData }: { tokenData: TokenMetadata }) {
               Viral Metrics
             </h3>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-2.5">
             <div className="flex justify-between items-center py-2 px-3 bg-accent/30 rounded-lg">
               <span className="text-sm text-muted-foreground">
                 Liquidity Score
@@ -246,7 +246,7 @@ function TokenSidebar({ tokenData }: { tokenData: TokenMetadata }) {
                 {tokenData.viralMetrics.priceStability.toFixed(1)}/100
               </span>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2">
               <div className="text-center py-2 px-3 bg-accent/30 rounded-lg">
                 <div className="text-xs text-muted-foreground mb-1">
                   Has Media
@@ -286,8 +286,8 @@ function TokenSidebar({ tokenData }: { tokenData: TokenMetadata }) {
 
       {/* Performance Metrics */}
       <Card className="bg-gradient-to-br from-card to-card/80 rounded-xl border border-border/50 shadow-lg backdrop-blur-sm">
-        <CardContent className="p-5">
-          <div className="flex items-center gap-3 mb-4">
+        <CardContent className="p-3">
+          <div className="flex items-center gap-2 mb-2.5">
             <div className="p-2 bg-orange-500/10 rounded-lg">
               <BarChart3 className="w-4 h-4 text-orange-500" />
             </div>
@@ -295,7 +295,7 @@ function TokenSidebar({ tokenData }: { tokenData: TokenMetadata }) {
               Performance Metrics
             </h3>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-2">
             <div className="flex justify-between items-center py-2 px-3 bg-accent/30 rounded-lg">
               <span className="text-sm text-muted-foreground">6h Volume</span>
               <span className="text-sm font-bold text-foreground bg-primary/10 px-2 py-1 rounded-md">
@@ -448,9 +448,9 @@ export default function TokenDetailsPage() {
         </div>
 
         {/* Main Content Grid */}
-        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
+        <div className="flex flex-col lg:flex-row gap-3 lg:gap-4">
           {/* Left Content - Main content area */}
-          <div className="flex-1 min-w-0 lg:max-w-[calc(100%-22rem)] xl:max-w-[calc(100%-24rem)] 2xl:max-w-[calc(100%-28rem)]">
+          <div className="flex-1 min-w-0 lg:max-w-[calc(100%-18rem)] xl:max-w-[calc(100%-20rem)] 2xl:max-w-[calc(100%-22rem)]">
             {/* Token Header Section */}
             <div className="bg-card rounded-xl border border-border p-4 md:p-6 mb-4 md:mb-6">
               <div className="flex flex-col sm:flex-row items-start gap-4 md:gap-6">
@@ -664,10 +664,10 @@ export default function TokenDetailsPage() {
             {/* Full Width Chart */}
             <div className="mb-4 md:mb-6">
               <div className="bg-card rounded-xl border border-border p-4 md:p-6">
-                <h3 className="text-lg font-semibold text-foreground mb-4 md:mb-6">
+                <h3 className="text-lg font-semibold text-foreground mb-3 md:mb-4">
                   Price Chart
                 </h3>
-                <div className="h-[400px] md:h-[500px] lg:h-[600px]">
+                <div className="h-[300px] md:h-[350px] lg:h-[400px]">
                   <PriceChartWidget tokenAddress={tokenAddress} chain={chain} />
                 </div>
               </div>
@@ -786,7 +786,7 @@ export default function TokenDetailsPage() {
           </div>
 
           {/* Right Sidebar - Proper two-column layout */}
-          <div className="w-full lg:w-80 xl:w-96 2xl:w-[28rem] flex-shrink-0">
+          <div className="w-full lg:w-64 xl:w-72 2xl:w-80 flex-shrink-0">
             <div className="lg:sticky lg:top-6 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto scrollbar-hide">
               <TokenSidebar tokenData={tokenData} />
             </div>
