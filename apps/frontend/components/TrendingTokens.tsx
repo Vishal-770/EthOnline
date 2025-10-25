@@ -114,7 +114,7 @@ const TrendingTokens: React.FC<TrendingTokensProps> = ({ chain }) => {
             <div className="h-6 sm:h-8 w-1 bg-primary rounded-full"></div>
             <div>
               <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground tracking-tight">
-                {chain ? `${chain.name} ` : ""}Trending Tokens
+                {chain ? `${chain.name} ` : ""} Tokens
               </h1>
               <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground mt-0.5">
                 Discover the hottest tokens on {chain?.name || "Ethereum"}

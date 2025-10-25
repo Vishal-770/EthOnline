@@ -10,7 +10,6 @@ import { CHAIN_ARRAY } from "@/lib/chains";
 const NavBar = () => {
   const pathname = usePathname();
 
-
   const currentChain =
     CHAIN_ARRAY.find((chain) => pathname.startsWith(`/${chain.slug}`)) ||
     CHAIN_ARRAY[0]; // Default to Ethereum
@@ -26,19 +25,13 @@ const NavBar = () => {
           ERC20WIZ
         </Link>
 
-        {/* Replaced dropdown with inline chain links */}
+        {/* Inline chain links */}
         <div className="flex items-center gap-2">
           {CHAIN_ARRAY.map((chain) => (
-            <Link
-              key={chain.id}
-              href={chain.slug === "ethereum" ? "/" : `/${chain.slug}`}
-            >
+            <Link key={chain.id} href={`/${chain.slug}`}>
               <Button
                 variant={
-                  pathname.startsWith(`/${chain.slug}`) ||
-                  (chain.slug === "ethereum" && pathname === "/")
-                    ? "secondary"
-                    : "ghost"
+                  pathname.startsWith(`/${chain.slug}`) ? "secondary" : "ghost"
                 }
                 size="sm"
               >

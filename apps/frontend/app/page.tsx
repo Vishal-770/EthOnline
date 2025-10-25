@@ -1,14 +1,15 @@
 import QueryProvider from "@/components/QueryClientProvider";
-import TrendingTokens from "@/components/TrendingTokens";
-import { CHAINS } from "@/lib/chains";
+import TrendingEthereumToken from "@/components/TrendingEthereumToken";
 import React from "react";
 
-const HomePage = () => {
+const TrendingPage = () => {
   return (
-    <QueryProvider>
-      <TrendingTokens chain={CHAINS.ethereum} />
-    </QueryProvider>
+    <div>
+      <QueryProvider>
+        <TrendingEthereumToken />
+      </QueryProvider>
+    </div>
   );
 };
 
-export default HomePage;
+export default TrendingPage;
