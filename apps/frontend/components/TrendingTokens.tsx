@@ -9,26 +9,53 @@ import { Button } from "@/components/ui/button";
 import { LoaderDemo } from "./Loader";
 import { getApiEndpoint } from "@/lib/env";
 import { LayoutGrid, List } from "lucide-react";
+import type { ChainConfig } from "@/lib/chains";
 
 interface Token {
   address: string;
   firstSeenBlock: number;
   firstSeenTimestamp: number;
+  chainId?: number;
+  chainName?: string;
 }
 
-async function getTokens(): Promise<Token[]> {
+interface TrendingTokensProps {
+  chain?: ChainConfig;
+}
+
+async function getTokens(chainSlug?: string): Promise<Token[]> {
+  if (chainSlug && chainSlug !== "ethereum") {
+    // For non-ethereum chains, use POST endpoint with hypersync URL
+    const { data } = await axios.post(getApiEndpoint("/token-addresses"), {
+      hypersyncurl: getHypersyncUrl(chainSlug),
+      days: 365,
+    });
+    return data;
+  }
+  // For ethereum, use the default GET endpoint
   const { data } = await axios.get(getApiEndpoint("/token-addresses"));
   return data;
 }
 
-const TrendingTokens = () => {
+function getHypersyncUrl(chainSlug: string): string {
+  const urls: Record<string, string> = {
+    base: "https://base.hypersync.xyz",
+    polygon: "https://polygon.hypersync.xyz",
+    arbitrum: "https://arbitrum.hypersync.xyz",
+    optimism: "https://optimism.hypersync.xyz",
+    ethereum: "https://eth.hypersync.xyz",
+  };
+  return urls[chainSlug] || urls.ethereum;
+}
+
+const TrendingTokens: React.FC<TrendingTokensProps> = ({ chain }) => {
   const {
     data: tokens,
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["trending-tokens"],
-    queryFn: getTokens,
+    queryKey: ["trending-tokens", chain?.slug || "ethereum"],
+    queryFn: () => getTokens(chain?.slug),
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
     retry: 2,
@@ -84,11 +111,11 @@ const TrendingTokens = () => {
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="h-6 sm:h-8 w-1 bg-primary rounded-full"></div>
             <div>
-              <h1 className="text-xl sm:text-xs md:text-xl font-bold text-foreground tracking-tight">
-                Trending Tokens
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground tracking-tight">
+                {chain ? `${chain.name} ` : ""}Trending Tokens
               </h1>
               <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground mt-0.5">
-                Discover the hottest tokens in the crypto market
+                Discover the hottest tokens on {chain?.name || "Ethereum"}
               </p>
             </div>
           </div>
@@ -161,6 +188,7 @@ const TrendingTokens = () => {
               key={token.address}
               tokenAddress={token.address}
               rank={startIndex + index + 1}
+              chain={chain}
             />
           ))}
         </div>
@@ -171,6 +199,7 @@ const TrendingTokens = () => {
               key={token.address}
               tokenAddress={token.address}
               rank={startIndex + index + 1}
+              chain={chain}
             />
           ))}
         </div>

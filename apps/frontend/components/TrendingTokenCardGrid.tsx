@@ -8,10 +8,12 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { LoaderDemo } from "./Loader";
 import { getApiEndpoint } from "@/lib/env";
+import type { ChainConfig } from "@/lib/chains";
 
 interface TrendingTokenCardGridProps {
   tokenAddress: string;
   rank?: number;
+  chain?: ChainConfig;
 }
 
 interface ChainData {
@@ -96,6 +98,7 @@ const formatPrice = (price: number): string => {
 const TrendingTokenCardGrid: React.FC<TrendingTokenCardGridProps> = ({
   tokenAddress,
   rank,
+  chain,
 }) => {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["token-metadata", tokenAddress],
@@ -127,8 +130,11 @@ const TrendingTokenCardGrid: React.FC<TrendingTokenCardGridProps> = ({
   const isPositive1h = data.priceChange1h >= 0;
   const isPositive6h = data.priceChange6h >= 0;
 
+  const chainSlug = chain?.slug || "ethereum";
+  const tokenLink = `/token/${chainSlug}/${tokenAddress}`;
+
   return (
-    <Link href={`/token/${tokenAddress}`} className="block w-full group">
+    <Link href={tokenLink} className="block w-full group">
       <Card className="relative w-full p-3 border border-border bg-card hover:bg-accent/5 hover:border-primary/20 rounded-lg transition-all duration-150 overflow-hidden">
         {/* Header Section with Token Info */}
         <div className="flex items-center gap-3 mb-3">

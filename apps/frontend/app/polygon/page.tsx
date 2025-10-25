@@ -3,12 +3,12 @@ import TrendingTokens from "@/components/TrendingTokens";
 import { CHAINS } from "@/lib/chains";
 import React from "react";
 
-const HomePage = () => {
+const PolygonPage = () => {
   return (
     <QueryProvider>
-      <TrendingTokens chain={CHAINS.ethereum} />
+      <TrendingTokens chain={CHAINS.polygon} />
     </QueryProvider>
   );
 };
 
-export default HomePage;
+export default PolygonPage;

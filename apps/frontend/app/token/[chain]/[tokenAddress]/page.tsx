@@ -23,6 +23,7 @@ import Image from "next/image";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { LoaderDemo } from "@/components/Loader";
+import { getChainBySlug, type ChainConfig } from "@/lib/chains";
 
 interface ChainData {
   chainId: string;
@@ -80,6 +81,9 @@ interface TokenMetadata {
 export default function TokenDetailsPage() {
   const params = useParams();
   const tokenAddress = params.tokenAddress as string;
+  const chainSlug = (params.chain as string) || "ethereum";
+  const chain = getChainBySlug(chainSlug);
+
   const [tokenData, setTokenData] = useState<TokenMetadata | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -164,11 +168,13 @@ export default function TokenDetailsPage() {
     }
   };
 
+  const backUrl = chainSlug === "ethereum" ? "/" : `/${chainSlug}`;
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header with Token Image */}
       {tokenData.headerImage && (
-        <div className="relative w-full h-32 md:h-48 bg-gradient-to-r from-purple-500/20 to-blue-500/20">
+        <div className="relative w-full h-32 md:h-48 bg-linear-to-r from-purple-500/20 to-blue-500/20">
           <Image
             src={tokenData.headerImage}
             alt={`${tokenData.name} header`}
@@ -184,11 +190,11 @@ export default function TokenDetailsPage() {
         {/* Back Button */}
         <div className="py-4 md:py-6">
           <Link
-            href="/"
+            href={backUrl}
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors bg-accent/50 hover:bg-accent px-3 py-2 rounded-lg"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to Tokens
+            Back to {chain?.name || "Ethereum"} Tokens
           </Link>
         </div>
 
@@ -218,6 +224,11 @@ export default function TokenDetailsPage() {
                   <span className="text-xs font-medium text-muted-foreground bg-primary/10 px-2 py-1 md:px-3 md:py-1.5 rounded-full">
                     {tokenData.viralMetrics.marketCapRank}
                   </span>
+                  {chain && (
+                    <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-1 md:px-3 md:py-1.5 rounded-full">
+                      {chain.name}
+                    </span>
+                  )}
                 </div>
               </div>
               <p className="text-xs text-muted-foreground font-mono bg-accent/50 px-2 py-1.5 md:px-3 md:py-2 rounded-lg inline-block mb-3 md:mb-4 break-all">
@@ -390,7 +401,7 @@ export default function TokenDetailsPage() {
               Price Chart
             </h3>
             <div className="h-[400px] md:h-[500px] lg:h-[600px]">
-              <PriceChartWidget tokenAddress={tokenAddress} />
+              <PriceChartWidget tokenAddress={tokenAddress} chain={chain} />
             </div>
           </div>
         </div>
@@ -719,7 +730,7 @@ export default function TokenDetailsPage() {
             <TabsContent value="transactions" className="p-4 md:p-6 m-0">
               <TokenTransactionsList
                 tokenAddress={tokenAddress}
-                decimals={tokenData.decimals}
+                chain={chain}
               />
             </TabsContent>
           </Tabs>

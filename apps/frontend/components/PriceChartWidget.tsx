@@ -1,15 +1,34 @@
 "use client";
 import React, { useEffect, useRef } from "react";
 import { env } from "@/lib/env";
+import type { ChainConfig } from "@/lib/chains";
 
 const PRICE_CHART_ID = "price-chart-widget-container";
 
+// Map chain slugs to Moralis chain IDs
+const getChainIdHex = (chain?: ChainConfig): string => {
+  if (!chain) return "0x1"; // Default to Ethereum
+
+  const chainIdMap: Record<number, string> = {
+    1: "0x1", // Ethereum
+    8453: "0x2105", // Base
+    42161: "0xa4b1", // Arbitrum
+    137: "0x89", // Polygon
+    10: "0xa", // Optimism
+  };
+
+  return chainIdMap[chain.id] || "0x1";
+};
+
 export const PriceChartWidget = ({
   tokenAddress,
+  chain,
 }: {
   tokenAddress: string;
+  chain?: ChainConfig;
 }) => {
   const containerRef = useRef(null);
+  const chainIdHex = getChainIdHex(chain);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -18,7 +37,7 @@ export const PriceChartWidget = ({
       if (typeof (window as any).createMyWidget === "function") {
         (window as any).createMyWidget(PRICE_CHART_ID, {
           autoSize: true,
-          chainId: "0x1",
+          chainId: chainIdHex,
           tokenAddress: tokenAddress,
           showHoldersChart: true,
           defaultInterval: "1D",
@@ -50,7 +69,7 @@ export const PriceChartWidget = ({
     } else {
       loadWidget();
     }
-  }, []);
+  }, [tokenAddress, chainIdHex]);
 
   return (
     <div style={{ width: "100%", height: "100%" }}>

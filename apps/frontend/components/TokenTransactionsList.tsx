@@ -4,6 +4,9 @@ import { useState, useEffect } from "react";
 import { ArrowRight, Loader2, ExternalLink } from "lucide-react";
 import { Button } from "./ui/button";
 import { getEtherscanLink } from "@/lib/env";
+import type { ChainConfig } from "@/lib/chains";
+import axios from "axios";
+import { getApiEndpoint } from "@/lib/env";
 
 interface Transfer {
   from: string;
@@ -19,11 +22,13 @@ interface Transfer {
 interface TransactionsListProps {
   tokenAddress: string;
   decimals?: number;
+  chain?: ChainConfig;
 }
 
 export default function TokenTransactionsList({
   tokenAddress,
   decimals = 18,
+  chain,
 }: TransactionsListProps) {
   const [transfers, setTransfers] = useState<Transfer[]>([]);
   const [loading, setLoading] = useState(false);
@@ -36,18 +41,31 @@ export default function TokenTransactionsList({
     setError(null);
 
     try {
-      const params = new URLSearchParams({
-        tokenAddress,
-        decimals: decimals.toString(),
-        limit: "10",
-      });
+      let data;
+      const chainSlug = chain?.slug || "ethereum";
 
-      if (fromBlock !== undefined) {
-        params.append("fromBlock", fromBlock.toString());
+      if (chainSlug !== "ethereum") {
+        // Use POST endpoint for non-ethereum chains
+        const response = await axios.post(
+          getApiEndpoint(`/transactions/${tokenAddress}`),
+          { hypersyncurl: chain?.hypersyncUrl }
+        );
+        data = response.data;
+      } else {
+        // Use GET endpoint for ethereum
+        const params = new URLSearchParams({
+          tokenAddress,
+          decimals: decimals.toString(),
+          limit: "10",
+        });
+
+        if (fromBlock !== undefined) {
+          params.append("fromBlock", fromBlock.toString());
+        }
+
+        const response = await fetch(`/api/erc20-transfers?${params}`);
+        data = await response.json();
       }
-
-      const response = await fetch(`/api/erc20-transfers?${params}`);
-      const data = await response.json();
 
       if (!data.success) {
         throw new Error(data.error || "Failed to fetch transactions");
@@ -148,7 +166,11 @@ export default function TokenTransactionsList({
                 </td>
                 <td className="px-4 py-3">
                   <a
-                    href={getEtherscanLink("address", transfer.from)}
+                    href={
+                      chain
+                        ? `${chain.explorerUrl}/address/${transfer.from}`
+                        : getEtherscanLink("address", transfer.from)
+                    }
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-primary hover:underline font-mono text-xs flex items-center gap-1"
@@ -159,7 +181,11 @@ export default function TokenTransactionsList({
                 </td>
                 <td className="px-4 py-3">
                   <a
-                    href={getEtherscanLink("address", transfer.to)}
+                    href={
+                      chain
+                        ? `${chain.explorerUrl}/address/${transfer.to}`
+                        : getEtherscanLink("address", transfer.to)
+                    }
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-primary hover:underline font-mono text-xs flex items-center gap-1"
@@ -176,7 +202,11 @@ export default function TokenTransactionsList({
                 </td>
                 <td className="px-4 py-3">
                   <a
-                    href={getEtherscanLink("tx", transfer.transactionHash)}
+                    href={
+                      chain
+                        ? `${chain.explorerUrl}/tx/${transfer.transactionHash}`
+                        : getEtherscanLink("tx", transfer.transactionHash)
+                    }
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-primary hover:underline font-mono text-xs flex items-center gap-1"
