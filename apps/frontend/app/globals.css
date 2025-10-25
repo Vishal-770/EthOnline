@@ -203,3 +203,8 @@
     display: none;
   }
 }
+
+.post-item {
+  /* Smoothly animate transform (for the slideInFromBottom) and opacity (if needed) */
+  transition: transform 0.6s ease-out, opacity 0.6s ease-out;
+}

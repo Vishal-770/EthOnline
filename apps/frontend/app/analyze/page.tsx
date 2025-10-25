@@ -131,28 +131,28 @@ export default function AnalyzePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-6 lg:py-8 max-w-full 2xl:max-w-8xl">
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-8 lg:mb-12">
           <div className="inline-flex items-center gap-3 mb-4">
             <div className="p-2 bg-primary/10 rounded-lg">
               <BarChart3 className="w-6 h-6 text-primary" />
             </div>
-            <h1 className="text-4xl font-bold text-foreground">
+            <h1 className="text-3xl sm:text-4xl font-bold text-foreground">
               Token Wallet Analyzer
             </h1>
           </div>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto px-4">
             Analyze the top wallets holding any ERC-20 token and discover their
             trading patterns
           </p>
         </div>
 
         {/* Search Section */}
-        <Card className="mb-8">
-          <CardContent className="p-6">
-            <div className="flex flex-col sm:flex-row gap-4 items-end">
-              <div className="flex-1 space-y-2">
+        <Card className="mb-6 lg:mb-8">
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-end">
+              <div className="flex-1 space-y-2 w-full">
                 <label className="text-sm font-medium text-foreground">
                   Token Contract Address
                 </label>
@@ -160,14 +160,14 @@ export default function AnalyzePage() {
                   placeholder="Enter 0x address..."
                   value={tokenAddress}
                   onChange={(e) => setTokenAddress(e.target.value)}
-                  className="font-mono h-12 text-base"
+                  className="font-mono h-12 text-base w-full"
                 />
               </div>
               <Button
                 onClick={analyzeToken}
                 disabled={loading}
                 size="lg"
-                className="h-12 px-8 min-w-[140px]"
+                className="h-12 px-6 sm:px-8 min-w-[120px] sm:min-w-[140px] w-full sm:w-auto"
               >
                 {loading ? (
                   <>
@@ -187,15 +187,15 @@ export default function AnalyzePage() {
 
         {/* Error State */}
         {error && (
-          <Card className="mb-8 border-destructive/50">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3">
-                <XCircle className="w-5 h-5 text-destructive shrink-0" />
-                <div>
+          <Card className="mb-6 lg:mb-8 border-destructive/50">
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex items-start gap-3">
+                <XCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                <div className="flex-1">
                   <h3 className="font-semibold text-foreground mb-1">
                     Analysis Failed
                   </h3>
-                  <p className="text-muted-foreground">{error}</p>
+                  <p className="text-muted-foreground text-sm">{error}</p>
                 </div>
               </div>
             </CardContent>
@@ -204,20 +204,20 @@ export default function AnalyzePage() {
 
         {/* Results */}
         {analysisData && (
-          <div className="space-y-8">
+          <div className="space-y-6 lg:space-y-8">
             {/* Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card>
-                <CardContent className="p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
+              <Card className="hover:shadow-lg transition-shadow">
+                <CardContent className="p-4 lg:p-6">
                   <div className="flex items-center gap-4">
                     <div className="p-3 bg-primary/10 rounded-xl">
-                      <Users className="w-6 h-6 text-primary" />
+                      <Users className="w-5 h-5 lg:w-6 lg:h-6 text-primary" />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground font-medium">
+                      <p className="text-xs lg:text-sm text-muted-foreground font-medium">
                         Top Wallets
                       </p>
-                      <p className="text-2xl font-bold text-foreground">
+                      <p className="text-xl lg:text-2xl font-bold text-foreground">
                         {analysisData.topWallets.length}
                       </p>
                     </div>
@@ -225,17 +225,17 @@ export default function AnalyzePage() {
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardContent className="p-6">
+              <Card className="hover:shadow-lg transition-shadow">
+                <CardContent className="p-4 lg:p-6">
                   <div className="flex items-center gap-4">
                     <div className="p-3 bg-green-500/10 rounded-xl">
-                      <TrendingUp className="w-6 h-6 text-green-600 dark:text-green-400" />
+                      <TrendingUp className="w-5 h-5 lg:w-6 lg:h-6 text-green-600 dark:text-green-400" />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground font-medium">
+                      <p className="text-xs lg:text-sm text-muted-foreground font-medium">
                         Profitable Wallets
                       </p>
-                      <p className="text-2xl font-bold text-foreground">
+                      <p className="text-xl lg:text-2xl font-bold text-foreground">
                         {
                           analysisData.topWallets.filter(
                             (w) => parseFloat(w.profit) > 0
@@ -247,17 +247,17 @@ export default function AnalyzePage() {
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardContent className="p-6">
+              <Card className="hover:shadow-lg transition-shadow sm:col-span-2 xl:col-span-1">
+                <CardContent className="p-4 lg:p-6">
                   <div className="flex items-center gap-4">
                     <div className="p-3 bg-purple-500/10 rounded-xl">
-                      <PieChart className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                      <PieChart className="w-5 h-5 lg:w-6 lg:h-6 text-purple-600 dark:text-purple-400" />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground font-medium">
+                      <p className="text-xs lg:text-sm text-muted-foreground font-medium">
                         Related Tokens
                       </p>
-                      <p className="text-2xl font-bold text-foreground">
+                      <p className="text-xl lg:text-2xl font-bold text-foreground">
                         {Object.values(analysisData.otherTokens).reduce(
                           (acc, tokens) => acc + tokens.length,
                           0
@@ -271,125 +271,126 @@ export default function AnalyzePage() {
 
             {/* Main Analysis Tabs */}
             <Tabs defaultValue="wallets" className="w-full">
-              <TabsList className="w-full max-w-md grid grid-cols-2">
+              <TabsList className="w-full max-w-full sm:max-w-md grid grid-cols-2">
                 <TabsTrigger
                   value="wallets"
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 text-xs sm:text-sm"
                 >
-                  <Wallet className="w-4 h-4" />
-                  Wallet Analysis
+                  <Wallet className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="truncate">Wallet Analysis</span>
                 </TabsTrigger>
-                <TabsTrigger value="tokens" className="flex items-center gap-2">
-                  <Coins className="w-4 h-4" />
-                  Token Portfolio
+                <TabsTrigger
+                  value="tokens"
+                  className="flex items-center gap-2 text-xs sm:text-sm"
+                >
+                  <Coins className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="truncate">Token Portfolio</span>
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="wallets" className="space-y-4 mt-6">
+              <TabsContent value="wallets" className="space-y-4 mt-4 lg:mt-6">
                 <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-xl">
-                      <Wallet className="w-5 h-5" />
+                  <CardHeader className="pb-3 lg:pb-4">
+                    <CardTitle className="flex items-center gap-2 text-lg lg:text-xl">
+                      <Wallet className="w-4 h-4 lg:w-5 lg:h-5" />
                       Wallet Performance
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
+                  <CardContent className="p-4 lg:p-6">
+                    <div className="space-y-3 lg:space-y-4 max-h-[600px] lg:max-h-[800px] overflow-y-auto pr-2">
                       {analysisData.topWallets.map((wallet, index) => (
                         <Card
                           key={wallet.address}
-                          className="hover:shadow-md transition-shadow"
+                          className="hover:shadow-md transition-shadow border"
                         >
-                          <CardContent className="p-6">
-                            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                              <div className="flex-1 space-y-4">
-                                <div className="flex items-center gap-3">
-                                  <Badge
-                                    variant="secondary"
-                                    className="font-mono"
-                                  >
-                                    #{index + 1}
-                                  </Badge>
-                                  <div className="flex items-center gap-2">
-                                    <code className="text-sm font-mono bg-muted px-3 py-1.5 rounded-md border">
-                                      {formatAddress(wallet.address)}
-                                    </code>
-                                    <div className="flex items-center gap-1">
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() =>
-                                          copyToClipboard(
-                                            wallet.address,
-                                            "Address"
-                                          )
-                                        }
-                                        className="h-8 w-8 p-0"
-                                      >
-                                        {copiedAddress === "Address" ? (
-                                          <Check className="w-3 h-3" />
-                                        ) : (
-                                          <Copy className="w-3 h-3" />
-                                        )}
-                                      </Button>
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() =>
-                                          window.open(
-                                            `https://etherscan.io/address/${wallet.address}`,
-                                            "_blank"
-                                          )
-                                        }
-                                        className="h-8 w-8 p-0"
-                                      >
-                                        <ExternalLink className="w-3 h-3" />
-                                      </Button>
-                                    </div>
+                          <CardContent className="p-4 lg:p-6">
+                            <div className="space-y-3 lg:space-y-4">
+                              <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                                <Badge
+                                  variant="secondary"
+                                  className="font-mono w-fit"
+                                >
+                                  #{index + 1}
+                                </Badge>
+                                <div className="flex items-center gap-2 flex-1 min-w-0">
+                                  <code className="text-xs sm:text-sm font-mono bg-muted px-2 sm:px-3 py-1.5 rounded-md border flex-1 truncate">
+                                    {formatAddress(wallet.address)}
+                                  </code>
+                                  <div className="flex items-center gap-1 flex-shrink-0">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() =>
+                                        copyToClipboard(
+                                          wallet.address,
+                                          "Address"
+                                        )
+                                      }
+                                      className="h-7 w-7 sm:h-8 sm:w-8 p-0"
+                                    >
+                                      {copiedAddress === "Address" ? (
+                                        <Check className="w-3 h-3" />
+                                      ) : (
+                                        <Copy className="w-3 h-3" />
+                                      )}
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() =>
+                                        window.open(
+                                          `https://etherscan.io/address/${wallet.address}`,
+                                          "_blank"
+                                        )
+                                      }
+                                      className="h-7 w-7 sm:h-8 sm:w-8 p-0"
+                                    >
+                                      <ExternalLink className="w-3 h-3" />
+                                    </Button>
                                   </div>
                                 </div>
+                              </div>
 
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                  <div className="space-y-1">
-                                    <p className="text-xs text-muted-foreground font-medium">
-                                      Total Bought
-                                    </p>
-                                    <p className="font-semibold text-foreground">
-                                      {formatNumber(wallet.totalBought)}
-                                    </p>
-                                  </div>
-                                  <div className="space-y-1">
-                                    <p className="text-xs text-muted-foreground font-medium">
-                                      Total Sold
-                                    </p>
-                                    <p className="font-semibold text-foreground">
-                                      {formatNumber(wallet.totalSold)}
-                                    </p>
-                                  </div>
-                                  <div className="space-y-1">
-                                    <p className="text-xs text-muted-foreground font-medium">
-                                      Net P&L
-                                    </p>
-                                    <div className="flex items-center gap-1">
-                                      {getProfitIcon(wallet.profit)}
-                                      <p
-                                        className={`font-semibold ${getProfitColor(wallet.profit)}`}
-                                      >
-                                        {formatNumber(wallet.profit)}
-                                      </p>
-                                    </div>
-                                  </div>
-                                  <div className="space-y-1">
-                                    <p className="text-xs text-muted-foreground font-medium">
-                                      Network
-                                    </p>
-                                    <Badge
-                                      variant="outline"
-                                      className="capitalize font-medium"
+                              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                                <div className="space-y-1">
+                                  <p className="text-xs text-muted-foreground font-medium">
+                                    Bought
+                                  </p>
+                                  <p className="font-semibold text-foreground text-sm sm:text-base">
+                                    {formatNumber(wallet.totalBought)}
+                                  </p>
+                                </div>
+                                <div className="space-y-1">
+                                  <p className="text-xs text-muted-foreground font-medium">
+                                    Sold
+                                  </p>
+                                  <p className="font-semibold text-foreground text-sm sm:text-base">
+                                    {formatNumber(wallet.totalSold)}
+                                  </p>
+                                </div>
+                                <div className="space-y-1">
+                                  <p className="text-xs text-muted-foreground font-medium">
+                                    Net P&L
+                                  </p>
+                                  <div className="flex items-center gap-1">
+                                    {getProfitIcon(wallet.profit)}
+                                    <p
+                                      className={`font-semibold text-sm sm:text-base ${getProfitColor(wallet.profit)}`}
                                     >
-                                      {wallet.chain}
-                                    </Badge>
+                                      {formatNumber(wallet.profit)}
+                                    </p>
                                   </div>
+                                </div>
+                                <div className="space-y-1">
+                                  <p className="text-xs text-muted-foreground font-medium">
+                                    Network
+                                  </p>
+                                  <Badge
+                                    variant="outline"
+                                    className="capitalize font-medium text-xs"
+                                  >
+                                    {wallet.chain}
+                                  </Badge>
                                 </div>
                               </div>
                             </div>
@@ -401,27 +402,30 @@ export default function AnalyzePage() {
                 </Card>
               </TabsContent>
 
-              <TabsContent value="tokens" className="space-y-4 mt-6">
+              <TabsContent value="tokens" className="space-y-4 mt-4 lg:mt-6">
                 <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-xl">
-                      <Coins className="w-5 h-5" />
+                  <CardHeader className="pb-3 lg:pb-4">
+                    <CardTitle className="flex items-center gap-2 text-lg lg:text-xl">
+                      <Coins className="w-4 h-4 lg:w-5 lg:h-5" />
                       Wallet Token Portfolios
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="space-y-6">
+                  <CardContent className="p-4 lg:p-6">
+                    <div className="space-y-4 lg:space-y-6 max-h-[600px] lg:max-h-[800px] overflow-y-auto pr-2">
                       {Object.entries(analysisData.otherTokens).map(
                         ([walletAddress, tokens]) => (
-                          <Card key={walletAddress}>
-                            <CardHeader className="pb-4">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                  <Wallet className="w-4 h-4 text-muted-foreground" />
-                                  <code className="text-sm font-mono bg-muted px-3 py-1.5 rounded-md border">
+                          <Card key={walletAddress} className="border">
+                            <CardHeader className="pb-3 lg:pb-4">
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <div className="flex items-center gap-3 min-w-0">
+                                  <Wallet className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                                  <code className="text-xs sm:text-sm font-mono bg-muted px-2 sm:px-3 py-1.5 rounded-md border flex-1 truncate">
                                     {formatAddress(walletAddress)}
                                   </code>
-                                  <Badge variant="secondary">
+                                  <Badge
+                                    variant="secondary"
+                                    className="flex-shrink-0"
+                                  >
                                     {tokens.length} token
                                     {tokens.length !== 1 ? "s" : ""}
                                   </Badge>
@@ -432,31 +436,32 @@ export default function AnalyzePage() {
                                   onClick={() =>
                                     copyToClipboard(walletAddress, "Wallet")
                                   }
+                                  className="flex-shrink-0"
                                 >
                                   {copiedAddress === "Wallet" ? (
                                     <Check className="w-3 h-3 mr-2" />
                                   ) : (
                                     <Copy className="w-3 h-3 mr-2" />
                                   )}
-                                  Copy
+                                  <span className="hidden sm:inline">Copy</span>
                                 </Button>
                               </div>
                             </CardHeader>
                             <CardContent>
                               {tokens.length > 0 ? (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-2 sm:gap-3">
                                   {tokens.map((token, index) => (
                                     <div
                                       key={`${token.token}-${index}`}
-                                      className="flex items-center justify-between p-3 bg-muted/50 rounded-lg border"
+                                      className="flex items-center justify-between p-2 sm:p-3 bg-muted/50 rounded-lg border"
                                     >
-                                      <div className="flex items-center gap-3">
-                                        <div className="w-2 h-2 bg-primary rounded-full"></div>
-                                        <code className="text-xs font-mono text-foreground">
+                                      <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                                        <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0"></div>
+                                        <code className="text-xs font-mono text-foreground truncate flex-1">
                                           {formatAddress(token.token)}
                                         </code>
                                       </div>
-                                      <div className="flex items-center gap-2">
+                                      <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                                         <Badge
                                           variant="outline"
                                           className="text-xs capitalize"
@@ -485,9 +490,9 @@ export default function AnalyzePage() {
                                   ))}
                                 </div>
                               ) : (
-                                <div className="text-center py-8 text-muted-foreground">
-                                  <AlertTriangle className="w-8 h-8 mx-auto mb-3 opacity-50" />
-                                  <p className="font-medium">
+                                <div className="text-center py-6 lg:py-8 text-muted-foreground">
+                                  <AlertTriangle className="w-6 h-6 lg:w-8 lg:h-8 mx-auto mb-2 lg:mb-3 opacity-50" />
+                                  <p className="font-medium text-sm lg:text-base">
                                     No other tokens found for this wallet
                                   </p>
                                 </div>
@@ -506,62 +511,64 @@ export default function AnalyzePage() {
 
         {/* Instructions */}
         {!analysisData && !loading && (
-          <Card className="mt-12">
+          <Card className="mt-8 lg:mt-12">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-xl">
-                <CheckCircle className="w-5 h-5 text-primary" />
+              <CardTitle className="flex items-center gap-2 text-lg lg:text-xl">
+                <CheckCircle className="w-4 h-4 lg:w-5 lg:h-5 text-primary" />
                 How It Works
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="space-y-3">
-                  <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+            <CardContent className="p-4 lg:p-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 lg:gap-6">
+                <div className="space-y-3 text-center sm:text-left">
+                  <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center mx-auto sm:mx-0">
                     <span className="text-sm font-semibold text-primary">
                       1
                     </span>
                   </div>
-                  <h3 className="font-semibold text-foreground">
+                  <h3 className="font-semibold text-foreground text-sm lg:text-base">
                     Enter Address
                   </h3>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs lg:text-sm text-muted-foreground">
                     Paste any ERC-20 token contract address starting with 0x
                   </p>
                 </div>
-                <div className="space-y-3">
-                  <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                <div className="space-y-3 text-center sm:text-left">
+                  <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center mx-auto sm:mx-0">
                     <span className="text-sm font-semibold text-primary">
                       2
                     </span>
                   </div>
-                  <h3 className="font-semibold text-foreground">
+                  <h3 className="font-semibold text-foreground text-sm lg:text-base">
                     Analyze Wallets
                   </h3>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs lg:text-sm text-muted-foreground">
                     System analyzes top wallets and their trading patterns
                   </p>
                 </div>
-                <div className="space-y-3">
-                  <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                <div className="space-y-3 text-center sm:text-left">
+                  <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center mx-auto sm:mx-0">
                     <span className="text-sm font-semibold text-primary">
                       3
                     </span>
                   </div>
-                  <h3 className="font-semibold text-foreground">
+                  <h3 className="font-semibold text-foreground text-sm lg:text-base">
                     View Insights
                   </h3>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs lg:text-sm text-muted-foreground">
                     See wallet performance and portfolio composition
                   </p>
                 </div>
-                <div className="space-y-3">
-                  <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                <div className="space-y-3 text-center sm:text-left">
+                  <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center mx-auto sm:mx-0">
                     <span className="text-sm font-semibold text-primary">
                       4
                     </span>
                   </div>
-                  <h3 className="font-semibold text-foreground">Take Action</h3>
-                  <p className="text-sm text-muted-foreground">
+                  <h3 className="font-semibold text-foreground text-sm lg:text-base">
+                    Take Action
+                  </h3>
+                  <p className="text-xs lg:text-sm text-muted-foreground">
                     Copy addresses or explore further on block explorers
                   </p>
                 </div>

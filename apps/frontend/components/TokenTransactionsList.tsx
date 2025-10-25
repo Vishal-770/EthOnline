@@ -120,14 +120,14 @@ export default function TokenTransactionsList({
 
   return (
     <div className="rounded-lg border border-border bg-card overflow-hidden">
-      <div className="p-6 border-b border-border">
+      {/* <div className="p-6 border-b border-border">
         <h3 className="text-lg font-semibold text-foreground">
           Recent Transactions
         </h3>
         <p className="text-sm text-muted-foreground mt-1">
           Latest token transfers on-chain
         </p>
-      </div>
+      </div> */}
 
       {error && (
         <div className="p-4 bg-destructive/10 border-b border-destructive/20">
@@ -175,9 +175,12 @@ export default function TokenTransactionsList({
                 key={`${transfer.blockNumber}-${transfer.logIndex}-${index}`}
                 className="border-b border-border hover:bg-card/50 transition-colors"
               >
-                <td className="px-4 py-3 text-foreground font-mono">
+                {/* Block */}
+                <td className="px-4 py-3 text-foreground font-mono text-blue-500">
                   {transfer.blockNumber.toLocaleString()}
                 </td>
+
+                {/* From */}
                 <td className="px-4 py-3">
                   <a
                     href={
@@ -187,12 +190,14 @@ export default function TokenTransactionsList({
                     }
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-primary hover:underline font-mono text-xs flex items-center gap-1"
+                    className="text-purple-500 hover:underline font-mono text-xs flex items-center gap-1"
                   >
                     {formatAddress(transfer.from)}
                     <ExternalLink className="h-3 w-3" />
                   </a>
                 </td>
+
+                {/* To */}
                 <td className="px-4 py-3">
                   <a
                     href={
@@ -202,18 +207,30 @@ export default function TokenTransactionsList({
                     }
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-primary hover:underline font-mono text-xs flex items-center gap-1"
+                    className="text-green-500 hover:underline font-mono text-xs flex items-center gap-1"
                   >
                     {formatAddress(transfer.to)}
                     <ExternalLink className="h-3 w-3" />
                   </a>
                 </td>
-                <td className="px-4 py-3 text-right font-mono text-foreground">
-                  {formatAmount(Number(transfer.amountFormatted))}
+
+                {/* Amount */}
+                <td
+                  className={`px-4 py-3 text-right font-mono ${
+                    parseFloat(transfer.amount) >= 0
+                      ? "text-green-500 font-semibold"
+                      : "text-red-500 font-semibold"
+                  }`}
+                >
+                  {formatAmount(parseFloat(transfer.amountFormatted))}
                 </td>
-                <td className="px-4 py-3 text-muted-foreground text-xs">
+
+                {/* Timestamp */}
+                <td className="px-4 py-3 text-xs text-indigo-400">
                   {formatTimestamp(transfer.timestamp)}
                 </td>
+
+                {/* Tx Hash */}
                 <td className="px-4 py-3">
                   <a
                     href={
@@ -223,7 +240,7 @@ export default function TokenTransactionsList({
                     }
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-primary hover:underline font-mono text-xs flex items-center gap-1"
+                    className="text-orange-500 hover:underline font-mono text-xs flex items-center gap-1"
                   >
                     {formatAddress(transfer.transactionHash)}
                     <ExternalLink className="h-3 w-3" />
@@ -265,4 +282,15 @@ export default function TokenTransactionsList({
       )}
     </div>
   );
+}
+function formatAmount(amount: number) {
+  if (amount === null || amount === undefined) return "0";
+
+  const num = Number(amount);
+
+  if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(3) + "B";
+  if (num >= 1_000_000) return (num / 1_000_000).toFixed(3) + "M";
+  if (num >= 1_000) return (num / 1_000).toFixed(3) + "K";
+
+  return num.toFixed(3);
 }

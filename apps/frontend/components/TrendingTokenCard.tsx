@@ -163,7 +163,7 @@ const TrendingTokenCard: React.FC<TrendingTokenCardProps> = ({
                 alt={data.name}
                 width={40}
                 height={40}
-                className="rounded-full border border-border"
+                className="rounded border border-border"
               />
               {data.viralMetrics?.multiChainPresence > 1 && (
                 <div className="absolute -bottom-1 -right-1 bg-primary text-white text-[10px] font-bold px-1 py-0.5 rounded-full border-2 border-card">
