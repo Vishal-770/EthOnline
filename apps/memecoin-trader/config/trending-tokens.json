@@ -1,0 +1,233 @@
+[
+  {
+    "address": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+    "name": "Sepolia USDC",
+    "symbol": "USDC",
+    "decimals": 6,
+    "totalSupply": "1000000000",
+    "marketCap": 50000000,
+    "priceUSD": 0.999,
+    "totalLiquidityUSD": 850000,
+    "volume24h": 125000,
+    "chains": [
+      {
+        "chainId": "11155111",
+        "dexId": "uniswap-v3",
+        "pairAddress": "0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8",
+        "liquidityUSD": 850000,
+        "volume24h": 125000,
+        "priceUSD": 0.999,
+        "url": "https://sepolia.etherscan.io/token/0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238"
+      }
+    ],
+    "totalPairs": 5,
+    "primaryDex": "uniswap-v3",
+    "viralMetrics": {
+      "multiChainPresence": 1,
+      "liquidityScore": 850000,
+      "volumeToLiquidityRatio": 0.147,
+      "priceStability": 99,
+      "dexDiversity": 3,
+      "hasMedia": true,
+      "ageInDays": 450,
+      "marketCapRank": "Medium ($10M-$100M)"
+    },
+    "imageUrl": "https://ethereum-optimism.github.io/data/USDC/logo.png",
+    "headerImage": "https://ethereum-optimism.github.io/data/USDC/logo.png",
+    "websites": ["https://www.circle.com/usdc"],
+    "socials": [
+      {
+        "type": "twitter",
+        "url": "https://twitter.com/circle"
+      }
+    ]
+  },
+  {
+    "address": "0x779877A7B0D9E8603169DdbD7836e478b4624789",
+    "name": "Link Token",
+    "symbol": "LINK",
+    "decimals": 18,
+    "totalSupply": "1000000000",
+    "marketCap": 8500000,
+    "priceUSD": 15.23,
+    "totalLiquidityUSD": 420000,
+    "volume24h": 85000,
+    "chains": [
+      {
+        "chainId": "11155111",
+        "dexId": "uniswap-v3",
+        "pairAddress": "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
+        "liquidityUSD": 420000,
+        "volume24h": 85000,
+        "priceUSD": 15.23,
+        "url": "https://sepolia.etherscan.io/token/0x779877A7B0D9E8603169DdbD7836e478b4624789"
+      }
+    ],
+    "totalPairs": 8,
+    "primaryDex": "uniswap-v3",
+    "viralMetrics": {
+      "multiChainPresence": 1,
+      "liquidityScore": 420000,
+      "volumeToLiquidityRatio": 0.202,
+      "priceStability": 85,
+      "dexDiversity": 4,
+      "hasMedia": true,
+      "ageInDays": 520,
+      "marketCapRank": "Small (<$10M)"
+    },
+    "imageUrl": "https://assets.coingecko.com/coins/images/877/small/chainlink-new-logo.png",
+    "headerImage": "https://assets.coingecko.com/coins/images/877/large/chainlink-new-logo.png",
+    "websites": ["https://chain.link"],
+    "socials": [
+      {
+        "type": "twitter",
+        "url": "https://twitter.com/chainlink"
+      },
+      {
+        "type": "telegram",
+        "url": "https://t.me/chainlinkofficial"
+      }
+    ]
+  },
+  {
+    "address": "0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14",
+    "name": "Wrapped Ether",
+    "symbol": "WETH",
+    "decimals": 18,
+    "totalSupply": "500000",
+    "marketCap": 120000000,
+    "priceUSD": 2400.50,
+    "totalLiquidityUSD": 2500000,
+    "volume24h": 850000,
+    "chains": [
+      {
+        "chainId": "11155111",
+        "dexId": "uniswap-v3",
+        "pairAddress": "0x7b79995e5f793a07bc00c21412e50ecae098e7f9",
+        "liquidityUSD": 2500000,
+        "volume24h": 850000,
+        "priceUSD": 2400.50,
+        "url": "https://sepolia.etherscan.io/token/0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14"
+      }
+    ],
+    "totalPairs": 12,
+    "primaryDex": "uniswap-v3",
+    "viralMetrics": {
+      "multiChainPresence": 1,
+      "liquidityScore": 2500000,
+      "volumeToLiquidityRatio": 0.340,
+      "priceStability": 70,
+      "dexDiversity": 5,
+      "hasMedia": true,
+      "ageInDays": 600,
+      "marketCapRank": "Large (>$100M)"
+    },
+    "imageUrl": "https://assets.coingecko.com/coins/images/2518/small/weth.png",
+    "headerImage": "https://assets.coingecko.com/coins/images/2518/large/weth.png",
+    "websites": ["https://weth.io"],
+    "socials": [
+      {
+        "type": "twitter",
+        "url": "https://twitter.com/ethereum"
+      }
+    ]
+  },
+  {
+    "address": "0x097D90c9d3E0B50Ca60e1ae45F6A81010f9FB534",
+    "name": "Pepe Doge",
+    "symbol": "PEPEDOGE",
+    "decimals": 18,
+    "totalSupply": "1000000000000",
+    "marketCap": 2500000,
+    "priceUSD": 0.0000025,
+    "totalLiquidityUSD": 180000,
+    "volume24h": 45000,
+    "chains": [
+      {
+        "chainId": "11155111",
+        "dexId": "uniswap-v2",
+        "pairAddress": "0xa478c2975ab1ea89e8196811f51a7b7ade33eb11",
+        "liquidityUSD": 180000,
+        "volume24h": 45000,
+        "priceUSD": 0.0000025,
+        "url": "https://sepolia.etherscan.io/token/0x097D90c9d3E0B50Ca60e1ae45F6A81010f9FB534"
+      }
+    ],
+    "totalPairs": 3,
+    "primaryDex": "uniswap-v2",
+    "viralMetrics": {
+      "multiChainPresence": 1,
+      "liquidityScore": 180000,
+      "volumeToLiquidityRatio": 0.250,
+      "priceStability": 45,
+      "dexDiversity": 2,
+      "hasMedia": true,
+      "ageInDays": 15,
+      "marketCapRank": "Small (<$10M)"
+    },
+    "imageUrl": "https://via.placeholder.com/100/00FF00/FFFFFF?text=PEPEDOGE",
+    "headerImage": "https://via.placeholder.com/300x100/00FF00/FFFFFF?text=PEPEDOGE",
+    "websites": ["https://pepedoge.meme"],
+    "socials": [
+      {
+        "type": "twitter",
+        "url": "https://twitter.com/pepedogecoin"
+      },
+      {
+        "type": "telegram",
+        "url": "https://t.me/pepedogeofficial"
+      }
+    ]
+  },
+  {
+    "address": "0x68194a729C2450ad26072b3D33ADaCbcef39D574",
+    "name": "Moon Rocket",
+    "symbol": "MOONR",
+    "decimals": 9,
+    "totalSupply": "10000000000",
+    "marketCap": 5800000,
+    "priceUSD": 0.00058,
+    "totalLiquidityUSD": 320000,
+    "volume24h": 95000,
+    "chains": [
+      {
+        "chainId": "11155111",
+        "dexId": "uniswap-v2",
+        "pairAddress": "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
+        "liquidityUSD": 320000,
+        "volume24h": 95000,
+        "priceUSD": 0.00058,
+        "url": "https://sepolia.etherscan.io/token/0x68194a729C2450ad26072b3D33ADaCbcef39D574"
+      }
+    ],
+    "totalPairs": 4,
+    "primaryDex": "uniswap-v2",
+    "viralMetrics": {
+      "multiChainPresence": 1,
+      "liquidityScore": 320000,
+      "volumeToLiquidityRatio": 0.297,
+      "priceStability": 55,
+      "dexDiversity": 2,
+      "hasMedia": true,
+      "ageInDays": 8,
+      "marketCapRank": "Small (<$10M)"
+    },
+    "imageUrl": "https://via.placeholder.com/100/FFD700/000000?text=MOONR",
+    "headerImage": "https://via.placeholder.com/300x100/FFD700/000000?text=MOONR",
+    "websites": ["https://moonrocket.finance"],
+    "socials": [
+      {
+        "type": "twitter",
+        "url": "https://twitter.com/moonrocketcoin"
+      },
+      {
+        "type": "telegram",
+        "url": "https://t.me/moonrocketgroup"
+      },
+      {
+        "type": "discord",
+        "url": "https://discord.gg/moonrocket"
+      }
+    ]
+  }
+]

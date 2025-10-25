@@ -8,6 +8,7 @@ import { createClient } from "redis";
 import type { Transaction } from "./aggregate.ts";
 import { fetchTokenAddressesMultichain } from "./multichain/multichain-address.ts";
 import { analyzeTokenWalletsMultiChain } from "./wallet-analysis.ts";
+import {runSingleTrade} from "./ai-agent.js";
 
 const client = createClient({
   username: "default",
