@@ -58,7 +58,17 @@ const client = createClient({
 });
 
 client.on('error', err => console.log('Redis Client Error', err));
-await client.connect();
+// Connect to Redis in a safe async context so connection errors are logged
+// and won't cause an uncaught exception that brings down the process.
+(async () => {
+  try {
+    await client.connect();
+    console.log('✅ Connected to Redis');
+  } catch (err) {
+    console.error('❌ Failed to connect to Redis:', err);
+    // Keep the process alive — other endpoints will return errors gracefully
+  }
+})();
 
 const app = express();
 const port = 3002;
