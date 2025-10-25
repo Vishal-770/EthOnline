@@ -4,6 +4,7 @@ import "./globals.css";
 import AppSideBar from "@/components/AppSideBar";
 import NavBar from "@/components/AppNavbar";
 import ThemeProviderWrapper from "@/components/ThemeProvider";
+import { WalletProviders } from "@/components/WalletProviders";
 
 const saira = Saira({
   variable: "--font-saira",
@@ -32,17 +33,19 @@ export default async function RootLayout({
         className={`${saira.variable} ${firaCode.variable} antialiased min-h-screen overflow-x-hidden`}
       >
         <ThemeProviderWrapper>
-          <div className="flex flex-col h-screen">
-            <NavBar />
-            <div className="flex flex-1 overflow-hidden relative">
-              <AppSideBar />
-              <main className="flex-1 overflow-y-auto w-full">
-                <div className="px-3 sm:px-4 md:px-6 py-4 md:py-6">
-                  {children}
-                </div>
-              </main>
+          <WalletProviders>
+            <div className="flex flex-col h-screen">
+              <NavBar />
+              <div className="flex flex-1 overflow-hidden relative">
+                <AppSideBar />
+                <main className="flex-1 overflow-y-auto w-full">
+                  <div className="px-3 sm:px-4 md:px-6 py-4 md:py-6">
+                    {children}
+                  </div>
+                </main>
+              </div>
             </div>
-          </div>
+          </WalletProviders>
         </ThemeProviderWrapper>
       </body>
     </html>

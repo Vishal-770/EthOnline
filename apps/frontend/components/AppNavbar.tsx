@@ -7,6 +7,7 @@ import { useState } from "react";
 import { ModeToggle } from "./ModeToggle";
 import { Button } from "./ui/button";
 import { CHAIN_ARRAY } from "@/lib/chains";
+import { WalletButton } from "./WalletButton";
 
 const NavBar = () => {
   const pathname = usePathname();
@@ -78,8 +79,9 @@ const NavBar = () => {
         </div>
       </div>
 
-      {/* RIGHT: Mode Toggle + Mobile Menu Button */}
+      {/* RIGHT: Wallet Button + Mode Toggle + Mobile Menu Button */}
       <div className="flex items-center gap-2">
+        <WalletButton />
         <ModeToggle />
         <button
           className="md:hidden p-2 rounded-md hover:bg-accent transition-colors"
@@ -138,6 +140,7 @@ const NavBar = () => {
             </Link>
           </div>
         </div>
+
       )}
     </nav>
   );
