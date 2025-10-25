@@ -1,16 +1,24 @@
 {
   "name": "offchain",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "OffChain Social Media Analytics API",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-  "start": "tsx src/index.ts"
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "build": "tsc && node -e \"console.log('Build completed successfully!')\"",
+    "build:clean": "rimraf dist && npm run build",
+    "typecheck": "tsc --noEmit",
+    "clean": "rimraf dist",
+    "prod": "npm run build && npm start"
   },
-  "keywords": [],
+  "keywords": ["social-media", "analytics", "crypto", "offchain"],
   "author": "",
   "license": "ISC",
   "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "@types/cors": "^2.8.19",
@@ -21,12 +29,14 @@
     "dotenv": "^16.0.3",
     "express": "^5.1.0",
     "openai": "^6.6.0",
+    "redis": "^5.9.0",
     "rss-parser": "^3.13.0",
     "snoowrap": "^1.23.0",
     "twitter-api-v2": "^1.27.0"
   },
   "devDependencies": {
     "@types/node": "^22.18.12",
+    "rimraf": "^5.0.5",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.6",
     "typescript": "^5.9.2"
