@@ -12,7 +12,11 @@
     "lint:fix": "eslint src --ext .ts --fix",
     "clean": "rm -rf dist"
   },
-  "keywords": ["envio", "blockchain", "token-analytics"],
+  "keywords": [
+    "envio",
+    "blockchain",
+    "token-analytics"
+  ],
   "author": "",
   "license": "ISC",
   "type": "module",
