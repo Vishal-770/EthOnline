@@ -98,19 +98,19 @@ async function fetchTweets(memeCoins: String[], cryptoTerms: String[], trendingH
 
   console.log('Strategy 1: Searching by meme coin names...');
   const coinQuery = memeCoins.slice(0, 10).map(k => `"${k}"`).join(' OR ') + ' -is:retweet lang:en';
-  await searchTweets(coinQuery, allTweets, 50);
+  await searchTweets(coinQuery, allTweets, 1);
 
   console.log('Strategy 2: Searching by crypto terms...');
   const termsQuery = cryptoTerms.map(k => `"${k}"`).join(' OR ') + ' -is:retweet lang:en';
-  await searchTweets(termsQuery, allTweets, 50);
+  await searchTweets(termsQuery, allTweets, 1);
 
   console.log('Strategy 3: Searching by trending hashtags...');
   const hashtagQuery = trendingHashtags.join(' OR ') + ' -is:retweet lang:en';
-  await searchTweets(hashtagQuery, allTweets, 50);
+  await searchTweets(hashtagQuery, allTweets, 1);
 
   console.log('Strategy 4: Searching for pump signals...');
   const pumpQuery = '(pump OR moon OR 100x OR 1000x) (coin OR token OR crypto) -is:retweet lang:en';
-  await searchTweets(pumpQuery, allTweets, 50);
+  await searchTweets(pumpQuery, allTweets, 1);
 
   const uniqueTweets = Array.from(
     new Map(allTweets.map(t => [t.id, t])).values()
