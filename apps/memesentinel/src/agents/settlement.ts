@@ -1,7 +1,5 @@
 import * as dotenv from 'dotenv';
 import { BaseAgent } from '../shared/BaseAgent';
-// TODO: Fix Hedera Agent Kit import once built
-// import { HederaLangchainToolkit, AgentMode } from 'hedera-agent-kit';
 import { Client, PrivateKey, TopicCreateTransaction, TopicMessageSubmitTransaction } from '@hashgraph/sdk';
 import { AgentConfig, AlertSignal, A2AMessagePayload } from '../types';
 import { ExecutionEventBus } from '@a2a-js/sdk/server';
@@ -23,8 +21,6 @@ export interface SettlementRecord {
 
 export class SettlementAgent extends BaseAgent {
   private hederaClient: Client;
-  // TODO: Add back once Hedera toolkit is built
-  // private hederaToolkit: HederaLangchainToolkit;
   private settlementRecords: Map<string, SettlementRecord> = new Map();
   private alertTopicId: string | null = null;
   
@@ -64,19 +60,6 @@ export class SettlementAgent extends BaseAgent {
       process.env.HEDERA_ACCOUNT_ID!,
       PrivateKey.fromStringECDSA(process.env.HEDERA_PRIVATE_KEY!)
     );
-
-    // TODO: Initialize Hedera Agent Kit once built
-    // this.hederaToolkit = new HederaLangchainToolkit({
-    //   client: this.hederaClient,
-    //   configuration: {
-    //     tools: [], // Load all tools
-    //     context: {
-    //       mode: AgentMode.AUTONOMOUS // Autonomous mode for direct execution
-    //     },
-    //     plugins: []
-    //   }
-    // });
-  }
 
   async initialize(): Promise<void> {
     await super.initialize();
