@@ -225,7 +225,7 @@ export default function AnalyzePage() {
                 </CardContent>
               </Card>
 
-              <Card className="hover:shadow-lg transition-shadow">
+              {/* <Card className="hover:shadow-lg transition-shadow">
                 <CardContent className="p-4 lg:p-6">
                   <div className="flex items-center gap-4">
                     <div className="p-3 bg-green-500/10 rounded-xl">
@@ -245,7 +245,7 @@ export default function AnalyzePage() {
                     </div>
                   </div>
                 </CardContent>
-              </Card>
+              </Card> */}
 
               <Card className="hover:shadow-lg transition-shadow sm:col-span-2 xl:col-span-1">
                 <CardContent className="p-4 lg:p-6">

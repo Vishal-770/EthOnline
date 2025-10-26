@@ -9,6 +9,7 @@ import axios from "axios";
 import { LoaderDemo } from "./Loader";
 import { getApiEndpoint } from "@/lib/env";
 import type { ChainConfig } from "@/lib/chains";
+import { Copy, Check } from "lucide-react"; // ✅ added
 
 interface TrendingTokenCardGridProps {
   tokenAddress: string;
@@ -70,12 +71,8 @@ interface TokenMetadata {
   socials?: Social[];
 }
 
-async function fetchTokenMetadata(
-  tokenAddress: string
-): Promise<TokenMetadata> {
-  const { data } = await axios.get(
-    getApiEndpoint(`/token-metadata/${tokenAddress}`)
-  );
+async function fetchTokenMetadata(tokenAddress: string): Promise<TokenMetadata> {
+  const { data } = await axios.get(getApiEndpoint(`/token-metadata/${tokenAddress}`));
   return data;
 }
 
@@ -102,16 +99,24 @@ const TrendingTokenCardGrid: React.FC<TrendingTokenCardGridProps> = ({
   chain,
   trendingScore,
 }) => {
+  const [copied, setCopied] = React.useState(false); // ✅ new state
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(data?.address || "");
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+
   const { data, isLoading, isError } = useQuery({
     queryKey: ["token-metadata", tokenAddress, chain?.slug || "ethereum"],
     queryFn: () => fetchTokenMetadata(tokenAddress),
-    staleTime: 10 * 60 * 1000, // Token metadata stays fresh for 10 minutes
-    gcTime: 60 * 60 * 1000, // Cache persists for 1 hour
-    retry: 2, // Retry failed requests twice
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000), // Exponential backoff
-    refetchOnWindowFocus: false, // Don't refetch on window focus (metadata doesn't change often)
-    refetchOnMount: false, // Don't refetch on component mount
-    refetchOnReconnect: false, // Don't refetch on reconnect
+    staleTime: 10 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
+    retry: 2,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
   });
 
   if (isLoading) {
@@ -137,20 +142,11 @@ const TrendingTokenCardGrid: React.FC<TrendingTokenCardGridProps> = ({
   const chainSlug = chain?.slug || "ethereum";
   const tokenLink = `/token/${chainSlug}/${tokenAddress}`;
 
-  // Debug logging
-  console.log('TrendingTokenCardGrid Debug:', {
-    tokenAddress,
-    chain,
-    chainSlug,
-    tokenLink
-  });
-
   return (
     <Link href={tokenLink} className="block w-full group">
       <Card className="relative w-full p-3 border border-border bg-card hover:bg-accent/5 hover:border-primary/20 rounded-lg transition-all duration-150 overflow-hidden">
-        {/* Header Section with Token Info */}
+        {/* Header Section */}
         <div className="flex items-center gap-3 mb-3">
-          {/* Rank Badge */}
           {rank && (
             <div className="flex flex-col items-center justify-center shrink-0">
               <div className="text-[10px] text-muted-foreground font-medium uppercase">
@@ -176,11 +172,9 @@ const TrendingTokenCardGrid: React.FC<TrendingTokenCardGridProps> = ({
             )}
           </div>
 
-          {/* Token Name & Symbol */}
+          {/* Token Info */}
           <div className="flex-1 min-w-0">
-            <h3 className="text-base font-bold text-foreground truncate">
-              {data.name}
-            </h3>
+            <h3 className="text-base font-bold text-foreground truncate">{data.name}</h3>
             <div className="flex items-center gap-2 mt-0.5">
               <span className="text-xs text-muted-foreground font-medium bg-muted px-2 py-0.5 rounded">
                 {data.symbol}
@@ -191,7 +185,7 @@ const TrendingTokenCardGrid: React.FC<TrendingTokenCardGridProps> = ({
             </div>
           </div>
 
-          {/* 24H Change Badge or Trending Score */}
+          {/* 24H Change or Trending Score */}
           {trendingScore ? (
             <div className="shrink-0 text-xs font-bold px-2 py-1 rounded bg-linear-to-r from-orange-500/10 to-red-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20">
               🔥 {trendingScore}
@@ -210,48 +204,28 @@ const TrendingTokenCardGrid: React.FC<TrendingTokenCardGridProps> = ({
           )}
         </div>
 
-        {/* Stats Grid - Horizontal Layout */}
+        {/* Stats Grid */}
         <div className="grid grid-cols-6 gap-2 py-2 border-t border-border">
-          {/* Price */}
           <div className="text-left">
-            <div className="text-[10px] text-muted-foreground font-medium mb-0.5 uppercase">
-              Price
-            </div>
-            <div className="text-xs font-bold text-foreground">
-              ${formatPrice(data.priceUSD)}
-            </div>
+            <div className="text-[10px] text-muted-foreground font-medium mb-0.5 uppercase">Price</div>
+            <div className="text-xs font-bold text-foreground">${formatPrice(data.priceUSD)}</div>
           </div>
 
-          {/* Market Cap */}
           <div className="text-left">
-            <div className="text-[10px] text-muted-foreground font-medium mb-0.5 uppercase">
-              MCap
-            </div>
-            <div className="text-xs font-semibold text-foreground">
-              {formatNumber(data.marketCap)}
-            </div>
+            <div className="text-[10px] text-muted-foreground font-medium mb-0.5 uppercase">MCap</div>
+            <div className="text-xs font-semibold text-foreground">{formatNumber(data.marketCap)}</div>
           </div>
 
-          {/* Volume */}
           <div className="text-left">
-            <div className="text-[10px] text-muted-foreground font-medium mb-0.5 uppercase">
-              Vol 24H
-            </div>
-            <div className="text-xs font-semibold text-foreground">
-              {formatNumber(data.volume24h)}
-            </div>
+            <div className="text-[10px] text-muted-foreground font-medium mb-0.5 uppercase">Vol 24H</div>
+            <div className="text-xs font-semibold text-foreground">{formatNumber(data.volume24h)}</div>
           </div>
 
-          {/* 1H Change */}
           <div className="text-left">
-            <div className="text-[10px] text-muted-foreground font-medium mb-0.5 uppercase">
-              1H
-            </div>
+            <div className="text-[10px] text-muted-foreground font-medium mb-0.5 uppercase">1H</div>
             <div
               className={`text-xs font-bold ${
-                isPositive1h
-                  ? "text-green-600 dark:text-green-400"
-                  : "text-red-600 dark:text-red-400"
+                isPositive1h ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
               }`}
             >
               {isPositive1h ? "+" : ""}
@@ -259,16 +233,11 @@ const TrendingTokenCardGrid: React.FC<TrendingTokenCardGridProps> = ({
             </div>
           </div>
 
-          {/* 6H Change */}
           <div className="text-left">
-            <div className="text-[10px] text-muted-foreground font-medium mb-0.5 uppercase">
-              6H
-            </div>
+            <div className="text-[10px] text-muted-foreground font-medium mb-0.5 uppercase">6H</div>
             <div
               className={`text-xs font-bold ${
-                isPositive6h
-                  ? "text-green-600 dark:text-green-400"
-                  : "text-red-600 dark:text-red-400"
+                isPositive6h ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
               }`}
             >
               {isPositive6h ? "+" : ""}
@@ -276,29 +245,37 @@ const TrendingTokenCardGrid: React.FC<TrendingTokenCardGridProps> = ({
             </div>
           </div>
 
-          {/* Liquidity */}
           <div className="text-left">
-            <div className="text-[10px] text-muted-foreground font-medium mb-0.5 uppercase">
-              Liquidity
-            </div>
-            <div className="text-xs font-semibold text-foreground">
-              {formatNumber(data.totalLiquidityUSD)}
-            </div>
+            <div className="text-[10px] text-muted-foreground font-medium mb-0.5 uppercase">Liquidity</div>
+            <div className="text-xs font-semibold text-foreground">{formatNumber(data.totalLiquidityUSD)}</div>
           </div>
         </div>
 
-        {/* Bottom Row - DEX and Address */}
+        {/* ✅ Bottom Row with Copy */}
         <div className="flex items-center justify-between pt-2 border-t border-border">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] text-muted-foreground uppercase">
-              DEX:
-            </span>
+            <span className="text-[10px] text-muted-foreground uppercase">DEX:</span>
             <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded font-medium">
               {data.primaryDex}
             </span>
           </div>
-          <div className="text-[10px] text-muted-foreground/60 font-mono">
-            {data.address.slice(0, 6)}...{data.address.slice(-4)}
+
+          <div className="flex items-center gap-1 text-[10px] text-muted-foreground/60 font-mono">
+            <span>{data.address.slice(0, 6)}...{data.address.slice(-4)}</span>
+            <button
+              onClick={(e) => {
+                e.preventDefault(); // stop link navigation
+                handleCopy();
+              }}
+              className="p-1 hover:bg-muted rounded transition-colors"
+              title="Copy address"
+            >
+              {copied ? (
+                <Check className="w-3 h-3 text-green-500" />
+              ) : (
+                <Copy className="w-3 h-3 text-muted-foreground" />
+              )}
+            </button>
           </div>
         </div>
       </Card>

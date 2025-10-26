@@ -18,6 +18,7 @@ import {
   ArrowDownRight 
 } from 'lucide-react';
 import { ethers } from 'ethers';
+import { useAccount, useWalletClient } from 'wagmi';
 
 // TypeScript interfaces
 interface TrendingToken {
@@ -44,6 +45,12 @@ interface Trade {
 interface InfoRowProps {
   label: string;
   value: string | number | JSX.Element;
+}
+
+interface TokenBalance {
+  tokenAddress: string;
+  symbol: string;
+  balance: string;
 }
 
 const ABI = [
@@ -469,10 +476,13 @@ const ABI = [
 ];
 
 export default function MemeTraderDashboard() {
-  const [connected, setConnected] = useState<boolean>(false);
+  const { address: connectedAddress, isConnected } = useAccount();
+  const { data: walletClient } = useWalletClient();
+  
   const [address, setAddress] = useState<string>('');
   const [ethBalance, setEthBalance] = useState<string>('0');
   const [contractEthBalance, setContractEthBalance] = useState<string>('0');
+  const [tokenBalances, setTokenBalances] = useState<TokenBalance[]>([]);
   const [isAutomating, setIsAutomating] = useState<boolean>(false);
   const [intervalTime, setIntervalTime] = useState<number>(60);
   const [trendingTokens, setTrendingTokens] = useState<TrendingToken[]>([]);
@@ -498,10 +508,43 @@ export default function MemeTraderDashboard() {
   }, []);
 
   useEffect(() => {
-    if (connected && contract) {
+    if (isConnected && connectedAddress) {
+      setAddress(connectedAddress);
+      initializeContract();
+    } else {
+      setAddress('');
+      setProvider(null);
+      setSigner(null);
+      setContract(null);
+      setEthBalance('0');
+      setContractEthBalance('0');
+      setTokenBalances([]);
+    }
+  }, [isConnected, connectedAddress]);
+
+  useEffect(() => {
+    if (isConnected && contract && address) {
       refreshBalances();
     }
-  }, [connected, contract]);
+  }, [isConnected, contract, address]);
+
+  const initializeContract = async (): Promise<void> => {
+    if (!connectedAddress || !window.ethereum) return;
+    
+    try {
+      const prov = new ethers.BrowserProvider(window.ethereum);
+      const sign = await prov.getSigner();
+      const contr = new ethers.Contract(CONTRACT_ADDRESS, ABI, sign);
+
+      setProvider(prov);
+      setSigner(sign);
+      setContract(contr);
+
+      console.log('Contract initialized for address:', connectedAddress);
+    } catch (error) {
+      console.error('Error initializing contract:', error);
+    }
+  };
 
   const checkApiStatus = async (): Promise<void> => {
     try {
@@ -536,9 +579,27 @@ export default function MemeTraderDashboard() {
       const contractBal = await contract.ethBalances(address);
       setContractEthBalance(ethers.formatEther(contractBal));
 
+      const tokenBals: TokenBalance[] = [];
+      for (const token of trendingTokens) {
+        try {
+          const balance = await contract.tokenBalances(address, token.address);
+          if (balance > 0n) {
+            tokenBals.push({
+              tokenAddress: token.address,
+              symbol: token.symbol,
+              balance: ethers.formatEther(balance)
+            });
+          }
+        } catch (err) {
+          console.error(`Error fetching balance for ${token.symbol}:`, err);
+        }
+      }
+      setTokenBalances(tokenBals);
+
       console.log('Balances refreshed:', {
         wallet: ethers.formatEther(ethBal),
-        contract: ethers.formatEther(contractBal)
+        contract: ethers.formatEther(contractBal),
+        tokens: tokenBals
       });
     } catch (error) {
       console.error('Error refreshing balances:', error);
@@ -688,41 +749,6 @@ export default function MemeTraderDashboard() {
     return `${value.toFixed(2)}`;
   };
 
-  const connectWallet = async (): Promise<void> => {
-    if (typeof window.ethereum !== 'undefined') {
-      try {
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        const addr = accounts[0];
-        setAddress(addr);
-        setConnected(true);
-
-        const prov = new ethers.BrowserProvider(window.ethereum);
-        const sign = await prov.getSigner();
-        const contr = new ethers.Contract(CONTRACT_ADDRESS, ABI, sign);
-
-        setProvider(prov);
-        setSigner(sign);
-        setContract(contr);
-
-        const ethBal = await prov.getBalance(addr);
-        setEthBalance(ethers.formatEther(ethBal));
-
-        const contractBal = await contr.ethBalances(addr);
-        setContractEthBalance(ethers.formatEther(contractBal));
-
-        console.log('Wallet connected:', {
-          address: addr,
-          ethBalance: ethers.formatEther(ethBal),
-          contractBalance: ethers.formatEther(contractBal)
-        });
-      } catch (error) {
-        console.error('Error connecting wallet:', error);
-      }
-    } else {
-      alert('Please install MetaMask!');
-    }
-  };
-
   const depositETH = async (): Promise<void> => {
     if (!contract) return;
     const amountStr = prompt('Enter ETH amount to deposit:');
@@ -737,7 +763,6 @@ export default function MemeTraderDashboard() {
       alert('Deposit successful!');
     } catch (error) {
       console.error('Deposit error:', error);
-      // alert('Deposit failed');
     } finally {
       setLoading(false);
     }
@@ -829,7 +854,6 @@ export default function MemeTraderDashboard() {
       alert(`Trade ${result.success ? 'successful' : 'failed'}!`);
     } catch (error: any) {
       console.error('Trade execution error:', error);
-      // alert(`Trade failed: ${error.message}`);
       
       const failedTrade: Trade = {
         id: Date.now(),
@@ -898,19 +922,12 @@ export default function MemeTraderDashboard() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="h-screen flex flex-col">
-        {!connected && (
+        {!isConnected && (
           <div className="bg-yellow-500/10 border-b border-yellow-500/30 px-4 py-2 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <AlertCircle className="text-yellow-500" size={16} />
-              <span className="text-xs text-yellow-600">Connect wallet to start trading</span>
+              <span className="text-xs text-yellow-600">Connect wallet to start trading (use navbar)</span>
             </div>
-            <button
-              onClick={connectWallet}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded-lg text-white text-xs transition"
-            >
-              <Wallet size={14} />
-              Connect Wallet
-            </button>
           </div>
         )}
 
@@ -918,20 +935,39 @@ export default function MemeTraderDashboard() {
           <div className="h-full flex gap-0">
             <div className="w-64 bg-card border-r border-border overflow-y-auto">
               <div className="p-3 space-y-3">
-                {connected && (
-                  <div className="bg-card border border-border rounded-lg p-3">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Wallet className="w-4 h-4 text-blue-500" />
-                      <h3 className="text-sm font-semibold uppercase tracking-wide">Wallet</h3>
-                    </div>
-                    <div className="space-y-1.5">
-                      <div className="font-mono text-xs bg-accent/20 px-2 py-1 rounded">
-                        {address.slice(0, 8)}...{address.slice(-6)}
+                {isConnected && (
+                  <>
+                    <div className="bg-card border border-border rounded-lg p-3">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Wallet className="w-4 h-4 text-blue-500" />
+                        <h3 className="text-sm font-semibold uppercase tracking-wide">Wallet</h3>
                       </div>
-                      <InfoRow label="Balance" value={`${parseFloat(ethBalance).toFixed(4)} ETH`} />
-                      <InfoRow label="Contract" value={`${parseFloat(contractEthBalance).toFixed(4)} ETH`} />
+                      <div className="space-y-1.5">
+                        <div className="font-mono text-xs bg-accent/20 px-2 py-1 rounded">
+                          {address.slice(0, 8)}...{address.slice(-6)}
+                        </div>
+                        <InfoRow label="Balance" value={`${parseFloat(ethBalance).toFixed(4)} ETH`} />
+                        <InfoRow label="Contract" value={`${parseFloat(contractEthBalance).toFixed(4)} ETH`} />
+                      </div>
                     </div>
-                  </div>
+
+                    {tokenBalances.length > 0 && (
+                      <div className="bg-card border border-border rounded-lg p-3">
+                        <div className="flex items-center gap-2 mb-2">
+                          <DollarSign className="w-4 h-4 text-green-500" />
+                          <h3 className="text-sm font-semibold uppercase tracking-wide">Token Holdings</h3>
+                        </div>
+                        <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                          {tokenBalances.map((token, idx) => (
+                            <div key={idx} className="flex items-center justify-between bg-accent/20 rounded-md px-2 py-1.5">
+                              <span className="text-[11px] font-semibold text-muted-foreground">{token.symbol}</span>
+                              <span className="text-[11px] font-bold">{parseFloat(token.balance).toFixed(4)}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </>
                 )}
 
                 <div className="bg-card border border-border rounded-lg p-3">
@@ -962,14 +998,14 @@ export default function MemeTraderDashboard() {
                   <div className="space-y-2">
                     <button
                       onClick={depositETH}
-                      disabled={!connected || loading}
+                      disabled={!isConnected || loading}
                       className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:opacity-50 px-3 py-2 rounded text-xs transition"
                     >
                       Deposit ETH
                     </button>
                     <button
                       onClick={withdrawETH}
-                      disabled={!connected || loading}
+                      disabled={!isConnected || loading}
                       className="w-full bg-red-600 hover:bg-red-700 disabled:bg-gray-600 disabled:opacity-50 px-3 py-2 rounded text-xs transition"
                     >
                       Withdraw ETH
@@ -1018,7 +1054,7 @@ export default function MemeTraderDashboard() {
                   <div className="space-y-2">
                     <button
                       onClick={toggleAutomation}
-                      disabled={!connected || apiStatus !== 'connected'}
+                      disabled={!isConnected || apiStatus !== 'connected'}
                       className={`w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded text-xs font-bold transition ${
                         isAutomating
                           ? 'bg-red-600 hover:bg-red-700'
@@ -1030,7 +1066,7 @@ export default function MemeTraderDashboard() {
                     </button>
                     <button
                       onClick={runAutomatedTrade}
-                      disabled={!connected || loading || apiStatus !== 'connected'}
+                      disabled={!isConnected || loading || apiStatus !== 'connected'}
                       className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:opacity-50 px-3 py-2 rounded text-xs transition"
                     >
                       <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
