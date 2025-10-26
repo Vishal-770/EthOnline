@@ -6,6 +6,12 @@ import { AlertCircle } from "lucide-react";
 import { SidebarWrapper } from "./SidebarWrapper";
 import axios from "axios";
 
+declare global {
+  interface Window {
+    rembeddit?: any;
+  }
+}
+
 interface SocialPost {
   id: string;
   platform: "twitter" | "reddit";
@@ -48,7 +54,9 @@ const RedditEmbed = ({ url, postId }: { url: string; postId: string }) => {
 };
 
 async function fetchSocialPosts() {
-  const response = await axios.get(`http://localhost:3002/allposts`);
+  const apiUrl =
+    process.env.NEXT_PUBLIC_OFFCHAIN_API_URL || "http://localhost:3002";
+  const response = await axios.get(`${apiUrl}/allposts`);
   return response.data;
 }
 
@@ -159,7 +167,9 @@ const AppSideBar = () => {
         {isLoading && visiblePosts.length === 0 ? (
           <div className="text-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-            <p className="text-sm text-muted-foreground mt-4">Loading posts...</p>
+            <p className="text-sm text-muted-foreground mt-4">
+              Loading posts...
+            </p>
           </div>
         ) : visiblePosts.length === 0 ? (
           <div className="text-center py-8">
@@ -169,9 +179,11 @@ const AppSideBar = () => {
           <div className="feed-container space-y-6" ref={feedContainerRef}>
             {visiblePosts.map((post, index) => (
               <div
-                key={`${post.platform}-${post.id}`}
+                key={`${post.platform}-${post.id}-${index}`}
                 className={`post-item transition-all duration-500 ease-out ${
-                  index === visiblePosts.length - 1 ? "animate-slide-in" : "animate-slide-up"
+                  index === visiblePosts.length - 1
+                    ? "animate-slide-in"
+                    : "animate-slide-up"
                 }`}
                 style={{ animationDelay: `${index * 0.1}s` }}
               >

@@ -23,8 +23,10 @@ export const CHAINS: Record<string, ChainConfig> = {
     id: 1,
     name: "Ethereum",
     slug: "ethereum",
-    hypersyncUrl: "https://eth.hypersync.xyz",
-    explorerUrl: "https://etherscan.io",
+    hypersyncUrl:
+      process.env.NEXT_PUBLIC_HYPERSYNC_ETH || "https://eth.hypersync.xyz",
+    explorerUrl:
+      process.env.NEXT_PUBLIC_ETHERSCAN_URL || "https://etherscan.io",
     explorerName: "Etherscan",
     nativeCurrency: {
       name: "Ether",
@@ -37,8 +39,9 @@ export const CHAINS: Record<string, ChainConfig> = {
     id: 8453,
     name: "Base",
     slug: "base",
-    hypersyncUrl: "https://base.hypersync.xyz",
-    explorerUrl: "https://basescan.org",
+    hypersyncUrl:
+      process.env.NEXT_PUBLIC_HYPERSYNC_BASE || "https://base.hypersync.xyz",
+    explorerUrl: process.env.NEXT_PUBLIC_BASESCAN_URL || "https://basescan.org",
     explorerName: "BaseScan",
     nativeCurrency: {
       name: "Ether",
@@ -51,8 +54,11 @@ export const CHAINS: Record<string, ChainConfig> = {
     id: 137,
     name: "Polygon",
     slug: "polygon",
-    hypersyncUrl: "https://polygon.hypersync.xyz",
-    explorerUrl: "https://polygonscan.com",
+    hypersyncUrl:
+      process.env.NEXT_PUBLIC_HYPERSYNC_POLYGON ||
+      "https://polygon.hypersync.xyz",
+    explorerUrl:
+      process.env.NEXT_PUBLIC_POLYGONSCAN_URL || "https://polygonscan.com",
     explorerName: "PolygonScan",
     nativeCurrency: {
       name: "MATIC",
@@ -65,8 +71,10 @@ export const CHAINS: Record<string, ChainConfig> = {
     id: 42161,
     name: "Arbitrum",
     slug: "arbitrum",
-    hypersyncUrl: "https://arbitrum.hypersync.xyz",
-    explorerUrl: "https://arbiscan.io",
+    hypersyncUrl:
+      process.env.NEXT_PUBLIC_HYPERSYNC_ARBITRUM ||
+      "https://arbitrum.hypersync.xyz",
+    explorerUrl: process.env.NEXT_PUBLIC_ARBISCAN_URL || "https://arbiscan.io",
     explorerName: "Arbiscan",
     nativeCurrency: {
       name: "Ether",
@@ -79,8 +87,12 @@ export const CHAINS: Record<string, ChainConfig> = {
     id: 10,
     name: "Optimism",
     slug: "optimism",
-    hypersyncUrl: "https://optimism.hypersync.xyz",
-    explorerUrl: "https://optimistic.etherscan.io",
+    hypersyncUrl:
+      process.env.NEXT_PUBLIC_HYPERSYNC_OPTIMISM ||
+      "https://optimism.hypersync.xyz",
+    explorerUrl:
+      process.env.NEXT_PUBLIC_OPTIMISM_ETHERSCAN_URL ||
+      "https://optimistic.etherscan.io",
     explorerName: "Optimism Explorer",
     nativeCurrency: {
       name: "Ether",

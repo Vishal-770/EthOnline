@@ -4,27 +4,68 @@ This guide will help you deploy the EthOnline frontend application to production
 
 ## 🔧 Environment Variables
 
-The application requires the following environment variables. Copy `.env.local.example` to `.env.local` for local development, or `.env.production.example` for production.
+The application requires the following environment variables. Copy `.env.example` to `.env` for local development or configure them in your deployment platform.
 
-### Required Variables
+### Required Backend API Endpoints
 
 ```bash
-# Backend API URL (Envio service)
+# Envio On-Chain Analytics API (Port 3001)
 # Local: http://localhost:3001
-# Production: Your deployed backend URL
-NEXT_PUBLIC_ENVIO_API_URL=
+# Production: https://your-envio-api.com
+NEXT_PUBLIC_ENVIO_API_URL=http://localhost:3001
 
-# Twitter API Key (Optional - for Twitter integration)
-NEXT_PUBLIC_TWITTER_API_KEY=
+# OffChain Social Analytics API (Port 3002)
+# Local: http://localhost:3002
+# Production: https://your-offchain-api.com
+NEXT_PUBLIC_OFFCHAIN_API_URL=http://localhost:3002
 
-# Etherscan URL (Default: https://etherscan.io)
+# Agent/Assistant API (Port 3003)
+# Local: http://localhost:3003
+# Production: https://your-agent-api.com
+NEXT_PUBLIC_AGENT_API_URL=http://localhost:3003
+
+# Dashboard/Chat API (Port 4007)
+# Local: http://localhost:4007
+# Production: https://your-dashboard-api.com
+NEXT_PUBLIC_DASHBOARD_API_URL=http://localhost:4007
+```
+
+### Blockchain Explorers (Optional - Defaults Provided)
+
+```bash
 NEXT_PUBLIC_ETHERSCAN_URL=https://etherscan.io
+NEXT_PUBLIC_BASESCAN_URL=https://basescan.org
+NEXT_PUBLIC_POLYGONSCAN_URL=https://polygonscan.com
+NEXT_PUBLIC_ARBISCAN_URL=https://arbiscan.io
+NEXT_PUBLIC_OPTIMISM_ETHERSCAN_URL=https://optimistic.etherscan.io
+```
 
-# Moralis Chart Widget URL (Default provided)
+### Hypersync URLs (Optional - Defaults Provided)
+
+```bash
+NEXT_PUBLIC_HYPERSYNC_ETH=https://eth.hypersync.xyz
+NEXT_PUBLIC_HYPERSYNC_BASE=https://base.hypersync.xyz
+NEXT_PUBLIC_HYPERSYNC_POLYGON=https://polygon.hypersync.xyz
+NEXT_PUBLIC_HYPERSYNC_ARBITRUM=https://arbitrum.hypersync.xyz
+NEXT_PUBLIC_HYPERSYNC_OPTIMISM=https://optimism.hypersync.xyz
+```
+
+### External APIs (Optional)
+
+```bash
+# Twitter API
+NEXT_PUBLIC_TWITTER_API_URL=https://api.twitterapi.io
+NEXT_PUBLIC_TWITTER_API_KEY=your_twitter_api_key
+
+# Moralis Chart Widget
 NEXT_PUBLIC_MORALIS_CHART_URL=https://moralis.com/static/embed/chart.js
 
-# Twitter API URL (Default provided)
-NEXT_PUBLIC_TWITTER_API_URL=https://api.twitterapi.io
+# ThirdWeb (for wallet connection)
+NEXT_PUBLIC_THIRD_WEB_SECRET=your_secret
+NEXT_PUBLIC_THIRD_WEB_CLIENT_ID=your_client_id
+
+# WalletConnect
+NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_project_id
 ```
 
 ### Setting Up Environment Variables
@@ -32,14 +73,14 @@ NEXT_PUBLIC_TWITTER_API_URL=https://api.twitterapi.io
 #### Local Development
 ```bash
 cd apps/frontend
-cp .env.local.example .env.local
-# Edit .env.local with your values
+cp .env.example .env
+# Edit .env with your local backend URLs (default: localhost)
 ```
 
 #### Production Deployment
 ```bash
-cp .env.production.example .env.production
-# Edit .env.production with your production values
+# Set all environment variables in your deployment platform
+# Replace localhost URLs with your deployed backend service URLs
 ```
 
 ## 📦 Building for Production

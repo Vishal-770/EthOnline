@@ -39,11 +39,19 @@ async function getTokens(chainSlug?: string): Promise<Token[]> {
 
 function getHypersyncUrl(chainSlug: string): string {
   const urls: Record<string, string> = {
-    base: "https://base.hypersync.xyz",
-    polygon: "https://polygon.hypersync.xyz",
-    arbitrum: "https://arbitrum.hypersync.xyz",
-    optimism: "https://optimism.hypersync.xyz",
-    ethereum: "https://eth.hypersync.xyz",
+    base:
+      process.env.NEXT_PUBLIC_HYPERSYNC_BASE || "https://base.hypersync.xyz",
+    polygon:
+      process.env.NEXT_PUBLIC_HYPERSYNC_POLYGON ||
+      "https://polygon.hypersync.xyz",
+    arbitrum:
+      process.env.NEXT_PUBLIC_HYPERSYNC_ARBITRUM ||
+      "https://arbitrum.hypersync.xyz",
+    optimism:
+      process.env.NEXT_PUBLIC_HYPERSYNC_OPTIMISM ||
+      "https://optimism.hypersync.xyz",
+    ethereum:
+      process.env.NEXT_PUBLIC_HYPERSYNC_ETH || "https://eth.hypersync.xyz",
   };
   return urls[chainSlug] || urls.ethereum;
 }

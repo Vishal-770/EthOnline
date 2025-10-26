@@ -85,7 +85,9 @@ export async function analyzeTokenWalletsMultiChain(tokenAddress: string) {
       url: chain.hypersyncUrl,
       bearerToken: process.env.HYPERSYNC_BEARER_TOKEN || "",
     });
-    const provider = new ethers.JsonRpcProvider(chain.rpcUrl);
+    const provider = new ethers.JsonRpcProvider(chain.rpcUrl, undefined, {
+      staticNetwork: ethers.Network.from(chain.chainId),
+    });
     const currentBlock = await provider.getBlockNumber();
 
     const query: Query = {
@@ -171,7 +173,9 @@ export async function analyzeTokenWalletsMultiChain(tokenAddress: string) {
 
     for (const [chainKey, chain] of Object.entries(CHAIN_CONFIGS)) {
       try {
-        const provider = new ethers.JsonRpcProvider(chain.rpcUrl);
+        const provider = new ethers.JsonRpcProvider(chain.rpcUrl, undefined, {
+          staticNetwork: ethers.Network.from(chain.chainId),
+        });
         const currentBlock = await provider.getBlockNumber();
         const blocksPerDay = Math.floor(86400 / chain.blockTime);
 

@@ -4,13 +4,13 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { LoaderDemo } from "@/components/Loader";
-import { 
-  TrendingUp, 
-  AlertTriangle, 
-  DollarSign, 
+import {
+  TrendingUp,
+  AlertTriangle,
+  DollarSign,
   Activity,
   PieChart,
-  BarChart3 
+  BarChart3,
 } from "lucide-react";
 
 interface DashboardData {
@@ -40,7 +40,9 @@ export function DashboardSidebar() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch("http://localhost:4007/api/dashboard-data");
+      const apiUrl =
+        process.env.NEXT_PUBLIC_DASHBOARD_API_URL || "http://localhost:4007";
+      const response = await fetch(`${apiUrl}/api/dashboard-data`);
       if (!response.ok) {
         throw new Error("Failed to fetch dashboard data");
       }
@@ -57,7 +59,7 @@ export function DashboardSidebar() {
 
   useEffect(() => {
     fetchData();
-    
+
     // Refresh data every 30 seconds
     const interval = setInterval(fetchData, 30000);
     return () => clearInterval(interval);
@@ -67,7 +69,9 @@ export function DashboardSidebar() {
     return (
       <div className="w-80 border-r border-border bg-card p-6 flex flex-col items-center justify-center">
         <LoaderDemo number={3} />
-        <p className="text-sm text-muted-foreground mt-4">Loading analytics...</p>
+        <p className="text-sm text-muted-foreground mt-4">
+          Loading analytics...
+        </p>
       </div>
     );
   }
@@ -107,15 +111,21 @@ export function DashboardSidebar() {
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Tokens Tracked:</span>
-                  <span className="font-medium">{data?.totalTokensTracked || 0}</span>
+                  <span className="font-medium">
+                    {data?.totalTokensTracked || 0}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Active Alerts:</span>
-                  <span className="font-medium">{data?.activeAlerts?.length || 0}</span>
+                  <span className="font-medium">
+                    {data?.activeAlerts?.length || 0}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Top Performers:</span>
-                  <span className="font-medium">{data?.topPerformers?.length || 0}</span>
+                  <span className="font-medium">
+                    {data?.topPerformers?.length || 0}
+                  </span>
                 </div>
               </div>
             </Card>
@@ -128,16 +138,19 @@ export function DashboardSidebar() {
               </h3>
               <div className="space-y-2">
                 {data?.activeAlerts?.map((alert, index) => (
-                  <div key={index} className="p-2 rounded bg-secondary/20 text-xs">
+                  <div
+                    key={index}
+                    className="p-2 rounded bg-secondary/20 text-xs"
+                  >
                     <div className="flex items-center justify-between mb-1">
                       <span className="font-medium">{alert.symbol}</span>
-                      <Badge 
+                      <Badge
                         variant={
-                          alert.alertType === "BUY" 
-                            ? "default" 
-                            : alert.alertType === "WATCH" 
-                            ? "secondary" 
-                            : "destructive"
+                          alert.alertType === "BUY"
+                            ? "default"
+                            : alert.alertType === "WATCH"
+                              ? "secondary"
+                              : "destructive"
                         }
                         className="text-xs"
                       >
@@ -164,7 +177,10 @@ export function DashboardSidebar() {
               </h3>
               <div className="space-y-2">
                 {data?.topPerformers?.map((token, index) => (
-                  <div key={index} className="p-2 rounded bg-secondary/20 text-xs">
+                  <div
+                    key={index}
+                    className="p-2 rounded bg-secondary/20 text-xs"
+                  >
                     <div className="flex items-center justify-between mb-1">
                       <span className="font-medium">{token.symbol}</span>
                       <div className="text-green-600 font-medium">
@@ -191,17 +207,20 @@ export function DashboardSidebar() {
               </h3>
               <div className="space-y-2">
                 {data?.riskHeatmap?.map((token, index) => (
-                  <div key={index} className="flex items-center justify-between text-xs">
+                  <div
+                    key={index}
+                    className="flex items-center justify-between text-xs"
+                  >
                     <span className="font-medium">{token.symbol}</span>
                     <div className="flex items-center gap-2">
-                      <div 
+                      <div
                         className={`w-2 h-2 rounded-full ${
-                          token.risk < 30 
-                            ? "bg-green-500" 
-                            : token.risk < 70 
-                            ? "bg-yellow-500" 
-                            : "bg-red-500"
-                        }`} 
+                          token.risk < 30
+                            ? "bg-green-500"
+                            : token.risk < 70
+                              ? "bg-yellow-500"
+                              : "bg-red-500"
+                        }`}
                       />
                       <span className="text-muted-foreground">
                         {token.risk}/100
@@ -220,7 +239,9 @@ export function DashboardSidebar() {
             <Card className="p-4">
               <div className="flex items-center gap-2 text-sm">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                <span className="text-muted-foreground">Live data stream active</span>
+                <span className="text-muted-foreground">
+                  Live data stream active
+                </span>
               </div>
               <p className="text-xs text-muted-foreground mt-1">
                 Last updated: {new Date().toLocaleTimeString()}

@@ -95,9 +95,9 @@ export default function AnalyzePage() {
     setAnalysisData(null);
 
     try {
-      const response = await fetch(
-        `http://localhost:3001/analyze-wallets/${tokenAddress}`
-      );
+      const apiUrl =
+        process.env.NEXT_PUBLIC_ENVIO_API_URL || "http://localhost:3001";
+      const response = await fetch(`${apiUrl}/analyze-wallets/${tokenAddress}`);
 
       if (!response.ok) {
         throw new Error(`Failed to analyze token: ${response.statusText}`);
@@ -225,7 +225,7 @@ export default function AnalyzePage() {
                 </CardContent>
               </Card>
 
-              <Card className="hover:shadow-lg transition-shadow">
+              {/* <Card className="hover:shadow-lg transition-shadow">
                 <CardContent className="p-4 lg:p-6">
                   <div className="flex items-center gap-4">
                     <div className="p-3 bg-green-500/10 rounded-xl">
@@ -245,7 +245,7 @@ export default function AnalyzePage() {
                     </div>
                   </div>
                 </CardContent>
-              </Card>
+              </Card> */}
 
               <Card className="hover:shadow-lg transition-shadow sm:col-span-2 xl:col-span-1">
                 <CardContent className="p-4 lg:p-6">
@@ -337,12 +337,16 @@ export default function AnalyzePage() {
                                     <Button
                                       variant="ghost"
                                       size="sm"
-                                      onClick={() =>
+                                      onClick={() => {
+                                        const explorerUrl =
+                                          process.env
+                                            .NEXT_PUBLIC_ETHERSCAN_URL ||
+                                          "https://etherscan.io";
                                         window.open(
-                                          `https://etherscan.io/address/${wallet.address}`,
+                                          `${explorerUrl}/address/${wallet.address}`,
                                           "_blank"
-                                        )
-                                      }
+                                        );
+                                      }}
                                       className="h-7 w-7 sm:h-8 sm:w-8 p-0"
                                     >
                                       <ExternalLink className="w-3 h-3" />

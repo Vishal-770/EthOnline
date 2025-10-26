@@ -1,6 +1,6 @@
 "use client";
 
-import { MessageCircle, TrendingUp, Menu, X } from "lucide-react";
+import { MessageCircle, TrendingUp, Menu, X, Bot } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -23,7 +23,7 @@ const NavBar = () => {
       <div className="flex items-center gap-3">
         <Link href="/" className="flex items-center gap-2">
           <span className="text-xl sm:text-2xl font-extrabold tracking-tight  ">
-            ERC20WIZ
+            Meme-Sentinel
           </span>
         </Link>
       </div>
@@ -74,6 +74,16 @@ const NavBar = () => {
             >
               <MessageCircle className="w-4 h-4" />
               <span>AI Assistant</span>
+            </Button>
+          </Link>
+          <Link href="/agent">
+            <Button
+              variant={pathname === "/agent" ? "secondary" : "ghost"}
+              size="sm"
+              className="gap-2 font-medium text-purple-600 hover:text-purple-700 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 transition-colors"
+            >
+              <Bot className="w-4 h-4" />
+              <span>AI Agent</span>
             </Button>
           </Link>
         </div>
@@ -140,7 +150,6 @@ const NavBar = () => {
             </Link>
           </div>
         </div>
-
       )}
     </nav>
   );

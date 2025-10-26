@@ -19,7 +19,7 @@ const SUGGESTED_PROMPTS = [
   "Show me high-risk high-reward opportunities",
   "What tokens should I avoid right now?",
   "Analyze the current market sentiment",
-  "Give me a portfolio recommendation"
+  "Give me a portfolio recommendation",
 ];
 
 export function ChatInterface() {
@@ -27,9 +27,10 @@ export function ChatInterface() {
     {
       id: "welcome",
       role: "assistant",
-      content: "Hello! I'm MemeSentinel AI, powered by Groq. I can help you analyze memecoin trends, assess risks, and provide market insights based on real-time data. What would you like to know?",
-      timestamp: Date.now()
-    }
+      content:
+        "Hello! I'm MemeSentinel AI, powered by Groq. I can help you analyze memecoin trends, assess risks, and provide market insights based on real-time data. What would you like to know?",
+      timestamp: Date.now(),
+    },
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -52,15 +53,17 @@ export function ChatInterface() {
       id: Date.now().toString(),
       role: "user",
       content: text,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://localhost:4007/api/chat", {
+      const apiUrl =
+        process.env.NEXT_PUBLIC_DASHBOARD_API_URL || "http://localhost:4007";
+      const response = await fetch(`${apiUrl}/api/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -78,19 +81,19 @@ export function ChatInterface() {
         id: (Date.now() + 1).toString(),
         role: "assistant",
         content: data.response || "Sorry, I couldn't process your request.",
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
 
-      setMessages(prev => [...prev, assistantMessage]);
+      setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
       console.error("Chat error:", error);
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
         content: "Sorry, I encountered an error. Please try again later.",
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
-      setMessages(prev => [...prev, errorMessage]);
+      setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }
@@ -108,9 +111,10 @@ export function ChatInterface() {
       {
         id: "welcome",
         role: "assistant",
-        content: "Hello! I'm MemeSentinel AI, powered by Groq. I can help you analyze memecoin trends, assess risks, and provide market insights based on real-time data. What would you like to know?",
-        timestamp: Date.now()
-      }
+        content:
+          "Hello! I'm MemeSentinel AI, powered by Groq. I can help you analyze memecoin trends, assess risks, and provide market insights based on real-time data. What would you like to know?",
+        timestamp: Date.now(),
+      },
     ]);
   };
 
@@ -125,7 +129,9 @@ export function ChatInterface() {
             </div>
             <div>
               <h1 className="font-semibold text-lg">MemeSentinel AI</h1>
-              <p className="text-sm text-muted-foreground">Powered by Groq • Real-time memecoin analysis</p>
+              <p className="text-sm text-muted-foreground">
+                Powered by Groq • Real-time memecoin analysis
+              </p>
             </div>
           </div>
           <Button
@@ -148,24 +154,30 @@ export function ChatInterface() {
               message.role === "user" ? "flex-row-reverse" : ""
             }`}
           >
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-              message.role === "user" 
-                ? "bg-accent text-accent-foreground" 
-                : "bg-primary text-primary-foreground"
-            }`}>
+            <div
+              className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                message.role === "user"
+                  ? "bg-accent text-accent-foreground"
+                  : "bg-primary text-primary-foreground"
+              }`}
+            >
               {message.role === "user" ? (
                 <User className="w-4 h-4" />
               ) : (
                 <Bot className="w-4 h-4" />
               )}
             </div>
-            <Card className={`max-w-2xl p-4 ${
-              message.role === "user" 
-                ? "bg-primary text-primary-foreground" 
-                : "bg-card"
-            }`}>
+            <Card
+              className={`max-w-2xl p-4 ${
+                message.role === "user"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-card"
+              }`}
+            >
               {message.role === "assistant" && (
-                <p className="text-sm text-muted-foreground mb-2">MemeSentinel AI</p>
+                <p className="text-sm text-muted-foreground mb-2">
+                  MemeSentinel AI
+                </p>
               )}
               <div className="whitespace-pre-wrap text-sm leading-relaxed">
                 {message.content}
@@ -186,7 +198,9 @@ export function ChatInterface() {
             <Card className="p-4">
               <div className="flex items-center gap-2">
                 <LoaderDemo number={3} />
-                <span className="text-sm text-muted-foreground">MemeSentinel is thinking...</span>
+                <span className="text-sm text-muted-foreground">
+                  MemeSentinel is thinking...
+                </span>
               </div>
             </Card>
           </div>

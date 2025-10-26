@@ -197,7 +197,7 @@ async function updateTokensByRankRange(startRank: number, endRank: number) {
       ["CryptoCurrency", "SatoshiStreetBets", "CryptoMoonShots"] as string[]
     );
 
-    const aggregator = new SocialMediaAggregator(process.env.GOOGLE_API_KEY!);
+    const aggregator = new SocialMediaAggregator(process.env.GEMINI_API_KEY!);
     aggregator.addPosts(posts);
     const analysis = await aggregator.analyzeTrends();
 
@@ -274,7 +274,7 @@ app.post("/social-analytics", async (req, res) => {
       subreddits
     );
 
-    const aggregator = new SocialMediaAggregator(process.env.GOOGLE_API_KEY!);
+    const aggregator = new SocialMediaAggregator(process.env.GEMINI_API_KEY!);
     aggregator.addPosts(posts);
     const analysis = await aggregator.analyzeTrends();
 

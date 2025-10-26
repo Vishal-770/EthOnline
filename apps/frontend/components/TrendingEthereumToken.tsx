@@ -19,7 +19,9 @@ interface TrendingToken {
 }
 
 async function fetchTrendingEthereumTokens(): Promise<TrendingToken[]> {
-  const { data } = await axios.get("http://localhost:3002/top-tokens");
+  const apiUrl =
+    process.env.NEXT_PUBLIC_OFFCHAIN_API_URL || "http://localhost:3002";
+  const { data } = await axios.get(`${apiUrl}/top-tokens`);
   return data;
 }
 
