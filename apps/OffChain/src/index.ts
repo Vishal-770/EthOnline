@@ -60,14 +60,37 @@ const client = createClient({
 });
 
 client.on("error", (err: Error) => {
-  // Redis connection errors
+  console.error("❌ Redis Client Error:", err);
+  console.error("Error details:", {
+    message: err.message,
+    stack: err.stack,
+    name: err.name,
+  });
+});
+
+client.on("connect", () => {
+  console.log("✅ Redis connected successfully");
+  console.log("Redis config:", {
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT,
+    username: process.env.REDIS_USERNAME,
+  });
 });
 
 (async () => {
   try {
     await client.connect();
-  } catch (err) {
-    // Failed to connect to Redis
+    console.log("✅ Redis client initialized");
+    console.log("Testing Redis connection with PING...");
+    const pong = await client.ping();
+    console.log("✅ Redis PING response:", pong);
+  } catch (err: any) {
+    console.error("❌ Failed to connect to Redis:", {
+      message: err.message,
+      code: err.code,
+      stack: err.stack,
+    });
+    process.exit(1);
   }
 })();
 
@@ -111,16 +134,31 @@ function calculateSocialScore(tokenAnalysis: AnalyzedToken): number {
 
 async function getTokenAddressesSorted(): Promise<any[]> {
   try {
+    // Check if Redis is connected
+    if (!client.isOpen) {
+      console.error("❌ Redis client is not connected");
+      return [];
+    }
+
     const now = Date.now();
     if (
       cachedRankings.length > 0 &&
       now - lastRankingUpdate < RANKING_CACHE_TTL
     ) {
+      console.log(
+        `📦 Returning cached rankings (${cachedRankings.length} tokens)`
+      );
       return cachedRankings;
     }
 
+    console.log("🔍 Fetching token addresses from Redis...");
     const keys = await client.keys("0x*");
-    if (!keys.length) return [];
+    console.log(`🔍 Found ${keys.length} token keys in Redis`);
+
+    if (!keys.length) {
+      console.log("⚠️ No token keys found in Redis");
+      return [];
+    }
 
     const values = await client.mGet(keys);
     const tokens = values
@@ -138,8 +176,11 @@ async function getTokenAddressesSorted(): Promise<any[]> {
     cachedRankings = sorted;
     lastRankingUpdate = now;
 
+    console.log(`✅ Sorted ${sorted.length} tokens by score`);
+
     return sorted;
   } catch (error) {
+    console.error("❌ Error in getTokenAddressesSorted:", error);
     return [];
   }
 }
@@ -305,14 +346,29 @@ app.get("/token/:address", async (req, res) => {
 });
 
 app.get("/top-tokens", async (req, res) => {
+  console.log("📊 Received request for top tokens");
   try {
     const limit = parseInt(req.query.limit as string) || 50;
+    console.log(`📊 Fetching top ${limit} tokens...`);
+
     const tokens = await getTokenAddressesSorted();
+    console.log(`📊 Found ${tokens.length} sorted tokens`);
+
+    if (tokens.length === 0) {
+      console.log("⚠️ No tokens found in Redis");
+      return res.json([]);
+    }
+
     const topAddresses = tokens.slice(0, limit);
+    console.log(`📊 Getting data for top ${topAddresses.length} addresses`);
+
     const values = await client.mGet(topAddresses.map((t) => t.address));
     const fullData = values.filter(Boolean).map((v) => JSON.parse(v!));
+
+    console.log(`✅ Returning ${fullData.length} tokens`);
     return res.json(fullData.map((t, i) => ({ ...t, rank: i + 1 })));
-  } catch {
+  } catch (error) {
+    console.error("❌ Error fetching top tokens:", error);
     return res.status(500).json({ error: "Failed to fetch top tokens" });
   }
 });
@@ -325,6 +381,7 @@ app.post("/clear-cache", (req, res) => {
 
 // -------------------- Start Server --------------------
 app.listen(port, () => {
+  console.log(`OffChain API listening at http://localhost:${port}`);
   startScheduledUpdates();
   setTimeout(() => updateTokensByRankRange(0, 20), 2000);
   setTimeout(() => updateTokensByRankRange(20, 100), 15000);

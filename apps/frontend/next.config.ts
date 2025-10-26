@@ -16,6 +16,13 @@ const nextConfig: NextConfig = {
         "@envio-dev/hypersync-client": false,
       };
     }
+
+    // Fix for @react-native-async-storage/async-storage in browser
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      "@react-native-async-storage/async-storage": false,
+    };
+
     return config;
   },
   images: {

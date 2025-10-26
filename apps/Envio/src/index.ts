@@ -321,5 +321,5 @@ setInterval(
 const port = parseInt(process.env.PORT || "3001");
 
 app.listen(port, () => {
-  // Server started
+ console.log(`Envio API is running on port ${port}`);
 });

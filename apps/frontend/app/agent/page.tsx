@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Wallet,
   AlertCircle,
@@ -44,7 +44,7 @@ interface Trade {
 
 interface InfoRowProps {
   label: string;
-  value: string | number | JSX.Element;
+  value: string | number | React.ReactElement;
 }
 
 interface TokenBalance {
