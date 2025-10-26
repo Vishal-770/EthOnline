@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
 import ThemeProviderWrapper from "@/components/ThemeProvider";
 
 export const metadata: Metadata = {
@@ -7,14 +6,9 @@ export const metadata: Metadata = {
   description: "Chat with AI-powered memecoin analysis assistant",
 };
 
-export default function ChatLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
-  return (
-    <ThemeProviderWrapper>
-      {children}
-    </ThemeProviderWrapper>
-  );
+export default function ChatLayout(props: any) {
+  // Use a permissive props type here to avoid cross-package React type
+  // mismatches during production builds (CI/Vercel). ThemeProvider will
+  // forward children to the underlying provider.
+  return <ThemeProviderWrapper>{props.children}</ThemeProviderWrapper>;
 }
