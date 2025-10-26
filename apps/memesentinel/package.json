@@ -5,7 +5,6 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "dev": "tsx src/orchestrator.ts",
     "start": "node dist/index.js",
     "clean": "rimraf dist",
     "lint": "eslint src --ext .ts",
